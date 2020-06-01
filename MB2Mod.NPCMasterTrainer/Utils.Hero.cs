@@ -54,12 +54,13 @@ namespace MB2Mod.NPCMasterTrainer
                 Culture = hero.TryGetValue(x => x.Culture.ToString()),
                 hero.IsChild,
                 hero.IsFemale,
+                hero.IsFertile,
                 IsMainPartyBelonged = IsMainPartyBelonged(hero),
                 InMainPartyCompanions = InMainPartyCompanions(hero),
                 hero.IsPlayerCompanion,
                 hero.IsPartyLeader,
                 hero.IsAlive,
-                Occupation = hero.GetOccupation(),
+                Profession = hero.GetProfession(),
                 FirstName = hero.TryGetValue(x => x.FirstName?.ToString()),
                 Location = new
                 {
@@ -73,6 +74,17 @@ namespace MB2Mod.NPCMasterTrainer
         }
 
         public static void Print(this IEnumerable<Hero> heroes, string tag) => heroes.Print(tag, "Heroes", Print);
+
+        public static void ReName(this Hero hero, string newName, bool showDisplayMessage = true)
+        {
+            if (hero == null) return;
+            if (showDisplayMessage)
+            {
+                var oldName = hero.Name?.ToString();
+                DisplayMessage($"{oldName} {Resources.Renamed} {newName}");
+            }
+            hero.Name = new TextObject(newName);
+        }
 
         public static bool? IsMainPartyBelonged(this Hero hero)
         {
@@ -115,21 +127,25 @@ namespace MB2Mod.NPCMasterTrainer
             }
         }
 
-        public static string GetOccupation(this Hero hero)
+        public static string GetProfession(this Hero hero)
         {
-            if (hero.IsNoble)
-            {
-                return Resources.Noble;
-            }
-            else if (hero.IsWanderer)
-            {
-                return Resources.Wanderer;
-            }
-            else if (hero.IsArtisan)
-            {
-                return Resources.Artisan;
-            }
-            return string.Empty;
+            // parent.SetTextVariable("PROFESSION", HeroHelper.GetCharacterTypeName(hero).ToString().ToLowerInvariant());
+            // TextObject CreateObituary(Hero hero, KillCharacterAction.KillCharacterActionDetail detail)
+            // TaleWorlds.CampaignSystem.Actions.KillCharacterAction
+            return HeroHelper.GetCharacterTypeName(hero).ToString().ToLowerInvariant();
+            //if (hero.IsNoble)
+            //{
+            //    return Resources.Noble;
+            //}
+            //else if (hero.IsWanderer)
+            //{
+            //    return Resources.Wanderer;
+            //}
+            //else if (hero.IsArtisan)
+            //{
+            //    return Resources.Artisan;
+            //}
+            //return string.Empty;
         }
 
         static Hero[] GetNotMeNpcsInMyTroops(IEnumerable<Hero> heroes, Hero player = null, bool? isNoble = null, bool? isWanderer = null)

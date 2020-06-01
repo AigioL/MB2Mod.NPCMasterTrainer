@@ -4,10 +4,8 @@ using System.Reflection;
 
 namespace MB2Mod.NPCMasterTrainer.Properties
 {
-    internal static class Resources
+    internal static partial class Resources
     {
-        internal static string Language { get; set; } = Utils.Localization.English; /*= Utils.Localization.GetLanguage();*/
-
         internal static string LoadedDeveloperConsoleInfoMessage => Language switch
         {
             Utils.Localization.SimplifiedChinese => "已加载 DeveloperConsole。按 CTRL 和 ~ 启用。",
@@ -487,7 +485,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
             }
         }
 
-        internal static string Occupation
+        [Obsolete("", true)]
+        internal static string Occupation => Profession;
+
+        internal static string Profession
         {
             get
             {
@@ -498,7 +499,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.TraditionalChinese:
                         return "職業";
                     default:
-                        return "Occupation";
+                        return "Profession";
                 }
             }
         }
@@ -1298,5 +1299,126 @@ namespace MB2Mod.NPCMasterTrainer.Properties
             }
         }
 
+        internal static string Renamed
+        {
+            get
+            {
+                switch (Language)
+                {
+                    case Utils.Localization.SimplifiedChinese:
+                        return "已更名为";
+                    case Utils.Localization.TraditionalChinese:
+                        return "已更名為";
+                    default:
+                        return "Renamed";
+                }
+            }
+        }
+
+        internal static string PregnancyModel
+        {
+            get
+            {
+                switch (Language)
+                {
+                    case Utils.Localization.SimplifiedChinese:
+                        return "妊娠配置";
+                    case Utils.Localization.TraditionalChinese:
+                        return "妊娠配寘";
+                    default:
+                        return "Pregnancy Model";
+                }
+            }
+        }
+
+        internal static string IsFertile
+        {
+            get
+            {
+                switch (Language)
+                {
+                    case Utils.Localization.SimplifiedChinese:
+                    case Utils.Localization.TraditionalChinese:
+                        return "可生育";
+                    default:
+                        return "Fertile";
+                }
+            }
+        }
+
+        internal static string Done
+        {
+            get
+            {
+                switch (Language)
+                {
+                    case Utils.Localization.SimplifiedChinese:
+                    case Utils.Localization.TraditionalChinese:
+                        return "完成";
+                    default:
+                        return "Done";
+                }
+            }
+        }
+
+        internal static string Catch
+        {
+            get
+            {
+                switch (Language)
+                {
+                    case Utils.Localization.SimplifiedChinese:
+                    case Utils.Localization.TraditionalChinese:
+                        return "异常";
+                    default:
+                        return "Catch";
+                }
+            }
+        }
+
+        internal static string TrueString_Exist
+        {
+            get
+            {
+                switch (Language)
+                {
+                    case Utils.Localization.SimplifiedChinese:
+                    case Utils.Localization.TraditionalChinese:
+                        return "存在 {0}";
+                    default:
+                        return "Exist {0}";
+                }
+            }
+        }
+
+        internal static string FalseString_Exist
+        {
+            get
+            {
+                switch (Language)
+                {
+                    case Utils.Localization.SimplifiedChinese:
+                    case Utils.Localization.TraditionalChinese:
+                        return "不存在 {0}";
+                    default:
+                        return "No Exist {0}";
+                }
+            }
+        }
+
+        internal static string FalseString_IsFertile
+        {
+            get
+            {
+                switch (Language)
+                {
+                    case Utils.Localization.SimplifiedChinese:
+                    case Utils.Localization.TraditionalChinese:
+                        return "不可生育";
+                    default:
+                        return "Barrenness";
+                }
+            }
+        }
     }
 }

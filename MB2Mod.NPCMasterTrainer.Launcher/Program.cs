@@ -15,8 +15,9 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
             if (Directory.Exists(gamePath))
             {
                 await Utils.ExitGameAsync();
-                var projPath = Utils.GetProjectPath();
-                var isOK = Utils.Deploy(projPath, gamePath);
+                var currentPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                var projPath = Utils.GetProjectPath(currentPath);
+                var isOK = Utils.Deploy(currentPath, projPath, gamePath, !Utils.IsDevelopment);
                 if (isOK) Console.WriteLine("Done");
             }
             else

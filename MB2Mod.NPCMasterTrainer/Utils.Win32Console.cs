@@ -5,7 +5,7 @@ namespace MB2Mod.NPCMasterTrainer
 {
     partial class Utils
     {
-        internal static class Win32Console
+        public static class Win32Console
         {
             [DllImport("kernel32.dll")]
             static extern bool AllocConsole();

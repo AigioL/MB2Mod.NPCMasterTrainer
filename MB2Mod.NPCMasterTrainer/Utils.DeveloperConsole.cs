@@ -7,7 +7,7 @@ namespace MB2Mod.NPCMasterTrainer
 {
     partial class Utils
     {
-        internal static class DeveloperConsole
+        public static class DeveloperConsole
         {
             [DllImport("Rgl.dll", EntryPoint = "?toggle_imgui_console_visibility@rglCommand_line_manager@@QEAAXXZ", CallingConvention = CallingConvention.Cdecl)]
             public static extern void toggle_imgui_console_visibility(UIntPtr x);

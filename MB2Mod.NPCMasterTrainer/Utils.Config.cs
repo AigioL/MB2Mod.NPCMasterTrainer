@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -51,6 +52,8 @@ namespace MB2Mod.NPCMasterTrainer
 
         public sealed partial class Config
         {
+            public string ModConfigVersion { get; set; }
+
             /// <summary>
             /// 启用开发者控制台
             /// </summary>
@@ -101,11 +104,28 @@ namespace MB2Mod.NPCMasterTrainer
             /// </summary>
             public ushort AddAmmoByJavelin { get; set; } = 1;
 
+            static bool IsOldConfigFile(string ver)
+            {
+                try
+                {
+                    var version = new Version(ver);
+                    var current_version = new Version(FileVersion);
+                    return current_version > version;
+                }
+                catch
+                {
+                    return ver != FileVersion;
+                }
+            }
+
+            static readonly StringBuilder lazy_instance_sb = IsDevelopment ? new StringBuilder() : null;
+
             static readonly Lazy<Config> lazy_instance = new Lazy<Config>(() =>
             {
                 Config config = null;
                 var path = ConfigPath;
-                if (File.Exists(path))
+                var exists = File.Exists(path);
+                if (exists)
                 {
                     string jsonConfig;
                     try
@@ -115,26 +135,82 @@ namespace MB2Mod.NPCMasterTrainer
                     catch (Exception ex_read)
                     {
                         jsonConfig = null;
-                        DisplayMessage(ex_read);
+                        if (IsDevelopment) lazy_instance_sb.AppendLine(ex_read.ToString());
                     }
-                    if (!string.IsNullOrWhiteSpace(jsonConfig) && TryDeserialize<Config>(jsonConfig, out var obj)) config = obj;
+                    if (!string.IsNullOrWhiteSpace(jsonConfig) && TryDeserialize<Config>(jsonConfig, out var obj))
+                    {
+                        config = obj;
+                    }
+                    else
+                    {
+                        if (IsDevelopment)
+                        {
+                            Console.WriteLine("Read Config File Fail.");
+                        }
+                    }
                 }
+                bool isWrite;
                 if (config == null)
                 {
-                    config = new Config();
+                    if (IsDevelopment) lazy_instance_sb.AppendLine("new Config And Write.");
+                    config = GetConfig();
+                    isWrite = true;
+                }
+                else if (IsOldConfigFile(config.ModConfigVersion))
+                {
+                    if (IsDevelopment) lazy_instance_sb.AppendLine($"IsOldConfigFile And Write, MCV: {config.ModConfigVersion}, CMCV: {GetModConfigVersion()}.");
+                    config.ModConfigVersion = GetModConfigVersion();
+                    isWrite = true;
+                }
+                else
+                {
+                    if (IsDevelopment) lazy_instance_sb.AppendLine("No Write.");
+                    isWrite = false;
+                }
+                if (isWrite)
+                {
                     try
                     {
+                        if (exists)
+                        {
+                            var bakPath = path + ".bak";
+                            if (File.Exists(bakPath)) File.Delete(bakPath);
+                            File.Move(path, bakPath);
+                            File.Delete(path);
+                        }
                         File.WriteAllText(path, config.ToJsonString());
                     }
                     catch (Exception ex_write)
                     {
-                        DisplayMessage(ex_write);
+                        if (IsDevelopment) lazy_instance_sb.AppendLine(ex_write.ToString());
                     }
                 }
                 return config;
             });
 
             public static Config Instance => lazy_instance.Value;
+
+            public static void PrintConfigInstanceLog()
+            {
+                if (lazy_instance_sb != null)
+                {
+                    var str = lazy_instance_sb.ToString();
+                    if (!string.IsNullOrEmpty(str))
+                    {
+                        Console.WriteLine(str);
+                    }
+                }
+            }
+
+            static string GetModConfigVersion() => ToFullString(new Version(FileVersion));
+
+            public static Config GetConfig() => new Config { ModConfigVersion = GetModConfigVersion() };
+        }
+
+        public static string ToFullString(this Version version)
+        {
+            return $"{GetInt(version.Major)}.{GetInt(version.Minor)}.{GetInt(version.Build)}.{GetInt(version.Revision)}";
+            static int GetInt(int i) => i < 0 ? 0 : i;
         }
     }
 }

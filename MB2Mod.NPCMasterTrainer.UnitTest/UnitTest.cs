@@ -1,6 +1,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using TaleWorlds.Core;
 
 namespace MB2Mod.NPCMasterTrainer.UnitTest
@@ -11,6 +15,7 @@ namespace MB2Mod.NPCMasterTrainer.UnitTest
         public UnitTest()
         {
             Utils.Localization.SetLanguage(CultureInfo.CurrentUICulture);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
 
         [TestMethod]
@@ -27,7 +32,7 @@ namespace MB2Mod.NPCMasterTrainer.UnitTest
         [TestMethod]
         public void Localization()
         {
-            var currentLanguageId = Utils.Localization.GetCurrentLanguageIdByMBTextManager();
+            var currentLanguageId = Utils.Localization.GetLanguage();
             Console.WriteLine(currentLanguageId);
             //var lang = Utils.Localization.GetLanguageByWin32Registry();
             //Console.WriteLine(lang);
@@ -77,5 +82,71 @@ namespace MB2Mod.NPCMasterTrainer.UnitTest
             item.SetDifficulty(sbyte.MaxValue);
             Assert.IsTrue(item.Difficulty == sbyte.MaxValue);
         }
+
+        [TestMethod]
+        public void Lazy()
+        {
+            var typeUtils = typeof(Utils);
+            var dels = new[] { typeUtils.Namespace + ".", ", " + typeUtils.Assembly };
+            TestLazyFields(typeUtils);
+            dynamic FormatDynamic(dynamic d)
+            {
+                if (d is string str)
+                {
+                    return FormatString(str);
+                }
+                return d;
+            }
+            string FormatString(string str)
+            {
+                foreach (var item in dels)
+                {
+                    str = str.Replace(item, string.Empty);
+                }
+                return str;
+            }
+            void TestLazyFields(Type type)
+            {
+                if (type.IsEnum || (type.IsGenericType && !type.IsConstructedGenericType)) return;
+                if (type.BaseType != null && type.BaseType != typeof(object)) TestLazyFields(type.BaseType);
+                var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetField);
+                fields = (from f in fields where f.FieldType.IsGenericType && f.FieldType.GetGenericTypeDefinition() == typeof(Lazy<>) select f).ToArray();
+                foreach (var item in fields)
+                {
+                    dynamic value;
+                    bool @catch = default;
+                    try
+                    {
+                        value = item.GetValue(null);
+                        value = value.Value;
+                        if (value is IReadOnlyCollection<object> collection)
+                        {
+                            value = $"{value} count: {collection.Count}";
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        value = e;
+                        @catch = true;
+                    }
+                    Console.WriteLine($"{FormatString(type.FullName)}.{item.Name}: {FormatDynamic(value)}");
+                    if (@catch) Assert.Fail();
+                }
+                var nestedTypes = type.GetNestedTypes();
+                if (nestedTypes != null) Array.ForEach(nestedTypes, TestLazyFields);
+            }
+        }
+
+        //[TestMethod]
+        //public void Encoding936()
+        //{
+        //    var gb2312 = Encoding.GetEncoding(936);
+        //    var source_str = "哈劳斯国王";
+        //    var source_bytes = Encoding.UTF8.GetBytes(source_str);
+        //    var str = gb2312.GetString(source_bytes); // utf8bytes -> gb2312string 导致不可逆数据丢失 反过来转也没法还原
+        //    Console.WriteLine($"gb2312: {str}");
+        //    var bytes = gb2312.GetBytes(str);
+        //    Console.WriteLine($"UTF8 :{Encoding.UTF8.GetString(bytes)}");
+        //}
     }
 }

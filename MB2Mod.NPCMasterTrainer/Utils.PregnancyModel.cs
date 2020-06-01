@@ -1,0 +1,218 @@
+﻿using Helpers;
+using MB2Mod.NPCMasterTrainer.Properties;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using System.Text;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.SandBox.GameComponents;
+
+namespace MB2Mod.NPCMasterTrainer
+{
+    partial class Utils
+    {
+        partial class Config
+        {
+            /// <summary>
+            /// 开启妊娠配置，默认值<see langword="false"/>(关)
+            /// </summary>
+            public bool EnablePregnancyModel { get; set; }
+
+            /// <summary>
+            /// [妊娠配置]在游戏创建成功后初始化所有的角色能够生育的占比，当前版本(1.4.0.230377)默认值为 0.95
+            /// </summary>
+            public float? CharacterFertilityProbability { get; set; }
+
+            /// <summary>
+            /// [妊娠配置]妊娠期(天数)，当前版本(1.4.0.230377)默认值为 36
+            /// </summary>
+            public float? PregnancyDurationInDays { get; set; }
+
+            /// <summary>
+            /// [妊娠配置]产妇分娩死亡率，当前版本(1.4.0.230377)默认值为 0.015
+            /// </summary>
+            public float? MaternalMortalityProbabilityInLabor { get; set; }
+
+            /// <summary>
+            /// [妊娠配置]死胎概率，当前版本(1.4.0.230377)默认值为 0.01
+            /// </summary>
+            public float? StillbirthProbability { get; set; }
+
+            /// <summary>
+            /// [妊娠配置]生育女性后代率，当前版本(1.4.0.230377)默认值为 0.51
+            /// </summary>
+            public float? DeliveringFemaleOffspringProbability { get; set; }
+
+            /// <summary>
+            /// [妊娠配置]生双胞胎的概率，当前版本(1.4.0.230377)默认值为 0.03
+            /// </summary>
+            public float? DeliveringTwinsProbability { get; set; }
+
+            /// <summary>
+            /// [妊娠配置]最大孕龄，当前版本(1.4.0.230377)默认值为 45
+            /// </summary>
+            public ushort? MaxPregnancyAge { get; set; }
+
+            /// <summary>
+            /// [妊娠配置]我或我的配偶的最大孕龄，当前版本(1.4.0.230377)默认值为 45
+            /// </summary>
+            public ushort? MaxPregnancyAgeForMeOrMySpouse { get; set; }
+
+            /// <summary>
+            /// [妊娠配置]增加每日怀孕几率倍数，默认值为 1
+            /// </summary>
+            public ulong AddDailyChanceOfPregnancyForHeroMultiple { get; set; } = 1;
+
+            /// <summary>
+            /// [妊娠配置]增加我或我的配偶每日怀孕几率倍数，默认值为 1
+            /// </summary>
+            public ulong AddDailyChanceOfPregnancyForMeOrMySpouseMultiple { get; set; } = 1;
+        }
+
+        public sealed class NPCMTPregnancyModel : DefaultPregnancyModel
+        {
+            readonly Config config;
+
+            NPCMTPregnancyModel(Config config) => this.config = config;
+
+            public override float CharacterFertilityProbability
+                => GetPercentage(config?.CharacterFertilityProbability) ?? base.CharacterFertilityProbability;
+
+            public override float PregnancyDurationInDays
+                => GetDays(config?.PregnancyDurationInDays) ?? base.PregnancyDurationInDays;
+
+            public override float MaternalMortalityProbabilityInLabor
+                => GetPercentage(config?.MaternalMortalityProbabilityInLabor) ?? base.MaternalMortalityProbabilityInLabor;
+
+            public override float StillbirthProbability
+                => GetPercentage(config?.StillbirthProbability) ?? base.StillbirthProbability;
+
+            public override float DeliveringFemaleOffspringProbability
+                => GetPercentage(config?.DeliveringFemaleOffspringProbability) ?? base.DeliveringFemaleOffspringProbability;
+
+            public override float DeliveringTwinsProbability
+                => GetPercentage(config?.DeliveringTwinsProbability) ?? base.DeliveringTwinsProbability;
+
+            static readonly Lazy<PregnancyModel> lazy_instance = new Lazy<PregnancyModel>(() => new NPCMTPregnancyModel(Config.Instance));
+
+            public static PregnancyModel Instance => lazy_instance.Value;
+
+            const int MinPregnancyAge = 18;
+            const int MaxPregnancyAge = 45;
+
+            static readonly Lazy<FieldInfo> lazy_field_MaxPregnancyAge = new Lazy<FieldInfo>(() =>
+            {
+                var field = typeof(DefaultPregnancyModel).GetField(nameof(MaxPregnancyAge), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                return field.FieldType == typeof(int) && field.IsLiteral ? field : null;
+            });
+
+            int GetMaxPregnancyAge()
+            {
+                if ((config?.MaxPregnancyAge).HasValue) return config.MaxPregnancyAge.Value;
+                try
+                {
+                    return Convert.ToInt32(lazy_field_MaxPregnancyAge.Value.GetValue(null));
+                }
+                catch
+                {
+                    return MaxPregnancyAge;
+                }
+            }
+
+            // PregnancyCampaignBehavior.DailyTickHero(Hero hero) Age<=18 直接 return 
+            // 不进行 RefreshSpouseVisit -> GetDailyChanceOfPregnancyForHero 调用
+
+            bool IsHeroAgeSuitableForPregnancy(Hero hero, int maxPregnancyAge) => hero.Age >= MinPregnancyAge && hero.Age <= maxPregnancyAge;
+
+            bool IsMeOrMySpouse(Hero hero)
+            {
+                var main = Hero.MainHero;
+                return hero == main || hero == main.Spouse;
+            }
+
+            public override float GetDailyChanceOfPregnancyForHero(Hero hero)
+            {
+                float result = default;
+                var isMeOrMySpouse = IsMeOrMySpouse(hero);
+                var maxPregnancyAge = isMeOrMySpouse ? config.MaxPregnancyAgeForMeOrMySpouse ?? GetMaxPregnancyAge() : GetMaxPregnancyAge();
+                if (hero.Spouse != null && hero.IsFertile && IsHeroAgeSuitableForPregnancy(hero, maxPregnancyAge))
+                {
+                    var bonuses = new ExplainedNumber(1f);
+                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Medicine.PerfectHealth, hero.Clan.Leader.CharacterObject, ref bonuses);
+                    result = (float)((6.5 - (hero.Age - MinPregnancyAge) * 0.230000004172325) * 0.0199999995529652) * bonuses.ResultNumber;
+                }
+                if (hero.Children.Count == 0) result *= 3f;
+                else if (hero.Children.Count == 1) result *= 2f;
+                if (isMeOrMySpouse && config.AddDailyChanceOfPregnancyForMeOrMySpouseMultiple != 1)
+                {
+                    result *= config.AddDailyChanceOfPregnancyForMeOrMySpouseMultiple;
+                }
+                else if (config.AddDailyChanceOfPregnancyForHeroMultiple != 1)
+                {
+                    result *= config.AddDailyChanceOfPregnancyForHeroMultiple;
+                }
+                if (config.HasWin32Console())
+                {
+                    Console.WriteLine($"GetDailyChanceOfPregnancyForHero: {result}, isMeOrMySpouse: {isMeOrMySpouse}, heroName: {hero?.Name}");
+                }
+                return result;
+            }
+
+            public static bool Print()
+            {
+                var model = Campaign.Current?.Models?.PregnancyModel;
+                if (model != default)
+                {
+                    DisplayMessage($"{Resources.PregnancyModel}: {model.GetType().FullName}");
+                    DisplayMessage($"CharacterFertilityProbability: {model.CharacterFertilityProbability}");
+                    DisplayMessage($"PregnancyDurationInDays: {model.PregnancyDurationInDays}");
+                    DisplayMessage($"MaternalMortalityProbabilityInLabor: {model.MaternalMortalityProbabilityInLabor}");
+                    DisplayMessage($"StillbirthProbability: {model.StillbirthProbability}");
+                    DisplayMessage($"DeliveringFemaleOffspringProbability: {model.DeliveringFemaleOffspringProbability}");
+                    DisplayMessage($"DeliveringTwinsProbability: {model.DeliveringTwinsProbability}");
+                    if (model is NPCMTPregnancyModel model_npcmt)
+                    {
+                        DisplayMessage($"MaxPregnancyAge: {model_npcmt.GetMaxPregnancyAge()}");
+                        DisplayMessage($"MaxPregnancyAgeForMeOrMySpouse: {model_npcmt.config.MaxPregnancyAgeForMeOrMySpouse ?? model_npcmt.GetMaxPregnancyAge()}");
+                        DisplayMessage($"AddDailyChanceOfPregnancyForHeroMultiple: {model_npcmt.config.AddDailyChanceOfPregnancyForHeroMultiple}");
+                        DisplayMessage($"AddDailyChanceOfPregnancyForMeOrMySpouseMultiple: {model_npcmt.config.AddDailyChanceOfPregnancyForMeOrMySpouseMultiple}");
+                    }
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        static float? GetSingle(float? f, float max, float min = 0f)
+        {
+            if (f.HasValue)
+            {
+                if (f.Value < min) f = min;
+                if (f.Value > max) f = max;
+            }
+            return f;
+        }
+
+        static float? GetPercentage(float? f) => GetSingle(f, 1f);
+
+        static float? GetDays(float? f) => GetSingle(f, 36500f);
+    }
+}
+
+// Campaign.Current.Models.PregnancyModel 
+//int num1 = (double)MBRandom.RandomFloat <= (double)pregnancyModel.DeliveringTwinsProbability ? 1 : 0; 生双胞胎的概率 0.03f;
+//int num2 = num1 != 0 ? 2 : 1;
+// if ((double) MBRandom.RandomFloat > (double) pregnancyModel.StillbirthProbability) 死胎概率 0.01f;
+
+// TaleWorlds.CampaignSystem.SandBox.GameComponents.DefaultPregnancyModel : PregnancyModel
+// GetDailyChanceOfPregnancyForHero 获取怀孕概率
+// Hero.IsFertile 是可生育的
+// CharacterFertilityProbability 0.95f 表明了当前是所有角色 有5%是绝育的
+// 在 TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors.PregnancyCampaignBehavior.DetermineCharacterFertilities
+// MaternalMortalityProbabilityInLabor 产妇分娩死亡率 0.015f
+// DeliveringFemaleOffspringProbability 生育女性后代率 0.51f
+// DeliveringTwinsProbability 生双胞胎的概率 0.03f
+// 在 18 ~ 45 岁才有能力生育
+
+// 在 PregnancyCampaignBehavior.CheckOffspringsToDeliver 中 如果玩家角色不为母亲，则会计算 产妇分娩死亡率

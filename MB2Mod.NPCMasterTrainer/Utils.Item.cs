@@ -316,19 +316,19 @@ namespace MB2Mod.NPCMasterTrainer
 
                         if (ClearItemDifficulty)
                         {
-                            DisplayMessage($"{Resources.ClearItemDifficulty}: {(exceptions[0] == null ? Done : Catch)}", Colors.BlueViolet);
+                            DisplayMessage($"{Resources.ClearItemDifficulty}: {(exceptions[0] == null ? Resources.Done : Resources.Catch)}", Colors.BlueViolet);
                         }
                         if (UnlockItemCivilian)
                         {
-                            DisplayMessage($"{Resources.UnlockItemCivilian}: {(exceptions[1] == null ? Done : Catch)}", Colors.BlueViolet);
+                            DisplayMessage($"{Resources.UnlockItemCivilian}: {(exceptions[1] == null ? Resources.Done : Resources.Catch)}", Colors.BlueViolet);
                         }
                         if (UnlockLongBowForUseOnHorseBack)
                         {
-                            DisplayMessage($"{Resources.UnlockLongBowForUseOnHorseBack}: {(exceptions[2] == null ? Done : Catch)}", Colors.BlueViolet);
+                            DisplayMessage($"{Resources.UnlockLongBowForUseOnHorseBack}: {(exceptions[2] == null ? Resources.Done : Resources.Catch)}", Colors.BlueViolet);
                         }
                         if (isAddAmmo)
                         {
-                            DisplayMessage($"{Resources.AddAmmo}: {(exceptions[3] == null ? Done : Catch)}", Colors.BlueViolet);
+                            DisplayMessage($"{Resources.AddAmmo}: {(exceptions[3] == null ? Resources.Done : Resources.Catch)}", Colors.BlueViolet);
                         }
 
                         #endregion

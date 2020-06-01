@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using TaleWorlds.Localization;
-using MB2Mod.NPCMasterTrainer.Properties;
 using System.Reflection;
+using TaleWorlds.MountAndBlade;
+using MB2Mod.NPCMasterTrainer.Properties;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -11,7 +12,7 @@ namespace MB2Mod.NPCMasterTrainer
     {
         public static class Localization
         {
-            const string _currentLanguageId = "_currentLanguageId";
+            //const string _currentLanguageId = "_currentLanguageId";
 
             public const string English = "en";
 
@@ -19,26 +20,13 @@ namespace MB2Mod.NPCMasterTrainer
 
             public const string TraditionalChinese = "zh-Hant";
 
-            public static void SetLanguageByGame()
-            {
-                try
-                {
-                    var currentLanguageId = GetCurrentLanguageIdByMBTextManager();
-                    if (currentLanguageId != null && mapping_language_id__culture_name.TryGetValue(currentLanguageId, out var value))
-                    {
-                        Resources.Language = value;
-                    }
-                }
-                catch
-                {
-                }
-            }
+            //static readonly Lazy<FieldInfo> lazy_field_currentLanguageId = new Lazy<FieldInfo>(() =>
+            //{
+            //    var typeMBTextManager = typeof(MBTextManager);
+            //    return typeMBTextManager.GetField(_currentLanguageId, BindingFlags.NonPublic | BindingFlags.Static);
+            //});
 
-            public static string GetCurrentLanguageIdByMBTextManager()
-            {
-                var typeMBTextManager = typeof(MBTextManager);
-                return typeMBTextManager.GetField(_currentLanguageId, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null)?.ToString();
-            }
+            //public static string GetCurrentLanguageIdByMBTextManager() => lazy_field_currentLanguageId.Value.GetValue(null)?.ToString();
 
             public static void Print(CultureInfo cultureInfo, string tag)
             {
@@ -65,10 +53,29 @@ namespace MB2Mod.NPCMasterTrainer
                 //{ "German", "" },
             };
 
-            public static void SetLanguage(CultureInfo culture)
+            static string Language;
+
+            public static string GetLanguage()
             {
-                if (culture.Match(SimplifiedChinese)) Resources.Language = SimplifiedChinese;
-                else if (culture.Match(TraditionalChinese)) Resources.Language = TraditionalChinese;
+                if (!string.IsNullOrWhiteSpace(Language)) return Language;
+                //var currentLanguageId = GetCurrentLanguageIdByMBTextManager();
+                var currentLanguageId = BannerlordConfig.Language;
+                if (currentLanguageId != null && mapping_language_id__culture_name.TryGetValue(currentLanguageId, out var value)) return value;
+                return English;
+            }
+
+            public static void SetLanguage(string value)
+            {
+                if (value != Language)
+                {
+                    Language = value;
+                }
+            }
+
+            public static void SetLanguage(CultureInfo value)
+            {
+                if (value.Match(SimplifiedChinese)) Resources.Language = SimplifiedChinese;
+                else if (value.Match(TraditionalChinese)) Resources.Language = TraditionalChinese;
             }
         }
 
@@ -83,6 +90,18 @@ namespace MB2Mod.NPCMasterTrainer
                 i++;
             } while (culture != null && culture != CultureInfo.InvariantCulture);
             return false;
+        }
+    }
+}
+
+namespace MB2Mod.NPCMasterTrainer.Properties
+{
+    partial class Resources
+    {
+        internal static string Language
+        {
+            get => Utils.Localization.GetLanguage();
+            set => Utils.Localization.SetLanguage(value);
         }
     }
 }

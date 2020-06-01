@@ -84,7 +84,8 @@ namespace MB2Mod.NPCMasterTrainer
         public static string CheckLegendarySmith(List<string> args)
         {
             static bool LegendarySmithExist(Hero hero) => DefaultPerks.Crafting.LegendarySmith.Exist(hero);
-            static string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultBoolean(heroes, LegendarySmithExist, Resources.LegendarySmith);
+            static string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultBoolean(heroes, LegendarySmithExist,
+                Resources.LegendarySmith, Resources.TrueString_Exist, Resources.FalseString_Exist);
             return Utils.HandleSearchHeroes(args, HandleHeroes);
         }
 
@@ -97,7 +98,8 @@ namespace MB2Mod.NPCMasterTrainer
         public static string AddPerkLegendarySmith(List<string> args)
         {
             static bool LegendarySmithAdd(Hero hero) => DefaultPerks.Crafting.LegendarySmith.Add(hero);
-            static string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultBoolean(heroes, LegendarySmithAdd, Resources.LegendarySmith);
+            static string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultBoolean(heroes, LegendarySmithAdd,
+                Resources.LegendarySmith, Resources.TrueString_Exist, Resources.FalseString_Exist);
             return Utils.HandleSearchHeroes(args, HandleHeroes);
         }
 
@@ -212,6 +214,85 @@ namespace MB2Mod.NPCMasterTrainer
                 return Utils.Done;
             }
             return Utils.NotFound;
+        }
+
+        #endregion
+
+        #region rename
+
+        /// <summary>
+        /// rename.children [num] 玩家的第 num 个孩子重命名(num从1开始)
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("children", "rename")]
+        public static string ReNameChildren(List<string> args)
+        {
+            if (Campaign.Current == null) return Utils.CampaignIsNull;
+            var me = Hero.MainHero;
+            if (me == default || me.Children == default || !me.Children.Any() ||
+                !int.TryParse(args?.FirstOrDefault(), out var indexStartForOne) || indexStartForOne > me.Children.Count || indexStartForOne <= 0) return Utils.NotFound;
+            var child = me.Children[indexStartForOne - 1];
+            var newName = Utils.Clipboard.GetTextOrEmpty();
+            child.ReName(newName);
+            return Utils.Done;
+        }
+
+        #endregion
+
+        #region pregnancy
+
+        /// <summary>
+        /// 输出当前妊娠配置参数
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("pregnancy_model", "print")]
+        public static string PrintPregnancyModel(List<string> args)
+        {
+            return Utils.NPCMTPregnancyModel.Print() ? Utils.Done : Utils.NotFound;
+        }
+
+        /// <summary>
+        /// npc.check_is_fertile 检查角色是否可生育
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("check_is_fertile", "npc")]
+        public static string CheckIsFertile(List<string> args)
+        {
+            static bool IsFertile(Hero hero) => hero.IsFertile;
+            static string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultBoolean(heroes, IsFertile,
+                null, Resources.IsFertile, Resources.FalseString_IsFertile);
+            return Utils.HandleSearchHeroes(args, HandleHeroes);
+        }
+
+        /// <summary>
+        /// npc.set_is_fertile_true 设置角色可生育
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("set_is_fertile_true", "npc")]
+        public static string SetIsFertileTrue(List<string> args)
+        {
+            static bool SetIsFertileTrue(Hero hero) => hero.IsFertile = true;
+            static string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultBoolean(heroes, SetIsFertileTrue,
+                null, Resources.IsFertile, Resources.FalseString_IsFertile);
+            return Utils.HandleSearchHeroes(args, HandleHeroes);
+        }
+
+        /// <summary>
+        /// npc.set_is_fertile_false 设置角色不可生育
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("set_is_fertile_false", "npc")]
+        public static string SetIsFertileFalse(List<string> args)
+        {
+            static bool SetIsFertileFalse(Hero hero) => hero.IsFertile = false;
+            static string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultBoolean(heroes, SetIsFertileFalse,
+                null, Resources.IsFertile, Resources.FalseString_IsFertile);
+            return Utils.HandleSearchHeroes(args, HandleHeroes);
         }
 
         #endregion

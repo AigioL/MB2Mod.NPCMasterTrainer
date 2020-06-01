@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Win32;
 using System.Security.AccessControl;
 using utils = MB2Mod.NPCMasterTrainer.Utils;
+using System.IO.Compression;
 
 namespace MB2Mod.NPCMasterTrainer.Launcher
 {
@@ -62,9 +63,8 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
             }
         }
 
-        public static string GetProjectPath()
+        public static string GetProjectPath(string currentPath)
         {
-            var currentPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
             var currentDirInfo = new DirectoryInfo(currentPath);
             string modProjPath = null;
             while (currentDirInfo.Parent != null)
@@ -77,12 +77,6 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                 }
             }
             return modProjPath;
-        }
-
-        public static string ToFullString(this Version version)
-        {
-            return $"{GetInt(version.Major)}.{GetInt(version.Minor)}.{GetInt(version.Build)}.{GetInt(version.Revision)}";
-            static int GetInt(int i) => i < 0 ? 0 : i;
         }
 
         public static string SetVersion(string xml, Version version)
@@ -107,7 +101,7 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
             return Directory.GetFiles(dirPath, mod_dll_file_search_pattern).OrderByDescending(x => File.GetCreationTime(x)).FirstOrDefault();
         }
 
-        public static bool Deploy(string projPath, string gamePath)
+        public static bool Deploy(string currentPath, string projPath, string gamePath, bool build_package = false)
         {
             if (string.IsNullOrWhiteSpace(projPath))
             {
@@ -132,12 +126,13 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                 Console.WriteLine("Deploy Fail, Mod Dll File Not Found.");
                 return false;
             }
+            Version version;
             try
             {
                 var assembly = Assembly.LoadFile(dllFilePathSource);
-                var version = new Version(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version);
-                xmlString = SetVersion(xmlString, version);
-
+                var file_version = new Version(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version);
+                version = assembly.GetName().Version;
+                xmlString = SetVersion(xmlString, file_version);
             }
             catch (Exception e)
             {
@@ -145,7 +140,8 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                 Console.WriteLine(e);
                 return false;
             }
-            var modDirName = Path.GetFileNameWithoutExtension(dllFilePathSource);
+            var dllFileNameWithoutExtension = Path.GetFileNameWithoutExtension(dllFilePathSource);
+            var modDirName = dllFileNameWithoutExtension;
             if (modDirName.StartsWith(mod_dll_file_prefix, StringComparison.OrdinalIgnoreCase))
                 modDirName = modDirName[mod_dll_file_prefix.Length..];
             var modDirPath = Path.Combine(gamePath, "Modules", modDirName);
@@ -213,6 +209,37 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                 }
             }
             if (dllFileWrite) File.Copy(dllFilePathSource, dllFilePathDest);
+            if (build_package)
+            {
+                string zipFileNamePrefix =
+                    dllFileNameWithoutExtension.StartsWith(mod_dll_file_prefix, StringComparison.OrdinalIgnoreCase) ?
+                    dllFileNameWithoutExtension[mod_dll_file_prefix.Length..] : dllFileNameWithoutExtension;
+                BuildPackage();
+                void ClearPackages()
+                {
+                    var files = Directory.GetFiles(currentPath, $"{zipFileNamePrefix}_v*.zip");
+                    foreach (var file in files)
+                    {
+                        Console.WriteLine("ClearPackages Del: " + file);
+                        File.Delete(file);
+                    }
+                }
+                void BuildPackage(CompressionLevel level = CompressionLevel.Optimal)
+                {
+                    ClearPackages();
+                    using var memoryStream = new MemoryStream();
+                    using var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true);
+                    archive.CreateEntryFromFile(xmlPath, SubModule_XML, level);
+                    archive.CreateEntryFromFile(readmePath, README_MD, level);
+                    var binPath = Path.Combine(utils.BinaryPath);
+                    archive.CreateEntryFromFile(dllFilePathSource, Path.Combine(binPath, dllFileNameWithoutExtension + ".dll"), level);
+                    var zipFilePath = Path.Combine(currentPath, $"{zipFileNamePrefix}_v{version.ToFullString()}.zip");
+                    using var fileStream = new FileStream(zipFilePath, FileMode.CreateNew);
+                    memoryStream.Position = 0;
+                    memoryStream.WriteTo(fileStream);
+                    Console.WriteLine($"BuildPackage Path: {zipFilePath}");
+                }
+            }
             return true;
         }
 

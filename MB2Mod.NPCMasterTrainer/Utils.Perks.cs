@@ -13,17 +13,44 @@ namespace MB2Mod.NPCMasterTrainer
             static PerkObject[] GetAllPerks()
             {
                 var perks = new HashSet<PerkObject>();
-                var all_po = PerkObject.All;
-                if (all_po != null) perks.AddRange(all_po, true);
-                var all_def = DefaultPerks.GetAllPerks();
-                if (all_def != null) perks.AddRange(all_def, true);
+                try
+                {
+                    var all_po = PerkObject.All;
+                    if (all_po != null) perks.AddRange(all_po, true);
+                }
+                catch (NullReferenceException)
+                {
+
+                }
+                try
+                {
+                    var all_def = DefaultPerks.GetAllPerks();
+                    if (all_def != null) perks.AddRange(all_def, true);
+                }
+                catch (NullReferenceException)
+                {
+
+                }
                 var typeDefaultPerks = typeof(DefaultPerks);
                 var typePerkObject = typeof(PerkObject);
                 var classs = typeDefaultPerks.GetNestedTypes().Where(x => !x.IsGenericType && x.IsClass && x.IsAbstract && x.IsSealed);
                 var fields = classs.SelectMany(x => x.GetProperties(BindingFlags.Public | BindingFlags.Static).Where(y => y.PropertyType == typePerkObject)).ToArray();
                 foreach (var item in fields)
                 {
-                    var value = item.GetValue(null);
+                    object value;
+                    try
+                    {
+                        value = item.GetValue(null);
+                    }
+                    catch (TargetInvocationException e)
+                    {
+                        if (e.InnerException != null && e.InnerException is NullReferenceException) continue;
+                        throw e;
+                    }
+                    catch (NullReferenceException)
+                    {
+                        continue;
+                    }
                     if (value != null && value is PerkObject perkObject)
                     {
                         perks.Add(perkObject);

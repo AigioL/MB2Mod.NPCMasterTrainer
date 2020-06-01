@@ -5,12 +5,13 @@ using TaleWorlds.CampaignSystem;
 using System.Runtime.InteropServices;
 using TaleWorlds.ObjectSystem;
 using TaleWorlds.Core;
+using colors = TaleWorlds.Library.Colors;
 
 namespace MB2Mod.NPCMasterTrainer
 {
     internal static partial class Utils
     {
-        public static bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Platform == PlatformID.Win32NT;
+        public static bool IsWindows { get; } = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Platform == PlatformID.Win32NT;
 
         public const string CampaignIsNull = "Campaign IsNull";
 
@@ -61,7 +62,7 @@ namespace MB2Mod.NPCMasterTrainer
             return (displayMessage ? list.Any() : any) ? Done : NotFound;
         }
 
-        public static string HandleResultBoolean<T>(IEnumerable<T> items, Func<T, bool> func, string tag) where T : MBObjectBase
+        public static string HandleResultBoolean<T>(IEnumerable<T> items, Func<T, bool> func, string tag, string trueString, string falseString) where T : MBObjectBase
         {
             var list_true = new List<string>();
             var list_false = new List<string>();
@@ -73,15 +74,16 @@ namespace MB2Mod.NPCMasterTrainer
             }
             var any_list_true = list_true.Any();
             var any_list_false = list_false.Any();
+            var has_tag = !string.IsNullOrWhiteSpace(tag);
             if (list_true.Any())
             {
-                DisplayMessage($"({bool.TrueString}){tag}");
-                DisplayMessage(list_true);
+                DisplayMessage(has_tag ? string.Format(trueString, tag) : trueString, colors.Cyan);
+                DisplayMessage(list_true, colors.Cyan);
             }
             if (list_false.Any())
             {
-                DisplayMessage($"({bool.FalseString}){tag}");
-                DisplayMessage(list_false);
+                DisplayMessage(has_tag ? string.Format(falseString, tag) : falseString, colors.Gray);
+                DisplayMessage(list_false, colors.Gray);
             }
             return (any_list_true || any_list_false) ? Done : NotFound;
         }

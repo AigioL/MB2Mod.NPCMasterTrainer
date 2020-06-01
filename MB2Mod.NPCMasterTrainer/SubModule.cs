@@ -4,6 +4,7 @@ using TaleWorlds.Library;
 using TaleWorlds.InputSystem;
 using TaleWorlds.MountAndBlade;
 using MB2Mod.NPCMasterTrainer.Properties;
+using System.Text;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -12,23 +13,36 @@ namespace MB2Mod.NPCMasterTrainer
         bool isLoaded;
         bool keyPressedDC;
 
+        public override void OnGameInitializationFinished(Game game)
+        {
+            base.OnGameInitializationFinished(game);
+            Utils.Config.Instance.HandleItemObjects();
+        }
+
+        protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
+        {
+            base.OnGameStart(game, gameStarterObject);
+            if (Utils.Config.Instance.EnablePregnancyModel)
+            {
+                gameStarterObject.AddModel(Utils.NPCMTPregnancyModel.Instance);
+                if (Utils.Config.Instance.HasWin32Console())
+                {
+                    Console.WriteLine($"PregnancyM(NPCMT) Init Success.");
+                }
+            }
+        }
+
         protected override void OnSubModuleLoad()
         {
             base.OnSubModuleLoad();
             if (Utils.Config.Instance.HasWin32Console())
             {
                 Utils.Win32Console.Show(Utils.AssemblyTitle + " Development Console");
-                //Console.WriteLine($"Language: {Resources.Language}" + Environment.NewLine);
+                Console.WriteLine($"DefaultEncodingName: {Encoding.Default.EncodingName}" + Environment.NewLine);
                 Utils.CurrentAppDomain.Print();
-                //Utils.Localization.Print(CultureInfo.CurrentUICulture, nameof(CultureInfo.CurrentUICulture));
+                Utils.Config.PrintConfigInstanceLog();
                 Console.WriteLine();
             }
-        }
-
-        public override void OnGameInitializationFinished(Game game)
-        {
-            base.OnGameInitializationFinished(game);
-            Utils.Config.Instance.HandleItemObjects();
         }
 
         protected override void OnSubModuleUnloaded()
@@ -46,7 +60,6 @@ namespace MB2Mod.NPCMasterTrainer
             if (isLoaded) return;
             //if (Utils.Localization.UseGameLanguage)
             //{
-            Utils.Localization.SetLanguageByGame();
             //Console.WriteLine($"Game Language: {Resources.Language}" + Environment.NewLine);
             //}
             if (Utils.Config.Instance.EnableDevConsole())

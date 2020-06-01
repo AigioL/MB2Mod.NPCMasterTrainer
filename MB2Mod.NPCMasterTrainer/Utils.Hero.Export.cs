@@ -48,7 +48,7 @@ namespace MB2Mod.NPCMasterTrainer
                     Culture = hero.Culture?.ToString(),
                     Age = hero.Age,
                     Level = hero.Level,
-                    Occupation = hero.GetOccupation(),
+                    Profession = hero.GetProfession(),
                     Generosity = traits?.Generosity ?? default,
                     Honor = traits?.Honor ?? default,
                     Valor = traits?.Valor ?? default,
@@ -61,6 +61,7 @@ namespace MB2Mod.NPCMasterTrainer
                     FirstName = hero.FirstName?.ToString(),
                     BodyProperties = hero.BodyProperties.ToString(),
                     Marriageable = Campaign.Current?.Models.MarriageModel.IsCoupleSuitableForMarriage(Hero.MainHero, hero) ?? false,
+                    IsFertile = hero.IsFemale,
                     LastKnownLocation = hero.GetHeroLastKnownLocation(),
                 };
                 for (var i = CharacterAttributesEnum.First; i < CharacterAttributesEnum.End; i++)
@@ -144,7 +145,7 @@ namespace MB2Mod.NPCMasterTrainer
             public int Level { get; set; }
 
             [Int32(8)]
-            public string Occupation { get; set; }
+            public string Profession { get; set; }
 
             const int _1 = 9;
 
@@ -312,9 +313,12 @@ namespace MB2Mod.NPCMasterTrainer
             public bool Marriageable { get; set; }
 
             [Int32(_10 + 4)]
-            public string BodyProperties { get; set; }
+            public bool IsFertile { get; set; }
 
             [Int32(_10 + 5)]
+            public string BodyProperties { get; set; }
+
+            [Int32(_10 + 6)]
             public string LastKnownLocation { get; set; }
 
             #endregion

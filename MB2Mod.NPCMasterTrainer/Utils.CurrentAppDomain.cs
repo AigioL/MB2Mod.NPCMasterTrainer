@@ -10,6 +10,8 @@ namespace MB2Mod.NPCMasterTrainer
         {
             static readonly Lazy<Assembly[]> lazy_CurrentAppDomainAssemblies = new Lazy<Assembly[]>(AppDomain.CurrentDomain.GetAssemblies);
 
+            public static Assembly[] Values => lazy_CurrentAppDomainAssemblies.Value;
+
             public static void Print()
             {
                 try

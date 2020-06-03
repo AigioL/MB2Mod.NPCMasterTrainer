@@ -141,20 +141,29 @@ namespace MB2Mod.NPCMasterTrainer
                     var bonuses = new ExplainedNumber(1f);
                     PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Medicine.PerfectHealth, hero.Clan.Leader.CharacterObject, ref bonuses);
                     result = (float)((6.5 - (hero.Age - MinPregnancyAge) * 0.230000004172325) * 0.0199999995529652) * bonuses.ResultNumber;
-                }
-                if (hero.Children.Count == 0) result *= 3f;
-                else if (hero.Children.Count == 1) result *= 2f;
-                if (isMeOrMySpouse && config.AddDailyChanceOfPregnancyForMeOrMySpouseMultiple != 1)
-                {
-                    result *= config.AddDailyChanceOfPregnancyForMeOrMySpouseMultiple;
-                }
-                else if (config.AddDailyChanceOfPregnancyForHeroMultiple != 1)
-                {
-                    result *= config.AddDailyChanceOfPregnancyForHeroMultiple;
-                }
-                if (config.HasWin32Console())
-                {
-                    Console.WriteLine($"GetDailyChanceOfPregnancyForHero: {result}, isMeOrMySpouse: {isMeOrMySpouse}, heroName: {hero?.Name}");
+                    if (hero.Children.Count == 0) result *= 3f;
+                    else if (hero.Children.Count == 1) result *= 2f;
+                    if (isMeOrMySpouse && config.AddDailyChanceOfPregnancyForMeOrMySpouseMultiple != 1)
+                    {
+                        result *= config.AddDailyChanceOfPregnancyForMeOrMySpouseMultiple;
+                    }
+                    else if (config.AddDailyChanceOfPregnancyForHeroMultiple != 1)
+                    {
+                        result *= config.AddDailyChanceOfPregnancyForHeroMultiple;
+                    }
+                    if (config.HasWin32Console())
+                    {
+                        var hero_name = hero?.Name?.ToString();
+                        var hero_culture = hero?.Culture?.Name?.ToString();
+                        var spouce_name = hero?.Spouse?.Name?.ToString();
+                        var spouce_culture = hero?.Spouse?.Culture?.Name?.ToString();
+                        var one_culture = hero_culture == spouce_culture;
+                        Console.WriteLine(
+                            $"GetDailyChanceOfPregnancyForHero: {result}, isMeOrMySpouse: {isMeOrMySpouse}, " +
+                            $"{hero_name}({hero_culture}) & " +
+                            $"{spouce_name}{(!one_culture ? $"({spouce_culture})" : null)}"
+                            );
+                    }
                 }
                 return result;
             }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Core;
 using MB2Mod.NPCMasterTrainer.Properties;
 
 #pragma warning disable IDE0060 // 删除未使用的参数
@@ -114,6 +115,75 @@ namespace MB2Mod.NPCMasterTrainer
             var heroes = Hero.FindAll(x => (x.IsNoble || x.IsWanderer) && x.IsAlive);
             return Utils.HandleResultVoid(heroes, Action, displayMessage: false);
             static void Action(Hero hero) => hero.SetHeroLastSeenLocation(true);
+        }
+
+        /// <summary>
+        /// npc.random_body [name] 给指定角色重新随机生成一个新的捏脸数据
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("random_body", "npc")]
+        public static string RandomBody(List<string> args)
+        {
+            static ValueTuple<DynamicBodyProperties, StaticBodyProperties>? GetRandomBodyProperties(Hero hero)
+            {
+                if (hero == default) return default;
+                var template = hero.Template;
+                if (template == default) return default;
+                var newCharacter = hero.CharacterObject;
+                if (newCharacter == default) return default;
+                // TaleWorlds.CampaignSystem.HeroCreator.CreateNewHero
+                var staticBodyProperties = BodyProperties.GetRandomBodyProperties(
+                    template.IsFemale,
+                    template.GetBodyPropertiesMin(false),
+                    template.GetBodyPropertiesMax(),
+                    0,
+                    MBRandom.RandomInt(),
+                    newCharacter.HairTags,
+                    newCharacter.BeardTags,
+                    newCharacter.TattooTags).StaticProperties;
+                var dynamicBodyProperties = new DynamicBodyProperties(hero.Age, 0.0f, 0.0f);
+                return (dynamicBodyProperties, staticBodyProperties);
+            }
+            static string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultVoid(heroes, hero =>
+            {
+                var body = GetRandomBodyProperties(hero);
+                if (body.HasValue)
+                {
+                    hero.SetBodyProperties(body.Value.Item1, body.Value.Item2);
+                }
+                else
+                {
+                    Utils.DisplayMessage($"RandomBody Fail, Hero: {hero?.Name}");
+                }
+            });
+            return Utils.HandleSearchHeroes(args, HandleHeroes, inMyTroops: false);
+        }
+
+        /// <summary>
+        /// npc.change_body [name] 更改指定角色的捏脸数据，需将捏脸数据复制到剪贴板后执行
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("change_body", "npc")]
+        public static string ChangeBody(List<string> args)
+        {
+            var text = Utils.Clipboard.GetTextOrEmpty();
+            if (string.IsNullOrWhiteSpace(text)) return Utils.NotFound;
+            bool parseResult;
+            BodyProperties bodyProperties;
+            try
+            {
+                parseResult = BodyProperties.FromString(text, out bodyProperties);
+            }
+            catch
+            {
+                bodyProperties = default;
+                parseResult = false;
+            }
+            if (!parseResult) return "BodyProperties Incorrect Format";
+            string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultVoid(heroes, hero => hero.SetBodyProperties(bodyProperties));
+            return Utils.HandleSearchHeroes(args, HandleHeroes, inMyTroops: false);
         }
 
         #endregion

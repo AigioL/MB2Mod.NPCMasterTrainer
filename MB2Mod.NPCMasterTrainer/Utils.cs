@@ -88,7 +88,7 @@ namespace MB2Mod.NPCMasterTrainer
             return (any_list_true || any_list_false) ? Done : NotFound;
         }
 
-        public static string HandleSearchHeroes(IReadOnlyList<string> args, Func<IEnumerable<Hero>, string> func)
+        public static string HandleSearchHeroes(IReadOnlyList<string> args, Func<IEnumerable<Hero>, string> func, bool inMyTroops = true)
         {
             if (Campaign.Current == null) return CampaignIsNull;
             if (!args.Any()) return InvalidArguments;
@@ -107,11 +107,11 @@ namespace MB2Mod.NPCMasterTrainer
             Hero[] heroes;
             if (inputNames == default)
             {
-                heroes = GetNpcsInMyTroops(choose_arg.GetNpcType());
+                heroes = GetNpcs(choose_arg.GetNpcType(), inMyTroops);
             }
             else
             {
-                heroes = SearchHeroes(inputNames, choose_arg.GetNpcType());
+                heroes = SearchHeroes(inputNames, choose_arg.GetNpcType(), inMyTroops);
             }
             return func(heroes);
         }

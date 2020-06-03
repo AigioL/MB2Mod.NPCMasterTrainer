@@ -104,6 +104,11 @@ namespace MB2Mod.NPCMasterTrainer
             /// </summary>
             public ushort AddAmmoByJavelin { get; set; } = 1;
 
+            /// <summary>
+            /// 修复目前游戏中从剪贴板粘贴的中文文字出现乱码
+            /// </summary>
+            public bool FixGetClipboardText { get; set; } = true;
+
             static bool IsOldConfigFile(string ver)
             {
                 try

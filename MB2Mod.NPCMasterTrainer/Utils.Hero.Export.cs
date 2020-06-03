@@ -44,7 +44,7 @@ namespace MB2Mod.NPCMasterTrainer
                     StringId = hero.StringId,
                     NameId = hero.Name?.GetID(),
                     Name = hero.Name?.ToString(),
-                    Gender = hero.IsFemale ? Resources.Female : Resources.Male,
+                    Gender = hero.GetGender(),
                     Culture = hero.Culture?.ToString(),
                     Age = hero.Age,
                     Level = hero.Level,

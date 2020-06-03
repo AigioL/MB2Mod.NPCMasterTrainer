@@ -43,6 +43,10 @@ namespace MB2Mod.NPCMasterTrainer
                 Utils.Config.PrintConfigInstanceLog();
                 Console.WriteLine();
             }
+            if (Utils.Config.Instance.FixGetClipboardText)
+            {
+                ScriptingInterfaceOfIInput.FixGetClipboardText();
+            }
         }
 
         protected override void OnSubModuleUnloaded()

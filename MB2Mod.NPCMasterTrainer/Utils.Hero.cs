@@ -8,6 +8,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Localization;
 using Helpers;
 using MB2Mod.NPCMasterTrainer.Properties;
+using System.Reflection;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -30,10 +31,17 @@ namespace MB2Mod.NPCMasterTrainer
             /// 贵族(前/配偶/子女)
             /// </summary>
             Noble = 0x4,
-            //= 0x8,
+
+            //=0x8,
             //= 0x10,
             //= 0x20,
             //= 0x40
+        }
+
+        public static string GetGender(this Hero hero)
+        {
+            if (hero == null) return string.Empty;
+            return hero.IsFemale ? Resources.Female : Resources.Male;
         }
 
         public static object Print(this Hero hero)
@@ -148,12 +156,12 @@ namespace MB2Mod.NPCMasterTrainer
             //return string.Empty;
         }
 
-        static Hero[] GetNotMeNpcsInMyTroops(IEnumerable<Hero> heroes, Hero player = null, bool? isNoble = null, bool? isWanderer = null)
+        static Hero[] GetNotMeNpcs(IEnumerable<Hero> heroes, Hero player = null, bool? isNoble = null, bool? isWanderer = null, bool inMyTroops = true)
         {
             if (heroes == null) return null;
             player ??= Hero.MainHero;
             var query = from hero in heroes
-                        let isMainPartyBelonged = IsMainPartyBelonged(hero)
+                        let isMainPartyBelonged = inMyTroops ? IsMainPartyBelonged(hero) : true
                         where hero != null && hero != player && hero.IsAlive && isMainPartyBelonged.HasValue && isMainPartyBelonged.Value
                         && (!isNoble.HasValue || isNoble.Value == hero.IsNoble) && (!isWanderer.HasValue || isWanderer.Value == hero.IsWanderer)
                         select hero;
@@ -165,7 +173,7 @@ namespace MB2Mod.NPCMasterTrainer
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static Hero[] GetNpcsInMyTroops(NpcType type)
+        public static Hero[] GetNpcs(NpcType type, bool inMyTroops = true)
         {
             var player = Hero.MainHero;
             var hashSet = new HashSet<Hero>();
@@ -175,12 +183,12 @@ namespace MB2Mod.NPCMasterTrainer
             }
             if (type.HasFlag(NpcType.Noble))
             {
-                var lords = GetNotMeNpcsInMyTroops(player.Clan.Heroes, player, isNoble: true);
+                var lords = GetNotMeNpcs(player.Clan.Heroes, player, isNoble: true, inMyTroops: inMyTroops);
                 if (lords != null) hashSet.AddRange(lords);
             }
             if (type.HasFlag(NpcType.Wanderer))
             {
-                var wanderers = GetNotMeNpcsInMyTroops(player.Clan.Companions, player, isWanderer: true);
+                var wanderers = GetNotMeNpcs(player.Clan.Companions, player, isWanderer: true, inMyTroops: inMyTroops);
                 if (wanderers != null) hashSet.AddRange(wanderers);
             }
             return hashSet.ToArray();
@@ -268,5 +276,30 @@ namespace MB2Mod.NPCMasterTrainer
         }
 
         #endregion
+
+        static readonly Lazy<PropertyInfo> lazy_property_StaticBodyProperties = new Lazy<PropertyInfo>(() =>
+        {
+            var property = typeof(Hero).GetProperty(
+                name: "StaticBodyProperties",
+                bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty,
+                returnType: typeof(StaticBodyProperties),
+                types: Array.Empty<Type>(),
+                binder: null,
+                modifiers: null);
+            return property;
+        });
+
+        public static void SetBodyProperties(this Hero obj, BodyProperties value)
+        {
+            obj.SetBodyProperties(value.DynamicProperties, value.StaticProperties);
+            obj.DynamicBodyProperties = value.DynamicProperties;
+            lazy_property_StaticBodyProperties.Value.SetValue(obj, value.StaticProperties);
+        }
+
+        public static void SetBodyProperties(this Hero obj, DynamicBodyProperties dynamicBodyProperties, StaticBodyProperties staticBodyProperties)
+        {
+            obj.DynamicBodyProperties = dynamicBodyProperties;
+            lazy_property_StaticBodyProperties.Value.SetValue(obj, staticBodyProperties);
+        }
     }
 }

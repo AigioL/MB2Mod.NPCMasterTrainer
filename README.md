@@ -12,6 +12,8 @@
 | npc.check_legendary_smith [name] | 检查角色是否有 **传奇铁匠** 技能点 |
 | npc.add_perk_legendary_smith [name] | 给指定的角色添加 **传奇铁匠** 技能点 |
 | npc.refresh_last_seen_location | 刷新所有的流浪者和贵族在百科中显示的最后一次见到的位置 |
+| npc.change_body [name] | 更改指定角色的捏脸数据，需将 **捏脸数据** 复制到 **剪贴板** 后执行 |
+| npc.random_body [name] | 给指定角色重新随机生成一个新的捏脸数据 |
 | print.towns_name_prosperity_desc [count] | 根据城镇繁荣度显示最高的 count 个城镇名 |
 | export_csv.query_path | 查询导出csv文件路径 |
 | export_csv.open_dir | 打开导出csv文件所在的文件夹 |
@@ -21,7 +23,6 @@
 | export_csv.all_towns | 导出所有 **城镇** 数据生成到csv文件中 |
 | 目前开发者控制台无法输入中文，需将 **新的名字** 复制到 **剪贴板** 后执行下面的命令 |
 | rename.children [num] | 玩家的第 num 个孩子重命名(num从1开始) |
-| v1.0.1+ 新增命令 |
 | npc.check_is_fertile [name] | 检查角色是否可生育 |
 | npc.set_is_fertile_true [name] | 设置角色可生育 |
 | npc.set_is_fertile_false [name] | 设置角色不可生育 |
@@ -66,7 +67,7 @@
 | AddAmmoByThrowingAxe | ushort | 2 | 增加弹药量-**飞斧** |
 | AddAmmoByThrowingKnife | ushort | 13 | 增加弹药量-**飞刀** |
 | AddAmmoByJavelin | ushort | 1 | 增加弹药量-**标枪** |
-| 妊娠配置(v1.0.1+) |
+| ---------- 妊娠配置(v1.0.1+) ---------- |
 | EnablePregnancyModel | bool | false | 是否开启妊娠配置 |
 | CharacterFertilityProbability | float? | null | 在创建新游戏时设置所有角色可生育的占比，当前版本(1.4.0.230377)默认值为 0.95 |
 | PregnancyDurationInDays | float? | null | 妊娠期(天数)，当前版本(1.4.0.230377)默认值为 36 |
@@ -78,3 +79,5 @@
 | MaxPregnancyAgeForMeOrMySpouse | ushort? | null | 我或我的配偶的最大孕龄，当前版本(1.4.0.230377)默认值为 45 |
 | AddDailyChanceOfPregnancyForHeroMultiple | ulong | 1 | 增加每日怀孕几率倍数 |
 | AddDailyChanceOfPregnancyForMeOrMySpouseMultiple | ulong | 1 | 增加我或我的配偶每日怀孕几率倍数 |
+| ---------- 妊娠配置(v1.0.1+) ---------- |
+| FixGetClipboardText | bool | true | 修复目前游戏中从剪贴板粘贴的中文文字出现乱码 |

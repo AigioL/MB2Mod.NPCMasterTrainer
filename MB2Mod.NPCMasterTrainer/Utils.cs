@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using TaleWorlds.ObjectSystem;
 using TaleWorlds.Core;
 using colors = TaleWorlds.Library.Colors;
+using TaleWorlds.Library;
+using System.IO;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -179,5 +181,25 @@ namespace MB2Mod.NPCMasterTrainer
         }
 
         #endregion
+
+        static readonly Lazy<ApplicationVersion> lazy_game_ver = new Lazy<ApplicationVersion>(() =>
+        {
+            try
+            {
+                var moduleNative = ModuleInfo.GetModules()
+                    ?.FirstOrDefault(x => x.IsOfficial && x.IsSelected && string.Equals(x.Id, "Native", StringComparison.OrdinalIgnoreCase));
+                if (moduleNative != default)
+                {
+                    return moduleNative.Version;
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+
+            }
+            return default;
+        });
+
+        public static ApplicationVersion GameVersion => lazy_game_ver.Value;
     }
 }

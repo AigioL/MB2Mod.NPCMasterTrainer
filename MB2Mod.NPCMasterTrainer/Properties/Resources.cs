@@ -1420,5 +1420,20 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 }
             }
         }
+
+        internal static string YouAreNowControlling_
+        {
+            get
+            {
+                switch (Language)
+                {
+                    case Utils.Localization.SimplifiedChinese:
+                    case Utils.Localization.TraditionalChinese:
+                        return "正在控制: {0}";
+                    default:
+                        return "You are now controlling: {0}";
+                }
+            }
+        }
     }
 }

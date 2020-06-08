@@ -38,7 +38,11 @@ namespace MB2Mod.NPCMasterTrainer
             if (Utils.Config.Instance.HasWin32Console())
             {
                 Utils.Win32Console.Show(Utils.AssemblyTitle + " Development Console");
-                Console.WriteLine($"DefaultEncodingName: {Encoding.Default.EncodingName}" + Environment.NewLine);
+                Console.WriteLine($"GameVersion: {Utils.GameVersion}");
+                Console.WriteLine($"DefaultEncodingName: {Encoding.Default.EncodingName}");
+                Console.WriteLine($"CurrentPlatform: {ApplicationPlatform.CurrentPlatform}");
+                Console.WriteLine($"CurrentRuntimeLibrary: {ApplicationPlatform.CurrentRuntimeLibrary}");
+                Console.WriteLine();
                 Utils.CurrentAppDomain.Print();
                 Utils.Config.PrintConfigInstanceLog();
                 Console.WriteLine();

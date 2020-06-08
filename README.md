@@ -26,6 +26,11 @@
 | npc.check_is_fertile [name] | 检查角色是否可生育 |
 | npc.set_is_fertile_true [name] | 设置角色可生育 |
 | npc.set_is_fertile_false [name] | 设置角色不可生育 |
+| npc_control.name [name] | 在战场上控制指定npc |
+| npc_control.index [index] | 在战场上控制指定npc |
+| npc_control.next | 在战场上控制下一个npc |
+| npc_control.next_noble | 在战场上控制下一个npc(贵族) |
+| npc_control.next_wanderer | 在战场上控制下一个npc(流浪者) |
 
 ### Arguments
 

@@ -158,8 +158,8 @@ namespace MB2Mod.NPCMasterTrainer
 
         static Hero[] GetNotMeNpcs(IEnumerable<Hero> heroes, Hero player = null, bool? isNoble = null, bool? isWanderer = null, bool inMyTroops = true)
         {
-            if (heroes == null) return null;
             player ??= Hero.MainHero;
+            if (heroes == null || player == null) return Array.Empty<Hero>();
             var query = from hero in heroes
                         let isMainPartyBelonged = inMyTroops ? IsMainPartyBelonged(hero) : true
                         where hero != null && hero != player && hero.IsAlive && isMainPartyBelonged.HasValue && isMainPartyBelonged.Value
@@ -176,6 +176,7 @@ namespace MB2Mod.NPCMasterTrainer
         public static Hero[] GetNpcs(NpcType type, bool inMyTroops = true)
         {
             var player = Hero.MainHero;
+            if (player == default) return Array.Empty<Hero>();
             var hashSet = new HashSet<Hero>();
             if (type.HasFlag(NpcType.Player))
             {
@@ -183,12 +184,12 @@ namespace MB2Mod.NPCMasterTrainer
             }
             if (type.HasFlag(NpcType.Noble))
             {
-                var lords = GetNotMeNpcs(player.Clan.Heroes, player, isNoble: true, inMyTroops: inMyTroops);
+                var lords = GetNotMeNpcs(player.Clan?.Heroes, player, isNoble: true, inMyTroops: inMyTroops);
                 if (lords != null) hashSet.AddRange(lords);
             }
             if (type.HasFlag(NpcType.Wanderer))
             {
-                var wanderers = GetNotMeNpcs(player.Clan.Companions, player, isWanderer: true, inMyTroops: inMyTroops);
+                var wanderers = GetNotMeNpcs(player.Clan?.Companions, player, isWanderer: true, inMyTroops: inMyTroops);
                 if (wanderers != null) hashSet.AddRange(wanderers);
             }
             return hashSet.ToArray();

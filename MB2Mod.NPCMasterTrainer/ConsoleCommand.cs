@@ -5,6 +5,7 @@ using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 using TaleWorlds.Core;
+using TaleWorlds.MountAndBlade;
 using MB2Mod.NPCMasterTrainer.Properties;
 
 #pragma warning disable IDE0060 // 删除未使用的参数
@@ -29,7 +30,7 @@ namespace MB2Mod.NPCMasterTrainer
         }
 
         /// <summary>
-        /// npc.reset_perks 重置npc 技能点
+        /// npc.reset_perks [name] 重置npc 技能点
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
@@ -41,7 +42,7 @@ namespace MB2Mod.NPCMasterTrainer
         }
 
         /// <summary>
-        /// npc.reset_focus 重置npc 专精点
+        /// npc.reset_focus [name] 重置npc 专精点
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
@@ -53,7 +54,7 @@ namespace MB2Mod.NPCMasterTrainer
         }
 
         /// <summary>
-        /// npc.reset_attrs 重置npc 属性点
+        /// npc.reset_attrs [name] 重置npc 属性点
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
@@ -65,7 +66,7 @@ namespace MB2Mod.NPCMasterTrainer
         }
 
         /// <summary>
-        /// npc.reset 重置npc 技能点/专精点/属性点
+        /// npc.reset [name] 重置npc 技能点/专精点/属性点
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
@@ -77,7 +78,7 @@ namespace MB2Mod.NPCMasterTrainer
         }
 
         /// <summary>
-        /// npc.check_legendary_smith 检查是否有传奇铁匠技能点
+        /// npc.check_legendary_smith [name] 检查是否有传奇铁匠技能点
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
@@ -91,7 +92,7 @@ namespace MB2Mod.NPCMasterTrainer
         }
 
         /// <summary>
-        /// npc.add_perk_legendary_smith 点上传奇铁匠技能点
+        /// npc.add_perk_legendary_smith [name] 点上传奇铁匠技能点
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
@@ -363,6 +364,114 @@ namespace MB2Mod.NPCMasterTrainer
             static string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultBoolean(heroes, SetIsFertileFalse,
                 null, Resources.IsFertile, Resources.FalseString_IsFertile);
             return Utils.HandleSearchHeroes(args, HandleHeroes);
+        }
+
+        #endregion
+
+        #region npc_control
+
+        /// <summary>
+        /// npc_control.name [name] 在战场上控制指定npc
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("name", "npc_control")]
+        public static string ControlHeroByName(List<string> args)
+        {
+            var heroes = Utils.SearchHeroes(args, Utils.NpcType.Noble | Utils.NpcType.Wanderer | Utils.NpcType.Player);
+            var agents = Utils.BattlefieldControl.GetAgents(heroes.Select(x => x.CharacterObject));
+            var result = Utils.BattlefieldControl.Control(agents.FirstOrDefault());
+            return result ? Utils.Done : Utils.NotFound;
+        }
+
+        /// <summary>
+        /// npc_control.index [index] 在战场上控制指定npc
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("index", "npc_control")]
+        public static string ControlHeroByIndex(List<string> args)
+        {
+            var index = args.Select(x => int.TryParse(x, out var number) ? number : -1).FirstOrDefault(x => x != -1);
+            var heroes = Utils.GetNpcs(Utils.NpcType.Noble | Utils.NpcType.Wanderer | Utils.NpcType.Player);
+            if (index >= 0 && index < heroes.Length)
+            {
+                var agents = Utils.BattlefieldControl.GetAgents(new[] { heroes[index].CharacterObject });
+                var result = Utils.BattlefieldControl.Control(agents.FirstOrDefault());
+                return result ? Utils.Done : Utils.NotFound;
+            }
+            return Utils.NotFound;
+        }
+
+        static string ControlHeroNext(Utils.NpcType npcType)
+        {
+            var main = Agent.Main;
+            if (main != default)
+            {
+                var heroes = Utils.GetNpcs(npcType).Select(x => x.CharacterObject);
+                var agents = Utils.BattlefieldControl.GetAgents(heroes).ToArray();
+                var mainIndex = Array.IndexOf(agents, main);
+                int index;
+                if (mainIndex < 0) index = 0;
+                else
+                {
+                    var mainIndexAdd1 = mainIndex + 1;
+                    if (mainIndexAdd1 < agents.Length) index = mainIndexAdd1;
+                    else index = 0;
+                }
+                var result = Utils.BattlefieldControl.Control(agents[index]);
+                Utils.DisplayMessage($"Current Index: {index}");
+                return result ? Utils.Done : Utils.NotFound;
+            }
+            return Utils.NotFound;
+        }
+
+        /// <summary>
+        /// npc_control.next 在战场上控制下一个npc
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("next", "npc_control")]
+        public static string ControlHeroNext(List<string> args)
+        {
+            return ControlHeroNext(Utils.NpcType.Noble | Utils.NpcType.Wanderer | Utils.NpcType.Player);
+        }
+
+        /// <summary>
+        /// npc_control.next_noble 在战场上控制下一个npc(noble)
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("next_noble", "npc_control")]
+        public static string ControlHeroNextNoble(List<string> args)
+        {
+            return ControlHeroNext(Utils.NpcType.Noble);
+        }
+
+        /// <summary>
+        /// npc_control.next_wanderer 在战场上控制下一个npc(wanderer)
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("next_wanderer", "npc_control")]
+        public static string ControlHeroNextWanderer(List<string> args)
+        {
+            return ControlHeroNext(Utils.NpcType.Wanderer);
+        }
+
+        [CommandLineFunctionality.CommandLineArgumentFunction("npcs_index", "print")]
+        public static string PrintHeroIndex(List<string> args)
+        {
+            var heroes = Utils.GetNpcs(Utils.NpcType.Noble | Utils.NpcType.Wanderer | Utils.NpcType.Player).Select(x => x.CharacterObject)?.ToArray();
+            if (heroes != default)
+            {
+                for (int i = 0; i < heroes.Length; i++)
+                {
+                    Utils.DisplayMessage($"index: {i}, name: {heroes[i].Name?.ToString()}");
+                }
+                return Utils.Done;
+            }
+            return Utils.NotFound;
         }
 
         #endregion

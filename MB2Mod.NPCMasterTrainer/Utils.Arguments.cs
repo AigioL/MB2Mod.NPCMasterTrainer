@@ -55,43 +55,17 @@ namespace MB2Mod.NPCMasterTrainer
             }
         }
 
-        public static Hero[] SearchHeroes(IEnumerable<string> args, NpcType type, bool inMyTroops = true)
-        {
-            (string name, int index)[] names = GetNames(args);
-            var findHeros = new Hero[names.Length];
-            for (int i = 0; i < names.Length; i++)
-            {
-                var name = names[i];
-                int currentIndex = 0;
-                Hero currentHero = null;
-                var npcHeros = GetNpcs(type, inMyTroops);
-                foreach (var npcHero in npcHeros)
-                {
-                    if (npcHero == default) continue;
-                    if (string.Equals(name.name, npcHero.Name.ToString(), StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (currentIndex == name.index)
-                        {
-                            currentHero = npcHero;
-                            break;
-                        }
-                        currentIndex++;
-                    }
-                }
-                findHeros[i] = currentHero;
-            }
-            return findHeros;
-        }
+        public static Hero[] SearchHeroes(IEnumerable<string> args, NpcType type, bool inMyTroops = true) => SearchHeroesV2(args, type, inMyTroops).ToArray();
 
         public static IEnumerable<Hero> SearchHeroesV2(IEnumerable<string> args, NpcType type, bool inMyTroops = true)
         {
             (string name, int index)[] names = GetNames(args);
+            var npcHeros = GetNpcs(type, inMyTroops);
             for (int i = 0; i < names.Length; i++)
             {
                 var name = names[i];
                 int currentIndex = 0;
                 Hero currentHero = null;
-                var npcHeros = GetNpcs(type, inMyTroops);
                 foreach (var npcHero in npcHeros)
                 {
                     if (npcHero == default) continue;

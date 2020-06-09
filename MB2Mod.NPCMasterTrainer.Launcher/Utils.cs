@@ -229,10 +229,10 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                     ClearPackages();
                     using var memoryStream = new MemoryStream();
                     using var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true);
-                    archive.CreateEntryFromFile(xmlPath, SubModule_XML, level);
-                    archive.CreateEntryFromFile(readmePath, README_MD, level);
+                    archive.CreateEntryFromFile(xmlPath, Path.Combine(modDirName, SubModule_XML), level);
+                    archive.CreateEntryFromFile(readmePath, Path.Combine(modDirName, README_MD), level);
                     var binPath = Path.Combine(utils.BinaryPath);
-                    archive.CreateEntryFromFile(dllFilePathSource, Path.Combine(binPath, dllFileNameWithoutExtension + ".dll"), level);
+                    archive.CreateEntryFromFile(dllFilePathSource, Path.Combine(modDirName, binPath, dllFileNameWithoutExtension + ".dll"), level);
                     var zipFilePath = Path.Combine(currentPath, $"{zipFileNamePrefix}_v{version.ToFullString()}.zip");
                     using var fileStream = new FileStream(zipFilePath, FileMode.CreateNew);
                     memoryStream.Position = 0;

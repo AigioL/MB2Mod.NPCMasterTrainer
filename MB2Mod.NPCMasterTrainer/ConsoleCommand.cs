@@ -187,6 +187,206 @@ namespace MB2Mod.NPCMasterTrainer
             return Utils.HandleSearchHeroes(args, HandleHeroes, inMyTroops: false);
         }
 
+        /// <summary>
+        /// npc.fill_up [name] | [num?] 加满npc的所有
+        /// <para>example: </para>
+        /// <para>npc.fill_up all</para>
+        /// <para>npc.fill_up all | 999</para>
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("fill_up", "npc")]
+        public static string FillUpHero(List<string> args)
+        {
+            if (!Utils.CheatMode) return "Cheat mode disabled!";
+            var args2 = args.SplitArgments();
+            if (args2.Any())
+            {
+                var maxSkillValue = int.TryParse(args2.LastOrDefault().LastOrDefault(), out var number) ? number : (int?)null;
+                string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultVoid(heroes, h => Utils.FillUp(h, maxSkillValue));
+                return Utils.HandleSearchHeroes(args2.First(), HandleHeroes);
+            }
+            return Utils.NotFound;
+        }
+
+        /// <summary>
+        /// npc.clone [name] | [count?] 克隆npc数量(不能克隆自己，因为克隆出来的玩家不会被AI控制)
+        /// <para>已知问题：</para>
+        /// <para>使用克隆出多个后，不可指派总督，创建新部队，否则会崩溃，需将count设为1恢复单个角色后再进行这些操作。</para>
+        /// <para>克隆数量太多，疑似超过部队最大数量，会在战场上崩溃，或坐镇卡死。</para>
+        /// <para>example: </para>
+        /// <para>npc.clone noble</para>
+        /// <para>npc.clone wanderer | 10</para>
+        /// <para>npc.clone all_not_me | 15</para>
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("clone", "npc")]
+        public static string CloneHero(List<string> args)
+        {
+            try
+            {
+                var troopRoster = Campaign.Current?.MainParty.MemberRoster;
+                if (troopRoster != default)
+                {
+                    if (troopRoster.TotalWoundedHeroes > 0) return "Fail, You can't have wounded heroes in your troops.";
+                    var args2 = args.SplitArgments();
+                    if (args2.Any())
+                    {
+                        var count = ushort.TryParse(args2.LastOrDefault().LastOrDefault(), out var number) ? number : 1;
+                        if (count <= 0) count = 1;
+                        string HandleHeroes(IEnumerable<Hero> heroes)
+                        {
+                            foreach (var hero in heroes)
+                            {
+                                int index = -2, countChange = index;
+                                TroopRosterElement item = default;
+                                bool isNegativeCountChange = default;
+                                try
+                                {
+                                    index = troopRoster.FindIndexOfTroop(hero.CharacterObject);
+                                    if (index >= 0 && index < troopRoster.Count)
+                                    {
+                                        item = troopRoster.GetElementCopyAtIndex(index);
+                                        countChange = count - item.Number;
+                                        //var hasWounded = item.WoundedNumber > 0;
+                                        isNegativeCountChange = countChange < 0;
+                                        if (isNegativeCountChange) countChange -= 1;
+                                        /*, woundedCountChange: hasWounded ? -item.WoundedNumber : 0*/
+                                        troopRoster.AddToCountsAtIndex(index, countChange, removeDepleted: false);
+                                        // ---- isNegativeCountChange Fix ----
+                                        // if (this.OwnerParty != null & isHero)
+                                        // else if (countChange < 0)
+                                        // if (!this.IsPrisonRoster)
+                                        // this.OwnerParty.OnHeroRemoved(character.HeroObject);
+                                        // -- in AddToCountsAtIndex(int index, int countChange, int woundedCountChange = 0, int xpChange = 0, bool removeDepleted = true) --
+                                        if (isNegativeCountChange) troopRoster.AddToCountsAtIndex(index, 1, removeDepleted: false);
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    Utils.DisplayMessage(e);
+                                }
+                                Utils.DisplayMessage($"NPC Clone: {hero?.Name}({(isNegativeCountChange ? countChange + 1 : countChange)})");
+                            }
+                            return Utils.Done;
+                        }
+                        return Utils.HandleSearchHeroes(args2.First(), HandleHeroes, excludeMe: true);
+                    }
+                }
+                return Utils.NotFound;
+            }
+            catch (Exception e)
+            {
+                Utils.DisplayMessage(e);
+                return Utils.Catch;
+            }
+        }
+
+        /// <summary>
+        /// npc.remove_attrs [name] | [attrType] | [value] 移除玩家部队中角色的属性并返还到可用点数
+        /// <para>attrType: Vigor(1), Control(2), Endurance(3), Cunning(4), Social(5), Intelligence(6)</para>
+        /// <para>example: </para>
+        /// <para>npc.remove_attrs me | 1 | 1</para>
+        /// <para>npc.remove_attrs me | Vigor | 1</para>
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("remove_attrs", "npc")]
+        public static string RemoveHeroAttrs(List<string> args)
+        {
+            try
+            {
+                var args2 = args.SplitArgments();
+                if (args2.Count == 3)
+                {
+                    var attrTypeInputText = args2[1].LastOrDefault();
+                    var attrType = (CharacterAttributesEnum)(ushort.TryParse(attrTypeInputText, out var number) ?
+                        number - 1 :
+                        (Enum.TryParse<CharacterAttributesEnum>(attrTypeInputText, true, out var @enum) ?
+                        (int)@enum : -1));
+                    var value = ushort.TryParse(args2[2].LastOrDefault(), out var number2) ? number2 : 0;
+                    if (attrType >= CharacterAttributesEnum.First && attrType < CharacterAttributesEnum.End && value > 0 && value < HeroDeveloper.MaxAttribute)
+                    {
+                        string HandleHeroes(IEnumerable<Hero> heroes)
+                        {
+                            foreach (var hero in heroes)
+                            {
+                                var currentAttrValue = hero.GetAttributeValue(attrType);
+                                if (currentAttrValue > value)
+                                {
+                                    var tempValue = currentAttrValue - value;
+                                    hero.SetAttributeValue(attrType, tempValue);
+                                    hero.HeroDeveloper.UnspentAttributePoints += value;
+                                }
+                            }
+                            return Utils.Done;
+                        }
+                        return Utils.HandleSearchHeroes(args2.First(), HandleHeroes);
+                    }
+                }
+                return Utils.NotFound;
+            }
+            catch (Exception e)
+            {
+                Utils.DisplayMessage(e);
+                return Utils.Catch;
+            }
+        }
+
+        /// <summary>
+        /// npc.remove_focus [name] | [row] | [column] | [value] 移除玩家部队中角色的专精并返还到可用点数
+        /// <para>row: 1~6</para>
+        /// <para>column: 1~3</para>
+        /// <para>example: </para>
+        /// <para>npc.remove_focus me | 2 | 1 | 1</para>
+        /// <para>npc.remove_focus me | control | 1 | 1</para>
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("remove_focus", "npc")]
+        public static string RemoveHeroFocus(List<string> args)
+        {
+            try
+            {
+                var args2 = args.SplitArgments();
+                if (args2.Count == 4)
+                {
+                    var rowInputText = args2[1].LastOrDefault();
+                    var row = ushort.TryParse(args2[1].LastOrDefault(), out var row_num) ?
+                        row_num : (Enum.TryParse<CharacterAttributesEnum>(rowInputText, true, out var @enum) ?
+                        (int)@enum : -1);
+                    var column = ushort.TryParse(args2[2].LastOrDefault(), out var column_num) ? column_num : -1;
+                    var skill = Utils.GetSkillObject(row, column);
+                    var value = ushort.TryParse(args2[3].LastOrDefault(), out var value_num) ? value_num : 0;
+                    if (skill != default && value > 0 && value < HeroDeveloper.MaxFocusPerSkill)
+                    {
+                        string HandleHeroes(IEnumerable<Hero> heroes)
+                        {
+                            foreach (var hero in heroes)
+                            {
+                                var currentValue = hero.HeroDeveloper.GetFocus(skill);
+                                if (currentValue >= value)
+                                {
+                                    var tempValue = value - currentValue;
+                                    hero.HeroDeveloper.AddFocus(skill, tempValue, false);
+                                    hero.HeroDeveloper.UnspentFocusPoints += value;
+                                }
+                            }
+                            return Utils.Done;
+                        }
+                        return Utils.HandleSearchHeroes(args2.First(), HandleHeroes);
+                    }
+                }
+                return Utils.NotFound;
+            }
+            catch (Exception e)
+            {
+                Utils.DisplayMessage(e);
+                return Utils.Catch;
+            }
+        }
+
         #endregion
 
         #region export csv
@@ -321,7 +521,7 @@ namespace MB2Mod.NPCMasterTrainer
         [CommandLineFunctionality.CommandLineArgumentFunction("pregnancy_model", "print")]
         public static string PrintPregnancyModel(List<string> args)
         {
-            return Utils.NPCMTPregnancyModel.Print() ? Utils.Done : Utils.NotFound;
+            return Utils.NPCMT_PregnancyModel.Print() ? Utils.Done : Utils.NotFound;
         }
 
         /// <summary>
@@ -477,3 +677,7 @@ namespace MB2Mod.NPCMasterTrainer
         #endregion
     }
 }
+
+// 未来计划(v1.0.6)
+// 优化 多个hero(clone) 控制选取/npc_control
+// 优化 agent match hero

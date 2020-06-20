@@ -19,17 +19,13 @@ namespace MB2Mod.NPCMasterTrainer
             Utils.Config.Instance.HandleItemObjects();
         }
 
-        protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
+        protected override void OnGameStart(Game game, IGameStarter gameStarter)
         {
-            base.OnGameStart(game, gameStarterObject);
-            if (Utils.Config.Instance.EnablePregnancyModel)
-            {
-                gameStarterObject.AddModel(Utils.NPCMTPregnancyModel.Instance);
-                if (Utils.Config.Instance.HasWin32Console())
-                {
-                    Console.WriteLine($"PregnancyM(NPCMT) Init Success.");
-                }
-            }
+            base.OnGameStart(game, gameStarter);
+            gameStarter.AddModel(Utils.NPCMT_ClanTierModel.Init);
+            gameStarter.AddModel(Utils.NPCMT_PregnancyModel.Init);
+            gameStarter.AddModel(Utils.NPCMT_TroopCountLimitModel.Init);
+            gameStarter.AddModel(Utils.NPCMT_WorkshopModel.Init);
         }
 
         protected override void OnSubModuleLoad()

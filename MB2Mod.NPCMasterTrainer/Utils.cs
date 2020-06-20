@@ -8,6 +8,7 @@ using TaleWorlds.Core;
 using colors = TaleWorlds.Library.Colors;
 using TaleWorlds.Library;
 using System.IO;
+using TaleWorlds.CampaignSystem.SandBox.GameComponents;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -90,7 +91,7 @@ namespace MB2Mod.NPCMasterTrainer
             return (any_list_true || any_list_false) ? Done : NotFound;
         }
 
-        public static string HandleSearchHeroes(IReadOnlyList<string> args, Func<IEnumerable<Hero>, string> func, bool inMyTroops = true)
+        public static string HandleSearchHeroes(IReadOnlyList<string> args, Func<IEnumerable<Hero>, string> func, bool inMyTroops = true, bool excludeMe = false)
         {
             if (Campaign.Current == null) return CampaignIsNull;
             if (!args.Any()) return InvalidArguments;
@@ -109,16 +110,43 @@ namespace MB2Mod.NPCMasterTrainer
             Hero[] heroes;
             if (inputNames == default)
             {
-                heroes = GetNpcs(choose_arg.GetNpcType(), inMyTroops);
+                heroes = GetNpcs(choose_arg.GetNpcType(), inMyTroops, excludeMe);
             }
             else
             {
-                heroes = SearchHeroes(inputNames, choose_arg.GetNpcType(), inMyTroops);
+                heroes = SearchHeroes(inputNames, choose_arg.GetNpcType(), inMyTroops, excludeMe);
             }
-            return func(heroes);
+            if (heroes != default && heroes.Any()) return func(heroes);
+            return NotFound;
         }
 
         #endregion
+
+        static readonly string[] separators_SplitArgments = new[] { "|", @"\|" };
+
+        public static IReadOnlyList<IReadOnlyList<string>> SplitArgments(this IReadOnlyList<string> args)
+        {
+            var result = new List<List<string>>() { new List<string>() };
+            var index = 0;
+            for (int i = 0; i < args.Count; i++)
+            {
+                var item = args[i];
+                if (separators_SplitArgments.Contains(item))
+                {
+                    if (i != 0)
+                    {
+                        index += 1;
+                        result.Add(new List<string>());
+                    }
+                    continue;
+                }
+                result[index].Add(item);
+            }
+#if DEBUG
+            Console.WriteLine(string.Join(Environment.NewLine, result.Select(x => string.Join(" ", x))));
+#endif
+            return result;
+        }
 
         #region TryGetValue
 
@@ -201,5 +229,88 @@ namespace MB2Mod.NPCMasterTrainer
         });
 
         public static ApplicationVersion GameVersion => lazy_game_ver.Value;
+
+        public static bool CheatMode
+        {
+            get
+            {
+                if (Game.Current != default)
+                {
+                    return Game.Current.CheatMode;
+                }
+                return false;
+            }
+        }
+
+        public static T GetGameModel<T>(this IEnumerable<GameModel> models) where T : GameModel
+        {
+            var items = models?.Reverse();
+            if (items != default)
+            {
+                foreach (var item in items)
+                {
+                    if (item is T t && t != null)
+                    {
+                        return t;
+                    }
+                }
+            }
+            return default;
+        }
+
+        public static T GetGameModel<T>(this IGameStarter gameStarter) where T : GameModel
+        {
+            var items = gameStarter?.Models;
+            return items.GetGameModel<T>();
+        }
+
+        public static void AddModel<T>(this IGameStarter gameStarter, Func<T> func) where T : GameModel
+        {
+            T _func(IGameStarter _) => func?.Invoke();
+            gameStarter.AddModel(_func);
+        }
+
+        public static void AddModel<T>(this IGameStarter gameStarter, Func<IGameStarter, T> func) where T : GameModel
+        {
+            T _func(Config _, IGameStarter gameStarter1) => func?.Invoke(gameStarter1);
+            gameStarter.AddModel(_func);
+        }
+
+        public static void AddModel<T>(this IGameStarter gameStarter, Func<Config, T> func) where T : GameModel
+        {
+            T _func(Config config, IGameStarter _) => func?.Invoke(config);
+            gameStarter.AddModel(_func);
+        }
+
+        public static void AddModel<T>(this IGameStarter gameStarter, Func<Config, IGameStarter, T> func) where T : GameModel
+        {
+            var config = Config.Instance;
+            var model = func?.Invoke(config, gameStarter);
+            if (model != null)
+            {
+                gameStarter.AddModel(model);
+                if (config.HasWin32Console())
+                {
+                    var name = model.GetType().Name.Replace("NPCMT", string.Empty).Replace("Model", "M");
+                    Console.WriteLine($"{name} Init Success.");
+                }
+            }
+        }
+
+        static TService GetGameModel<TService, TImplementation>() where TService : GameModel where TImplementation : TService, new()
+        {
+            TService model;
+            try
+            {
+                model = Game.Current?.BasicModels.GetGameModels().GetGameModel<TService>();
+            }
+            catch
+            {
+                model = default;
+            }
+            return model ?? new TImplementation();
+        }
+
+        public static ClanTierModel ClanTierModel => GetGameModel<ClanTierModel, DefaultClanTierModel>();
     }
 }

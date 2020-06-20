@@ -37,7 +37,7 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
             return string.IsNullOrWhiteSpace(gamePath) ? DefGamePath : gamePath;
         }
 
-        public static string[] GameProcessNames = new[] { "TaleWorlds.MountAndBlade.Launcher", "Bannerlord", "Bannerlord.Native", "Bannerlord_BE" };
+        public static readonly string[] GameProcessNames = new[] { "TaleWorlds.MountAndBlade.Launcher", "Bannerlord", "Bannerlord.Native", "Bannerlord_BE" };
 
         public static Process[] GetGameProcesses()
         {

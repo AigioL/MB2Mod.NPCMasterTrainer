@@ -15,10 +15,18 @@ namespace MB2Mod.NPCMasterTrainer
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
-                var indexStr = name.Split(new[] { NameIndexAnalysisSeparator }, StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
-                if (!string.IsNullOrWhiteSpace(indexStr) && int.TryParse(indexStr, out var index))
+                var array = name.Split(new[] { NameIndexAnalysisSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                if (array.Length > 1)
                 {
-                    return (name.Substring(0, name.Length - (indexStr.Length + 1)), index - 1); // input index starting at1
+                    var indexStr = array.LastOrDefault();
+                    if (!string.IsNullOrWhiteSpace(indexStr) && int.TryParse(indexStr, out var index))
+                    {
+                        var len = name.Length - (indexStr.Length + 1);
+                        if (len > 0)
+                        {
+                            return (name.Substring(0, len), index - 1); // input index starting at1
+                        }
+                    }
                 }
             }
             return (name, default);
@@ -55,12 +63,13 @@ namespace MB2Mod.NPCMasterTrainer
             }
         }
 
-        public static Hero[] SearchHeroes(IEnumerable<string> args, NpcType type, bool inMyTroops = true) => SearchHeroesV2(args, type, inMyTroops).ToArray();
+        public static Hero[] SearchHeroes(IEnumerable<string> args, NpcType type, bool inMyTroops = true, bool excludeMe = false)
+            => SearchHeroesV2(args, type, inMyTroops, excludeMe).ToArray();
 
-        public static IEnumerable<Hero> SearchHeroesV2(IEnumerable<string> args, NpcType type, bool inMyTroops = true)
+        public static IEnumerable<Hero> SearchHeroesV2(IEnumerable<string> args, NpcType type, bool inMyTroops = true, bool excludeMe = false)
         {
             (string name, int index)[] names = GetNames(args);
-            var npcHeros = GetNpcs(type, inMyTroops);
+            var npcHeros = GetNpcs(type, inMyTroops, excludeMe);
             for (int i = 0; i < names.Length; i++)
             {
                 var name = names[i];
@@ -79,7 +88,10 @@ namespace MB2Mod.NPCMasterTrainer
                         currentIndex++;
                     }
                 }
-                yield return currentHero;
+                if (currentHero != default)
+                {
+                    yield return currentHero;
+                }
             }
         }
     }

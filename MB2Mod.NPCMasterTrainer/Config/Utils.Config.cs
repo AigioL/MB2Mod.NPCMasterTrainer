@@ -197,13 +197,10 @@ namespace MB2Mod.NPCMasterTrainer
 
             public static void PrintConfigInstanceLog()
             {
-                if (lazy_instance_sb != null)
+                var str = lazy_instance_sb?.ToString();
+                if (!string.IsNullOrEmpty(str))
                 {
-                    var str = lazy_instance_sb.ToString();
-                    if (!string.IsNullOrEmpty(str))
-                    {
-                        Console.WriteLine(str);
-                    }
+                    Console.WriteLine(str);
                 }
             }
 

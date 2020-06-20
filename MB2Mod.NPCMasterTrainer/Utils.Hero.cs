@@ -156,7 +156,8 @@ namespace MB2Mod.NPCMasterTrainer
             //return string.Empty;
         }
 
-        static Hero[] GetNotMeNpcs(IEnumerable<Hero> heroes, Hero player = null, bool? isNoble = null, bool? isWanderer = null, bool inMyTroops = true)
+        public static IEnumerable<Hero> GetNotMeNpcs(
+            IEnumerable<Hero> heroes, Hero player = null, bool? isNoble = null, bool? isWanderer = null, bool inMyTroops = true)
         {
             player ??= Hero.MainHero;
             if (heroes == null || player == null) return Array.Empty<Hero>();
@@ -165,7 +166,7 @@ namespace MB2Mod.NPCMasterTrainer
                         where hero != null && hero != player && hero.IsAlive && isMainPartyBelonged.HasValue && isMainPartyBelonged.Value
                         && (!isNoble.HasValue || isNoble.Value == hero.IsNoble) && (!isWanderer.HasValue || isWanderer.Value == hero.IsWanderer)
                         select hero;
-            return query.ToArray();
+            return query;
         }
 
         /// <summary>
@@ -173,12 +174,12 @@ namespace MB2Mod.NPCMasterTrainer
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static Hero[] GetNpcs(NpcType type, bool inMyTroops = true)
+        public static Hero[] GetNpcs(NpcType type, bool inMyTroops = true, bool excludeMe = false)
         {
             var player = Hero.MainHero;
             if (player == default) return Array.Empty<Hero>();
             var hashSet = new HashSet<Hero>();
-            if (type.HasFlag(NpcType.Player))
+            if (!excludeMe && type.HasFlag(NpcType.Player))
             {
                 hashSet.Add(player);
             }
@@ -191,6 +192,10 @@ namespace MB2Mod.NPCMasterTrainer
             {
                 var wanderers = GetNotMeNpcs(player.Clan?.Companions, player, isWanderer: true, inMyTroops: inMyTroops);
                 if (wanderers != null) hashSet.AddRange(wanderers);
+            }
+            if (excludeMe && hashSet.Contains(player))
+            {
+                hashSet.Remove(player);
             }
             return hashSet.ToArray();
         }
@@ -302,5 +307,79 @@ namespace MB2Mod.NPCMasterTrainer
             obj.DynamicBodyProperties = dynamicBodyProperties;
             lazy_property_StaticBodyProperties.Value.SetValue(obj, staticBodyProperties);
         }
+
+        #region FillUp
+
+        const int _MaxSkillValue = 330;
+
+        static int MaxSkillValue => Math.Max(_MaxSkillValue, DefaultSkills.MaxAssumedValue);
+
+        static readonly Lazy<FieldInfo> lazy_field_openedPerks = new Lazy<FieldInfo>(() =>
+        {
+            var field = typeof(HeroDeveloper).GetField(
+                name: "_openedPerks",
+                bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance);
+            return field;
+        });
+
+        public static void FillUp([NotNull] this Hero hero, int? maxSkillValue)
+        {
+            if (hero == default) return;
+            try
+            {
+                maxSkillValue ??= MaxSkillValue;
+                //DisplayMessage(string.Format("FillUp {0}", hero));
+                hero.HeroDeveloper.ClearFocuses();
+                hero.ClearAttributes();
+                var allSkills = DefaultSkills.GetAllSkills().ToArray();
+                foreach (var skill in allSkills)
+                {
+                    hero.SetSkillValue(skill, maxSkillValue.Value);
+                    var xpValue = Campaign.Current.Models.CharacterDevelopmentModel.GetXpRequiredForSkillLevel(maxSkillValue.Value);
+                    hero.HeroDeveloper.SetPropertyValue(skill, xpValue);
+                    hero.HeroDeveloper.AddFocus(skill, HeroDeveloper.MaxFocusPerSkill, false);
+                }
+                for (var i = CharacterAttributesEnum.First; i < CharacterAttributesEnum.End; i++)
+                {
+                    try
+                    {
+                        hero.SetAttributeValue(i, HeroDeveloper.MaxAttribute);
+                    }
+                    catch (Exception e)
+                    {
+                        DisplayMessage($"Attr(catch) item: {i}" + e.ToString());
+                    }
+                }
+                var allPerks = Perks.All;
+                foreach (var item in allPerks)
+                {
+                    try
+                    {
+                        if (!hero.GetPerkValue(item))
+                        {
+                            hero.SetPerkValue(item, true);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        DisplayMessage($"Perk(catch) item: {item}" + e.ToString());
+                    }
+                }
+                var openedPerks = lazy_field_openedPerks.Value.GetValue(hero.HeroDeveloper);
+                if (openedPerks is List<PerkObject> _openedPerks)
+                {
+                    _openedPerks.Clear();
+                }
+                hero.Level = 1;
+                hero.HeroDeveloper.UnspentAttributePoints = 0;
+                hero.HeroDeveloper.UnspentFocusPoints = 0;
+            }
+            catch (Exception ex)
+            {
+                DisplayMessage(ex);
+            }
+        }
+
+        #endregion
     }
 }

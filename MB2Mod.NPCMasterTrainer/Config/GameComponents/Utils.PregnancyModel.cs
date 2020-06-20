@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
+using TaleWorlds.Core;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents;
 
@@ -70,11 +71,11 @@ namespace MB2Mod.NPCMasterTrainer
             public ulong AddDailyChanceOfPregnancyForMeOrMySpouseMultiple { get; set; } = 1;
         }
 
-        public sealed class NPCMTPregnancyModel : DefaultPregnancyModel
+        public sealed class NPCMT_PregnancyModel : DefaultPregnancyModel
         {
             readonly Config config;
 
-            NPCMTPregnancyModel(Config config) => this.config = config;
+            NPCMT_PregnancyModel(Config config) => this.config = config;
 
             public override float CharacterFertilityProbability
                 => GetPercentage(config?.CharacterFertilityProbability) ?? base.CharacterFertilityProbability;
@@ -94,7 +95,7 @@ namespace MB2Mod.NPCMasterTrainer
             public override float DeliveringTwinsProbability
                 => GetPercentage(config?.DeliveringTwinsProbability) ?? base.DeliveringTwinsProbability;
 
-            static readonly Lazy<PregnancyModel> lazy_instance = new Lazy<PregnancyModel>(() => new NPCMTPregnancyModel(Config.Instance));
+            static readonly Lazy<PregnancyModel> lazy_instance = new Lazy<PregnancyModel>(() => new NPCMT_PregnancyModel(Config.Instance));
 
             public static PregnancyModel Instance => lazy_instance.Value;
 
@@ -180,7 +181,7 @@ namespace MB2Mod.NPCMasterTrainer
                     DisplayMessage($"StillbirthProbability: {model.StillbirthProbability}");
                     DisplayMessage($"DeliveringFemaleOffspringProbability: {model.DeliveringFemaleOffspringProbability}");
                     DisplayMessage($"DeliveringTwinsProbability: {model.DeliveringTwinsProbability}");
-                    if (model is NPCMTPregnancyModel model_npcmt)
+                    if (model is NPCMT_PregnancyModel model_npcmt)
                     {
                         DisplayMessage($"MaxPregnancyAge: {model_npcmt.GetMaxPregnancyAge()}");
                         DisplayMessage($"MaxPregnancyAgeForMeOrMySpouse: {model_npcmt.config.MaxPregnancyAgeForMeOrMySpouse ?? model_npcmt.GetMaxPregnancyAge()}");
@@ -190,6 +191,13 @@ namespace MB2Mod.NPCMasterTrainer
                     return true;
                 }
                 return false;
+            }
+
+            public static PregnancyModel Init(Config config)
+            {
+                if (config.EnablePregnancyModel)
+                    return Instance;
+                return default;
             }
         }
 

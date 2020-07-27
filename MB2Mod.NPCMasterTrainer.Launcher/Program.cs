@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace MB2Mod.NPCMasterTrainer.Launcher
 {
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             var gamePath = Utils.GetGamePath();
             if (Directory.Exists(gamePath))

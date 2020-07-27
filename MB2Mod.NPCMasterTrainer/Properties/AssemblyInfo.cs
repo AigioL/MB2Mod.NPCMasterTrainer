@@ -1,6 +1,6 @@
-﻿using System.Reflection;
+﻿using MB2Mod.NPCMasterTrainer;
+using System.Reflection;
 using System.Runtime.CompilerServices;
-using MB2Mod.NPCMasterTrainer;
 
 [assembly: SuppressIldasm]
 [assembly: AssemblyTitle(Utils.AssemblyTitle)]

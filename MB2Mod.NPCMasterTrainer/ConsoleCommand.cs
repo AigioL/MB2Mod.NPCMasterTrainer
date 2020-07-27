@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MB2Mod.NPCMasterTrainer.Properties;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.Library;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
-using MB2Mod.NPCMasterTrainer.Properties;
 
 #pragma warning disable IDE0060 // 删除未使用的参数
 
@@ -603,7 +603,7 @@ namespace MB2Mod.NPCMasterTrainer
             return Utils.NotFound;
         }
 
-        static string ControlHeroNext(Utils.NpcType npcType)
+        private static string ControlHeroNext(Utils.NpcType npcType)
         {
             var main = Agent.Main;
             if (main != default)

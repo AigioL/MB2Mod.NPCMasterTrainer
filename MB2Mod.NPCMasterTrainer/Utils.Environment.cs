@@ -2,7 +2,7 @@
 {
     partial class Utils
     {
-        const bool IS_DEBUG_CONST =
+        private const bool IS_DEBUG_CONST =
 #if DEBUG
         true
 #else

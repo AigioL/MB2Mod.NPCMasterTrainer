@@ -12,7 +12,7 @@ namespace MB2Mod.NPCMasterTrainer
             [DllImport("Rgl.dll", EntryPoint = "?toggle_imgui_console_visibility@rglCommand_line_manager@@QEAAXXZ", CallingConvention = CallingConvention.Cdecl)]
             public static extern void toggle_imgui_console_visibility(UIntPtr x);
 
-            static readonly Lazy<bool> lazy_Exists = new Lazy<bool>(() => CurrentAppDomain.Exists("DeveloperConsole"));
+            private static readonly Lazy<bool> lazy_Exists = new Lazy<bool>(() => CurrentAppDomain.Exists("DeveloperConsole"));
 
             public static bool Exists => lazy_Exists.Value;
         }

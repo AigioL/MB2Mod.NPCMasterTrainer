@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents;
 
@@ -34,9 +31,9 @@ namespace MB2Mod.NPCMasterTrainer
 
         public sealed class NPCMT_WorkshopModel : DefaultWorkshopModel
         {
-            readonly Config config;
+            private readonly Config config;
 
-            NPCMT_WorkshopModel(Config config) => this.config = config;
+            private NPCMT_WorkshopModel(Config config) => this.config = config;
 
             public override int GetMaxWorkshopCountForPlayer()
             {
@@ -65,7 +62,7 @@ namespace MB2Mod.NPCMasterTrainer
                 return base.GetMaxWorkshopCountForPlayer();
             }
 
-            static readonly Lazy<WorkshopModel> lazy_instance = new Lazy<WorkshopModel>(() => new NPCMT_WorkshopModel(Config.Instance));
+            private static readonly Lazy<WorkshopModel> lazy_instance = new Lazy<WorkshopModel>(() => new NPCMT_WorkshopModel(Config.Instance));
 
             public static WorkshopModel Instance => lazy_instance.Value;
 

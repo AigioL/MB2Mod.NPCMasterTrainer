@@ -1,8 +1,8 @@
-﻿using System;
+﻿using MB2Mod.NPCMasterTrainer.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
-using MB2Mod.NPCMasterTrainer.Properties;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -124,7 +124,7 @@ namespace MB2Mod.NPCMasterTrainer
         public static bool? Export(IEnumerable<Town> towns, string mark)
         {
             var fileNamePrefix = $"{Resources.TownsData}({mark})";
-            return Export(towns, TownExportData.Convert, TownExportData.TableHeader, fileNamePrefix,
+            return Export(towns, TownExportData.Convert, TownExportData.TableHeaders, fileNamePrefix,
                 TownExportData.GetDynamicHeaders, TownExportData.GetDynamicValue);
         }
     }

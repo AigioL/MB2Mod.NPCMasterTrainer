@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using TaleWorlds.CampaignSystem;
-using System.Runtime.InteropServices;
-using TaleWorlds.ObjectSystem;
-using TaleWorlds.Core;
-using colors = TaleWorlds.Library.Colors;
-using TaleWorlds.Library;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
+using TaleWorlds.ObjectSystem;
+using colors = TaleWorlds.Library.Colors;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -42,7 +42,7 @@ namespace MB2Mod.NPCMasterTrainer
 
         #region Handle
 
-        static string ToString<T>(T obj) where T : MBObjectBase
+        private static string ToString<T>(T obj) where T : MBObjectBase
         {
             if (obj is Hero hero) return hero.Name?.ToString() ?? hero.ToString();
             if (obj is Town town) return town.Name?.ToString() ?? town.ToString();
@@ -122,7 +122,7 @@ namespace MB2Mod.NPCMasterTrainer
 
         #endregion
 
-        static readonly string[] separators_SplitArgments = new[] { "|", @"\|" };
+        private static readonly string[] separators_SplitArgments = new[] { "|", @"\|" };
 
         public static IReadOnlyList<IReadOnlyList<string>> SplitArgments(this IReadOnlyList<string> args)
         {
@@ -150,7 +150,7 @@ namespace MB2Mod.NPCMasterTrainer
 
         #region TryGetValue
 
-        static bool CanToJsonString(object obj, out Exception exception)
+        private static bool CanToJsonString(object obj, out Exception exception)
         {
             try
             {
@@ -165,7 +165,7 @@ namespace MB2Mod.NPCMasterTrainer
             }
         }
 
-        static object TryGetValue<T, TResult>(this T t, Func<T, TResult> func)
+        private static object TryGetValue<T, TResult>(this T t, Func<T, TResult> func)
         {
             try
             {
@@ -177,9 +177,9 @@ namespace MB2Mod.NPCMasterTrainer
             }
         }
 
-        static object TryGetValue(this object obj) => CanToJsonString(obj, out var e) ? obj : e.ToString();
+        private static object TryGetValue(this object obj) => CanToJsonString(obj, out var e) ? obj : e.ToString();
 
-        static object TryGetValue<T>(this IEnumerable<T> ts, Func<T, object> func)
+        private static object TryGetValue<T>(this IEnumerable<T> ts, Func<T, object> func)
         {
             if (ts != null && ts.Any())
             {
@@ -210,23 +210,22 @@ namespace MB2Mod.NPCMasterTrainer
 
         #endregion
 
-        static readonly Lazy<ApplicationVersion> lazy_game_ver = new Lazy<ApplicationVersion>(() =>
-        {
-            try
-            {
-                var moduleNative = ModuleInfo.GetModules()
-                    ?.FirstOrDefault(x => x.IsOfficial && x.IsSelected && string.Equals(x.Id, "Native", StringComparison.OrdinalIgnoreCase));
-                if (moduleNative != default)
-                {
-                    return moduleNative.Version;
-                }
-            }
-            catch (DirectoryNotFoundException)
-            {
-
-            }
-            return default;
-        });
+        private static readonly Lazy<ApplicationVersion> lazy_game_ver = new Lazy<ApplicationVersion>(() =>
+           {
+               try
+               {
+                   var moduleNative = ModuleInfo.GetModules()
+                       ?.FirstOrDefault(x => x.IsOfficial && x.IsSelected && string.Equals(x.Id, "Native", StringComparison.OrdinalIgnoreCase));
+                   if (moduleNative != default)
+                   {
+                       return moduleNative.Version;
+                   }
+               }
+               catch (DirectoryNotFoundException)
+               {
+               }
+               return default;
+           });
 
         public static ApplicationVersion GameVersion => lazy_game_ver.Value;
 
@@ -291,13 +290,13 @@ namespace MB2Mod.NPCMasterTrainer
                 gameStarter.AddModel(model);
                 if (config.HasWin32Console())
                 {
-                    var name = model.GetType().Name.Replace("NPCMT", string.Empty).Replace("Model", "M");
+                    var name = model.GetType().Name.Replace("NPCMT_", string.Empty).Replace("Model", "M");
                     Console.WriteLine($"{name} Init Success.");
                 }
             }
         }
 
-        static TService GetGameModel<TService, TImplementation>() where TService : GameModel where TImplementation : TService, new()
+        private static TService GetGameModel<TService, TImplementation>() where TService : GameModel where TImplementation : TService, new()
         {
             TService model;
             try

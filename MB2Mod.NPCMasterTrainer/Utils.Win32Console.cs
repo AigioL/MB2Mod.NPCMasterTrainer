@@ -8,15 +8,15 @@ namespace MB2Mod.NPCMasterTrainer
         public static class Win32Console
         {
             [DllImport("kernel32.dll")]
-            static extern bool AllocConsole();
+            private static extern bool AllocConsole();
 
             [DllImport("kernel32.dll")]
-            static extern bool FreeConsole();
+            private static extern bool FreeConsole();
 
             [DllImport("kernel32.dll")]
-            static extern IntPtr GetConsoleWindow();
+            private static extern IntPtr GetConsoleWindow();
 
-            static bool HasConsole => GetConsoleWindow() != IntPtr.Zero;
+            private static bool HasConsole => GetConsoleWindow() != IntPtr.Zero;
 
             public static void Show(string title = null)
             {

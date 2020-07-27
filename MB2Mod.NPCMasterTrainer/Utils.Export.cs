@@ -1,10 +1,10 @@
-﻿using System;
+﻿using MB2Mod.NPCMasterTrainer.Properties;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using MB2Mod.NPCMasterTrainer.Properties;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -12,35 +12,68 @@ namespace MB2Mod.NPCMasterTrainer
     {
         public interface IExportData
         {
-            string ToRowString();
+            StringBuilder AppendRowString(StringBuilder stringBuilder);
         }
 
         public abstract partial class ExportData : IExportData
         {
             public const string Separator = ",";
 
-            static string StringToCSVCell(string str)
+            static StringBuilder StringToCSVCell(StringBuilder stringBuilder, string str)
             {
-                if (str == default) return string.Empty;
-                var mustQuote = str.Contains(",") || str.Contains("\"") || str.Contains("\r") || str.Contains("\n");
-                if (mustQuote)
+                if (!string.IsNullOrEmpty(str))
                 {
-                    var stringBuilder = new StringBuilder();
-                    stringBuilder.Append("\"");
-                    foreach (char nextChar in str)
+                    var mustQuote = str.Contains(",") || str.Contains("\"") || str.Contains("\r") || str.Contains("\n");
+                    if (mustQuote)
                     {
-                        stringBuilder.Append(nextChar);
-                        if (nextChar == '"') stringBuilder.Append("\"");
+                        stringBuilder.Append("\"");
+                        foreach (char nextChar in str)
+                        {
+                            stringBuilder.Append(nextChar);
+                            if (nextChar == '"') stringBuilder.Append("\"");
+                        }
+                        stringBuilder.Append("\"");
                     }
-                    stringBuilder.Append("\"");
-                    return stringBuilder.ToString();
+                    else
+                    {
+                        stringBuilder.Append(str);
+                    }
                 }
-                return str;
+                return stringBuilder;
             }
 
-            public static string Join(IEnumerable<string> strings) => string.Join(Separator, strings.Select(StringToCSVCell));
+            public static StringBuilder Join(StringBuilder stringBuilder, IEnumerable<string> strings)
+            {
+                if (strings != default && strings.Any())
+                {
+                    int count = default, i = default;
+                    var hasCount = false;
+                    if (strings is ICollection<string> strings2)
+                    {
+                        count = strings2.Count;
+                        hasCount = true;
+                    }
+                    else if (strings is IReadOnlyCollection<string> strings3)
+                    {
+                        count = strings3.Count;
+                        hasCount = true;
+                    }
+                    foreach (var item in strings)
+                    {
+                        StringToCSVCell(stringBuilder, item);
+                        if (hasCount)
+                        {
+                            i++;
+                            if (i == count) return stringBuilder;
+                        }
+                        stringBuilder.Append(Separator);
+                    }
+                    stringBuilder.Remove(stringBuilder.Length - 1, 1);
+                }
+                return stringBuilder;
+            }
 
-            public abstract string ToRowString();
+            public abstract StringBuilder AppendRowString(StringBuilder stringBuilder);
         }
 
         public abstract class ExportData<TExportData> : ExportData where TExportData : ExportData<TExportData>
@@ -62,13 +95,13 @@ namespace MB2Mod.NPCMasterTrainer
                 }
             }
 
-            public override string ToRowString()
+            public override StringBuilder AppendRowString(StringBuilder stringBuilder)
             {
                 var strings = Values;
-                return Join(strings);
+                return Join(stringBuilder, strings);
             }
 
-            protected static IEnumerable<string> TableHeaders
+            public static IEnumerable<string> TableHeaders
             {
                 get
                 {
@@ -77,11 +110,9 @@ namespace MB2Mod.NPCMasterTrainer
                     return strings;
                 }
             }
-
-            public static string TableHeader => Join(TableHeaders);
         }
 
-        static void WriteFile(string contents, string fileNamePrefix)
+        private static void WriteFile(string contents, string fileNamePrefix)
         {
             if (string.IsNullOrWhiteSpace(contents)) return;
             var path = ExportDirectory;
@@ -93,7 +124,7 @@ namespace MB2Mod.NPCMasterTrainer
             File.WriteAllText(filePath, contents, new UTF8Encoding(true)); // csv utf-8 with BOM
         }
 
-        static bool? Export<T, TExportData>(IEnumerable<T> source, Func<T, TExportData> convert, string tableHeader, string fileNamePrefix,
+        private static bool? Export<T, TExportData>(IEnumerable<T> source, Func<T, TExportData> convert, IEnumerable<string> tableHeaders, string fileNamePrefix,
             Func<IEnumerable<TExportData>, string[]> getDynamicHeaders = null,
             Func<string, TExportData, string> getDynamicValue = null)
             where TExportData : IExportData
@@ -105,7 +136,8 @@ namespace MB2Mod.NPCMasterTrainer
                 if (items != null && items.Any())
                 {
                     var hasDynamicHeaders = getDynamicHeaders != default && getDynamicValue != default;
-                    var stringBuilder = new StringBuilder(tableHeader);
+                    var stringBuilder = new StringBuilder();
+                    ExportData.Join(stringBuilder, tableHeaders);
                     string[] dynamicHeaders = null;
                     if (hasDynamicHeaders)
                     {
@@ -113,7 +145,7 @@ namespace MB2Mod.NPCMasterTrainer
                         if (dynamicHeaders != null && dynamicHeaders.Any())
                         {
                             stringBuilder.Append(ExportData.Separator);
-                            stringBuilder.Append(ExportData.Join(dynamicHeaders));
+                            ExportData.Join(stringBuilder, dynamicHeaders);
                         }
                         else
                         {
@@ -123,17 +155,12 @@ namespace MB2Mod.NPCMasterTrainer
                     stringBuilder.AppendLine();
                     foreach (var item in items)
                     {
-                        var str = item.ToRowString();
-                        stringBuilder.Append(str);
+                        item.AppendRowString(stringBuilder);
                         if (hasDynamicHeaders)
                         {
-                            var dynamicValues = dynamicHeaders.Select(x => getDynamicValue(x, item)).ToArray();
-                            str = ExportData.Join(dynamicValues);
-                            if (!string.IsNullOrEmpty(str))
-                            {
-                                stringBuilder.Append(ExportData.Separator);
-                                stringBuilder.Append(str);
-                            }
+                            var dynamicValues = dynamicHeaders.Select(x => getDynamicValue(x, item));
+                            stringBuilder.Append(ExportData.Separator);
+                            ExportData.Join(stringBuilder, dynamicValues);
                         }
                         stringBuilder.AppendLine();
                     }
@@ -156,7 +183,7 @@ namespace MB2Mod.NPCMasterTrainer
             }
         }
 
-        static void Print<T>(this IEnumerable<T> items, string tag, string name, Func<T, object> print)
+        private static void Print<T>(this IEnumerable<T> items, string tag, string name, Func<T, object> print)
         {
             Console.WriteLine($"----- Print {name}({tag}) -----");
             if (items != null && items.Any())

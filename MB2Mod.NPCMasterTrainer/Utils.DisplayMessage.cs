@@ -11,7 +11,7 @@ namespace MB2Mod.NPCMasterTrainer
         {
             var infoMessage = color.HasValue ? new InformationMessage(information, color.Value) : new InformationMessage(information);
             InformationManager.DisplayMessage(infoMessage);
-            if (Utils.Config.Instance.HasWin32Console())
+            if (Config.Instance.HasWin32Console())
             {
                 Console.WriteLine(information);
                 // not impl win api SetConsoleMode set custom colors

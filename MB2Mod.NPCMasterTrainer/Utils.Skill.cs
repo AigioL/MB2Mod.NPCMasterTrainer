@@ -30,8 +30,9 @@ namespace MB2Mod.NPCMasterTrainer
             yield return DefaultSkills.OneHanded; yield return DefaultSkills.TwoHanded; yield return DefaultSkills.Polearm;
             yield return DefaultSkills.Bow; yield return DefaultSkills.Crossbow; yield return DefaultSkills.Throwing;
             yield return DefaultSkills.Riding; yield return DefaultSkills.Athletics; yield return DefaultSkills.Crafting;
-            yield return DefaultSkills.Riding; yield return DefaultSkills.Tactics; yield return DefaultSkills.Trade;
-            yield return DefaultSkills.Riding; yield return DefaultSkills.Tactics; yield return DefaultSkills.Trade;
+            yield return DefaultSkills.Scouting; yield return DefaultSkills.Tactics; yield return DefaultSkills.Roguery;
+            yield return DefaultSkills.Charm; yield return DefaultSkills.Leadership; yield return DefaultSkills.Trade;
+            yield return DefaultSkills.Steward; yield return DefaultSkills.Medicine; yield return DefaultSkills.Engineering;
         }
     }
 }

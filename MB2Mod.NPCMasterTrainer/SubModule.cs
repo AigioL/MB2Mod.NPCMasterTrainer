@@ -1,17 +1,17 @@
-﻿using System;
-using TaleWorlds.Core;
-using TaleWorlds.Library;
-using TaleWorlds.InputSystem;
-using TaleWorlds.MountAndBlade;
-using MB2Mod.NPCMasterTrainer.Properties;
+﻿using MB2Mod.NPCMasterTrainer.Properties;
+using System;
 using System.Text;
+using TaleWorlds.Core;
+using TaleWorlds.InputSystem;
+using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
 
 namespace MB2Mod.NPCMasterTrainer
 {
     public class SubModule : MBSubModuleBase
     {
-        bool isLoaded;
-        bool keyPressedDC;
+        private bool isLoaded;
+        private bool keyPressedDC;
 
         public override void OnGameInitializationFinished(Game game)
         {
@@ -24,7 +24,7 @@ namespace MB2Mod.NPCMasterTrainer
             base.OnGameStart(game, gameStarter);
             gameStarter.AddModel(Utils.NPCMT_ClanTierModel.Init);
             gameStarter.AddModel(Utils.NPCMT_PregnancyModel.Init);
-            gameStarter.AddModel(Utils.NPCMT_TroopCountLimitModel.Init);
+            //gameStarter.AddModel(Utils.NPCMT_TroopCountLimitModel.Init);
             gameStarter.AddModel(Utils.NPCMT_WorkshopModel.Init);
         }
 
@@ -95,7 +95,7 @@ namespace MB2Mod.NPCMasterTrainer
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
 
-        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             var ex = e.ExceptionObject is Exception exception ? exception : null;
             Utils.DisplayMessage(

@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Diagnostics;
-using System.Linq;
 using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.Win32;
-using System.Security.AccessControl;
-using utils = MB2Mod.NPCMasterTrainer.Utils;
 using System.IO.Compression;
+using System.Linq;
+using System.Reflection;
+using System.Security.AccessControl;
+using System.Threading.Tasks;
+using utils = MB2Mod.NPCMasterTrainer.Utils;
 
 namespace MB2Mod.NPCMasterTrainer.Launcher
 {
@@ -15,9 +15,9 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
     {
         public static bool IsDevelopment => utils.IsDevelopment;
 
-        const string DefGamePath = @"C:\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord";
+        private const string DefGamePath = @"C:\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord";
 
-        const string SteamInstallRegistryPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 261550";
+        private const string SteamInstallRegistryPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 261550";
 
         public static string GetGamePath()
         {
@@ -88,13 +88,13 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
             return xml;
         }
 
-        const string SubModule_XML = "SubModule.xml";
+        private const string SubModule_XML = "SubModule.xml";
 
-        const string README_MD = "README.md";
+        private const string README_MD = "README.md";
 
-        const string mod_dll_file_prefix = "MB2Mod.";
+        private const string mod_dll_file_prefix = "MB2Mod.";
 
-        const string mod_dll_file_search_pattern = mod_dll_file_prefix + "*.dll";
+        private const string mod_dll_file_search_pattern = mod_dll_file_prefix + "*.dll";
 
         public static string SearchModDllFile(string dirPath)
         {
@@ -243,7 +243,7 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
             return true;
         }
 
-        static bool FileEquals(string leftFilePath, string rightFilePath)
+        private static bool FileEquals(string leftFilePath, string rightFilePath)
         {
             using var leftFileStream = File.OpenRead(leftFilePath);
             using var rightFileStream = File.OpenRead(rightFilePath);

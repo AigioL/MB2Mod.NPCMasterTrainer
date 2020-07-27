@@ -22,7 +22,7 @@ namespace MB2Mod.NPCMasterTrainer
                 return string.Empty;
             }
 
-            static string GetText()
+            private static string GetText()
             {
                 if (!IsClipboardFormatAvailable(cfUnicodeText))
                 {
@@ -33,7 +33,7 @@ namespace MB2Mod.NPCMasterTrainer
                 return InnerGet();
             }
 
-            static string InnerGet()
+            private static string InnerGet()
             {
                 IntPtr handle = default;
 
@@ -70,7 +70,7 @@ namespace MB2Mod.NPCMasterTrainer
                 }
             }
 
-            static void TryOpenClipboard()
+            private static void TryOpenClipboard()
             {
                 var num = 10;
                 while (true)
@@ -89,37 +89,37 @@ namespace MB2Mod.NPCMasterTrainer
                 }
             }
 
-            const uint cfUnicodeText = 13;
+            private const uint cfUnicodeText = 13;
 
-            static void ThrowWin32()
+            private static void ThrowWin32()
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
             [DllImport("user32.dll", SetLastError = true)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            static extern bool IsClipboardFormatAvailable(uint format);
+            private static extern bool IsClipboardFormatAvailable(uint format);
 
             [DllImport("user32.dll", SetLastError = true)]
-            static extern IntPtr GetClipboardData(uint uFormat);
+            private static extern IntPtr GetClipboardData(uint uFormat);
 
             [DllImport("kernel32.dll", SetLastError = true)]
-            static extern IntPtr GlobalLock(IntPtr hMem);
-
-            [DllImport("user32.dll", SetLastError = true)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            static extern bool OpenClipboard(IntPtr hWndNewOwner);
-
-            [DllImport("kernel32.dll", SetLastError = true)]
-            static extern int GlobalSize(IntPtr hMem);
-
-            [DllImport("kernel32.dll", SetLastError = true)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            static extern bool GlobalUnlock(IntPtr hMem);
+            private static extern IntPtr GlobalLock(IntPtr hMem);
 
             [DllImport("user32.dll", SetLastError = true)]
             [return: MarshalAs(UnmanagedType.Bool)]
-            static extern bool CloseClipboard();
+            private static extern bool OpenClipboard(IntPtr hWndNewOwner);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            private static extern int GlobalSize(IntPtr hMem);
+
+            [DllImport("kernel32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            private static extern bool GlobalUnlock(IntPtr hMem);
+
+            [DllImport("user32.dll", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            private static extern bool CloseClipboard();
         }
     }
 }

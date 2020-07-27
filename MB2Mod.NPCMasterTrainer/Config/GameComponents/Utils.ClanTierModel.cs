@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents;
 
@@ -28,9 +26,9 @@ namespace MB2Mod.NPCMasterTrainer
 
         public sealed class NPCMT_ClanTierModel : DefaultClanTierModel
         {
-            readonly Config config;
+            private readonly Config config;
 
-            NPCMT_ClanTierModel(Config config) => this.config = config;
+            private NPCMT_ClanTierModel(Config config) => this.config = config;
 
             public override int GetCompanionLimitForTier(int clanTier)
             {
@@ -45,7 +43,7 @@ namespace MB2Mod.NPCMasterTrainer
                 return base.GetCompanionLimitForTier(clanTier);
             }
 
-            static readonly Lazy<ClanTierModel> lazy_instance = new Lazy<ClanTierModel>(() => new NPCMT_ClanTierModel(Config.Instance));
+            private static readonly Lazy<ClanTierModel> lazy_instance = new Lazy<ClanTierModel>(() => new NPCMT_ClanTierModel(Config.Instance));
 
             public static ClanTierModel Instance => lazy_instance.Value;
 

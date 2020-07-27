@@ -10,39 +10,38 @@ namespace MB2Mod.NPCMasterTrainer
     {
         internal static string[] BinaryPath { get; } = new string[] { "bin", "Win64_Shipping_Client" };
 
-        static readonly Lazy<string> lazy_CurrentDirectory = new Lazy<string>(() =>
-        {
-            var assembly = typeof(Utils).Assembly;
-            if (!assembly.IsDynamic)
-            {
-                try
-                {
-                    return Path.GetDirectoryName(assembly.Location);
-                }
-                catch
-                {
-
-                }
-            }
-            return Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-        });
+        private static readonly Lazy<string> lazy_CurrentDirectory = new Lazy<string>(() =>
+           {
+               var assembly = typeof(Utils).Assembly;
+               if (!assembly.IsDynamic)
+               {
+                   try
+                   {
+                       return Path.GetDirectoryName(assembly.Location);
+                   }
+                   catch
+                   {
+                   }
+               }
+               return Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+           });
 
         public static string CurrentDirectory => lazy_CurrentDirectory.Value;
 
-        static readonly Lazy<string> lazy_CurrentModDirectory = new Lazy<string>(() =>
-        {
-            var current = CurrentDirectory;
-            var directory = new DirectoryInfo(current);
-            foreach (var item in BinaryPath.Reverse())
-            {
-                if (!string.Equals(directory.Name, item, StringComparison.OrdinalIgnoreCase))
-                {
-                    return current;
-                }
-                directory = directory.Parent;
-            }
-            return directory.FullName;
-        });
+        private static readonly Lazy<string> lazy_CurrentModDirectory = new Lazy<string>(() =>
+           {
+               var current = CurrentDirectory;
+               var directory = new DirectoryInfo(current);
+               foreach (var item in BinaryPath.Reverse())
+               {
+                   if (!string.Equals(directory.Name, item, StringComparison.OrdinalIgnoreCase))
+                   {
+                       return current;
+                   }
+                   directory = directory.Parent;
+               }
+               return directory.FullName;
+           });
 
         public static string CurrentModDirectory => lazy_CurrentModDirectory.Value;
 
@@ -109,7 +108,7 @@ namespace MB2Mod.NPCMasterTrainer
             /// </summary>
             public bool FixGetClipboardText { get; set; } = true;
 
-            static bool IsOldConfigFile(string ver)
+            private static bool IsOldConfigFile(string ver)
             {
                 try
                 {
@@ -123,75 +122,75 @@ namespace MB2Mod.NPCMasterTrainer
                 }
             }
 
-            static readonly StringBuilder lazy_instance_sb = IsDevelopment ? new StringBuilder() : null;
+            private static readonly StringBuilder lazy_instance_sb = IsDevelopment ? new StringBuilder() : null;
 
-            static readonly Lazy<Config> lazy_instance = new Lazy<Config>(() =>
-            {
-                Config config = null;
-                var path = ConfigPath;
-                var exists = File.Exists(path);
-                if (exists)
-                {
-                    string jsonConfig;
-                    try
-                    {
-                        jsonConfig = File.ReadAllText(path);
-                    }
-                    catch (Exception ex_read)
-                    {
-                        jsonConfig = null;
-                        if (IsDevelopment) lazy_instance_sb.AppendLine(ex_read.ToString());
-                    }
-                    if (!string.IsNullOrWhiteSpace(jsonConfig) && TryDeserialize<Config>(jsonConfig, out var obj))
-                    {
-                        config = obj;
-                    }
-                    else
-                    {
-                        if (IsDevelopment)
-                        {
-                            Console.WriteLine("Read Config File Fail.");
-                        }
-                    }
-                }
-                bool isWrite;
-                if (config == null)
-                {
-                    if (IsDevelopment) lazy_instance_sb.AppendLine("new Config And Write.");
-                    config = GetConfig();
-                    isWrite = true;
-                }
-                else if (IsOldConfigFile(config.ModConfigVersion))
-                {
-                    if (IsDevelopment) lazy_instance_sb.AppendLine($"IsOldConfigFile And Write, MCV: {config.ModConfigVersion}, CMCV: {GetModConfigVersion()}.");
-                    config.ModConfigVersion = GetModConfigVersion();
-                    isWrite = true;
-                }
-                else
-                {
-                    if (IsDevelopment) lazy_instance_sb.AppendLine("No Write.");
-                    isWrite = false;
-                }
-                if (isWrite)
-                {
-                    try
-                    {
-                        if (exists)
-                        {
-                            var bakPath = path + ".bak";
-                            if (File.Exists(bakPath)) File.Delete(bakPath);
-                            File.Move(path, bakPath);
-                            File.Delete(path);
-                        }
-                        File.WriteAllText(path, config.ToJsonString());
-                    }
-                    catch (Exception ex_write)
-                    {
-                        if (IsDevelopment) lazy_instance_sb.AppendLine(ex_write.ToString());
-                    }
-                }
-                return config;
-            });
+            private static readonly Lazy<Config> lazy_instance = new Lazy<Config>(() =>
+               {
+                   Config config = null;
+                   var path = ConfigPath;
+                   var exists = File.Exists(path);
+                   if (exists)
+                   {
+                       string jsonConfig;
+                       try
+                       {
+                           jsonConfig = File.ReadAllText(path);
+                       }
+                       catch (Exception ex_read)
+                       {
+                           jsonConfig = null;
+                           if (IsDevelopment) lazy_instance_sb.AppendLine(ex_read.ToString());
+                       }
+                       if (!string.IsNullOrWhiteSpace(jsonConfig) && TryDeserialize<Config>(jsonConfig, out var obj))
+                       {
+                           config = obj;
+                       }
+                       else
+                       {
+                           if (IsDevelopment)
+                           {
+                               Console.WriteLine("Read Config File Fail.");
+                           }
+                       }
+                   }
+                   bool isWrite;
+                   if (config == null)
+                   {
+                       if (IsDevelopment) lazy_instance_sb.AppendLine("new Config And Write.");
+                       config = GetConfig();
+                       isWrite = true;
+                   }
+                   else if (IsOldConfigFile(config.ModConfigVersion))
+                   {
+                       if (IsDevelopment) lazy_instance_sb.AppendLine($"IsOldConfigFile And Write, MCV: {config.ModConfigVersion}, CMCV: {GetModConfigVersion()}.");
+                       config.ModConfigVersion = GetModConfigVersion();
+                       isWrite = true;
+                   }
+                   else
+                   {
+                       if (IsDevelopment) lazy_instance_sb.AppendLine("No Write.");
+                       isWrite = false;
+                   }
+                   if (isWrite)
+                   {
+                       try
+                       {
+                           if (exists)
+                           {
+                               var bakPath = path + ".bak";
+                               if (File.Exists(bakPath)) File.Delete(bakPath);
+                               File.Move(path, bakPath);
+                               File.Delete(path);
+                           }
+                           File.WriteAllText(path, config.ToJsonString());
+                       }
+                       catch (Exception ex_write)
+                       {
+                           if (IsDevelopment) lazy_instance_sb.AppendLine(ex_write.ToString());
+                       }
+                   }
+                   return config;
+               });
 
             public static Config Instance => lazy_instance.Value;
 
@@ -204,7 +203,7 @@ namespace MB2Mod.NPCMasterTrainer
                 }
             }
 
-            static string GetModConfigVersion() => ToFullString(new Version(FileVersion));
+            private static string GetModConfigVersion() => ToFullString(new Version(FileVersion));
 
             public static Config GetConfig() => new Config { ModConfigVersion = GetModConfigVersion() };
         }

@@ -10,7 +10,7 @@ namespace MB2Mod.NPCMasterTrainer
     {
         public static class Perks
         {
-            static PerkObject[] GetAllPerks()
+            private static PerkObject[] GetAllPerks()
             {
                 var perks = new HashSet<PerkObject>();
                 try
@@ -20,7 +20,6 @@ namespace MB2Mod.NPCMasterTrainer
                 }
                 catch (NullReferenceException)
                 {
-
                 }
                 try
                 {
@@ -29,7 +28,6 @@ namespace MB2Mod.NPCMasterTrainer
                 }
                 catch (NullReferenceException)
                 {
-
                 }
                 var typeDefaultPerks = typeof(DefaultPerks);
                 var typePerkObject = typeof(PerkObject);
@@ -59,7 +57,7 @@ namespace MB2Mod.NPCMasterTrainer
                 return perks.ToArray();
             }
 
-            static readonly Lazy<PerkObject[]> lazy_allPerks = new Lazy<PerkObject[]>(GetAllPerks);
+            private static readonly Lazy<PerkObject[]> lazy_allPerks = new Lazy<PerkObject[]>(GetAllPerks);
 
             public static PerkObject[] All => lazy_allPerks.Value;
         }

@@ -8,7 +8,7 @@ namespace MB2Mod.NPCMasterTrainer
     internal static class ScriptingInterfaceOfIInput
     {
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static string GetClipboardText()
+        private static string GetClipboardText()
         {
             var text = Utils.Clipboard.GetTextOrEmpty();
             if (Utils.Config.Instance.HasWin32Console())

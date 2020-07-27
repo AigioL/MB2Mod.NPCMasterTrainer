@@ -62,7 +62,7 @@ namespace MB2Mod.NPCMasterTrainer.UnitTest
         [TestMethod]
         public void Export()
         {
-            var header = Utils.HeroExportData.TableHeader;
+            var header = Utils.ExportData.Join(new StringBuilder(), Utils.HeroExportData.TableHeaders).ToString();
             Console.WriteLine(header);
             var json = new Utils.HeroExportData().ToJsonString();
             Console.WriteLine(json);

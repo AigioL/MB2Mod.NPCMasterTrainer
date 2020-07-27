@@ -1,10 +1,10 @@
-﻿using System;
+﻿using MB2Mod.NPCMasterTrainer.Properties;
+using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.ViewModelCollection;
-using MB2Mod.NPCMasterTrainer.Properties;
 
 namespace MB2Mod.NPCMasterTrainer
 {

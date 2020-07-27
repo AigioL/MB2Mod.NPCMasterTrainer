@@ -1,11 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using MB2Mod.NPCMasterTrainer.Properties;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using TaleWorlds.Core;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
-using MB2Mod.NPCMasterTrainer.Properties;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -34,7 +34,6 @@ namespace MB2Mod.NPCMasterTrainer
             }
             catch
             {
-
             }
             return default;
         }
@@ -108,65 +107,65 @@ namespace MB2Mod.NPCMasterTrainer
 
         public static void Print(this IEnumerable<ItemObject> items, string tag) => items.Print(tag, "Items", Print);
 
-        static readonly Lazy<PropertyInfo> lazy_property_Difficulty = new Lazy<PropertyInfo>(() =>
-        {
-            var property = typeof(ItemObject).GetProperty(
-                name: "Difficulty",
-                bindingAttr: BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty,
-                returnType: typeof(int),
-                types: Array.Empty<Type>(),
-                binder: null,
-                modifiers: null);
-            return property;
-        });
+        private static readonly Lazy<PropertyInfo> lazy_property_Difficulty = new Lazy<PropertyInfo>(() =>
+           {
+               var property = typeof(ItemObject).GetProperty(
+                   name: "Difficulty",
+                   bindingAttr: BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty,
+                   returnType: typeof(int),
+                   types: Array.Empty<Type>(),
+                   binder: null,
+                   modifiers: null);
+               return property;
+           });
 
         public static void SetDifficulty(this ItemObject obj, int value) => lazy_property_Difficulty.Value.SetValue(obj, value);
 
-        static readonly Lazy<PropertyInfo> lazy_property_ItemUsage = new Lazy<PropertyInfo>(() =>
-        {
-            var property = typeof(WeaponComponentData).GetProperty(
-                name: "ItemUsage",
-                bindingAttr: BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty,
-                returnType: typeof(string),
-                types: Array.Empty<Type>(),
-                binder: null,
-                modifiers: null);
-            return property;
-        });
+        private static readonly Lazy<PropertyInfo> lazy_property_ItemUsage = new Lazy<PropertyInfo>(() =>
+           {
+               var property = typeof(WeaponComponentData).GetProperty(
+                   name: "ItemUsage",
+                   bindingAttr: BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty,
+                   returnType: typeof(string),
+                   types: Array.Empty<Type>(),
+                   binder: null,
+                   modifiers: null);
+               return property;
+           });
 
         public static void SetItemUsage(this WeaponComponentData obj, string value) => lazy_property_ItemUsage.Value.SetValue(obj, value);
 
-        static readonly Lazy<PropertyInfo> lazy_property_ItemFlags = new Lazy<PropertyInfo>(() =>
-        {
-            var property = typeof(ItemObject).GetProperty(
-                name: "ItemFlags",
-                bindingAttr: BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty,
-                returnType: typeof(ItemFlags),
-                types: Array.Empty<Type>(),
-                binder: null,
-                modifiers: null);
-            return property;
-        });
+        private static readonly Lazy<PropertyInfo> lazy_property_ItemFlags = new Lazy<PropertyInfo>(() =>
+           {
+               var property = typeof(ItemObject).GetProperty(
+                   name: "ItemFlags",
+                   bindingAttr: BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty,
+                   returnType: typeof(ItemFlags),
+                   types: Array.Empty<Type>(),
+                   binder: null,
+                   modifiers: null);
+               return property;
+           });
 
         public static void SetItemFlags(this ItemObject obj, ItemFlags value) => lazy_property_ItemFlags.Value.SetValue(obj, value);
 
-        static readonly Lazy<PropertyInfo> lazy_property_MaxDataValue = new Lazy<PropertyInfo>(() =>
-        {
-            var property = typeof(WeaponComponentData).GetProperty(
-                name: "MaxDataValue",
-                bindingAttr: BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty,
-                returnType: typeof(short),
-                types: Array.Empty<Type>(),
-                binder: null,
-                modifiers: null);
-            return property;
-        });
+        private static readonly Lazy<PropertyInfo> lazy_property_MaxDataValue = new Lazy<PropertyInfo>(() =>
+           {
+               var property = typeof(WeaponComponentData).GetProperty(
+                   name: "MaxDataValue",
+                   bindingAttr: BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty,
+                   returnType: typeof(short),
+                   types: Array.Empty<Type>(),
+                   binder: null,
+                   modifiers: null);
+               return property;
+           });
 
         public static void SetMaxDataValue(this WeaponComponentData obj, short value) => lazy_property_MaxDataValue.Value.SetValue(obj, value);
 
-        static bool HasAddAmmoValue(ushort value) => value > 0;
+        private static bool HasAddAmmoValue(ushort value) => value > 0;
 
-        static short AddAmmoValue(short left, ushort right)
+        private static short AddAmmoValue(short left, ushort right)
         {
             var value = left + right;
             if (value > short.MaxValue) value = short.MaxValue;
@@ -268,15 +267,19 @@ namespace MB2Mod.NPCMasterTrainer
                                     case WeaponClass.Arrow when isAddAmmoByArrow:
                                         addValue = AddAmmoByArrow;
                                         break;
+
                                     case WeaponClass.Bolt when isAddAmmoByBolt:
                                         addValue = AddAmmoByBolt;
                                         break;
+
                                     case WeaponClass.ThrowingAxe when isAddAmmoByThrowingAxe:
                                         addValue = AddAmmoByThrowingAxe;
                                         break;
+
                                     case WeaponClass.ThrowingKnife when isAddAmmoByThrowingKnife:
                                         addValue = AddAmmoByThrowingKnife;
                                         break;
+
                                     case WeaponClass.Javelin when isAddAmmoByJavelin:
                                         addValue = AddAmmoByJavelin;
                                         break;

@@ -8,7 +8,7 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
 {
     internal static partial class Hashs
     {
-        static byte[] ComputeHash<T>(Stream inputStream, T hashAlgorithm) where T : HashAlgorithm
+        private static byte[] ComputeHash<T>(Stream inputStream, T hashAlgorithm) where T : HashAlgorithm
         {
             if (hashAlgorithm == null)
                 throw new ArgumentNullException(nameof(hashAlgorithm));
@@ -18,13 +18,13 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
             return result;
         }
 
-        static string ComputeHashString<T>(Stream inputStream, T hashAlgorithm, bool isLower = true) where T : HashAlgorithm
+        private static string ComputeHashString<T>(Stream inputStream, T hashAlgorithm, bool isLower = true) where T : HashAlgorithm
         {
             var temp = ComputeHash(inputStream, hashAlgorithm);
             return string.Join(null, temp.Select(x => x.ToString($"{(isLower ? "x" : "X")}2")));
         }
 
-        static sha384 CreateSHA384()
+        private static sha384 CreateSHA384()
         {
             try
             {

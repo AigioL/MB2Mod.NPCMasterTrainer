@@ -1,11 +1,12 @@
 ﻿#if DEBUG
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
-using TaleWorlds.CampaignSystem;
-using System.Text;
 
 #pragma warning disable IDE0060 // 删除未使用的参数
 
@@ -103,9 +104,8 @@ namespace MB2Mod.NPCMasterTrainer
         //}
     }
 }
+
 #endif
-
-
 
 //| <span>rename.me</span> | 玩家重命名 |
 

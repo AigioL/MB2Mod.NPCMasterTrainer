@@ -20,12 +20,12 @@ namespace MB2Mod.NPCMasterTrainer.Properties
             _ => "Unspent: {0} stat | {1} focus",
         };
 
-        static readonly Lazy<PropertyInfo[]> lazy_properties = new Lazy<PropertyInfo[]>(() =>
-        {
-            var properties = typeof(Resources).GetProperties(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetProperty);
-            var query = from p in properties where p.PropertyType == typeof(string) select p;
-            return query.ToArray();
-        });
+        private static readonly Lazy<PropertyInfo[]> lazy_properties = new Lazy<PropertyInfo[]>(() =>
+           {
+               var properties = typeof(Resources).GetProperties(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetProperty);
+               var query = from p in properties where p.PropertyType == typeof(string) select p;
+               return query.ToArray();
+           });
 
         public static string GetString(string name)
         {
@@ -42,8 +42,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "名称";
+
                     case Utils.Localization.TraditionalChinese:
                         return "名稱";
+
                     default:
                         return "Name";
                 }
@@ -59,6 +61,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "性别";
+
                     default:
                         return "Gender";
                 }
@@ -74,6 +77,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "女";
+
                     default:
                         return "Female";
                 }
@@ -89,6 +93,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "男";
+
                     default:
                         return "Male";
                 }
@@ -104,6 +109,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "文化";
+
                     default:
                         return "Culture";
                 }
@@ -118,8 +124,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "等级";
+
                     case Utils.Localization.TraditionalChinese:
                         return "等級";
+
                     default:
                         return "Level";
                 }
@@ -134,8 +142,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "胸怀";
+
                     case Utils.Localization.TraditionalChinese:
                         return "胸懷";
+
                     default:
                         return "Generosity";
                 }
@@ -150,8 +160,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "荣誉";
+
                     case Utils.Localization.TraditionalChinese:
                         return "榮譽";
+
                     default:
                         return "Honor";
                 }
@@ -166,8 +178,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "胆气";
+
                     case Utils.Localization.TraditionalChinese:
                         return "膽氣";
+
                     default:
                         return "Valor";
                 }
@@ -183,6 +197,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "善恶";
+
                     default:
                         return "Mercy";
                 }
@@ -211,8 +226,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "单手";
+
                     case Utils.Localization.TraditionalChinese:
                         return "單手";
+
                     default:
                         return "One Handed";
                 }
@@ -227,8 +244,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "双手";
+
                     case Utils.Localization.TraditionalChinese:
                         return "雙手";
+
                     default:
                         return "Two Handed";
                 }
@@ -243,8 +262,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "长杆";
+
                     case Utils.Localization.TraditionalChinese:
                         return "長杆";
+
                     default:
                         return "Polearm";
                 }
@@ -260,6 +281,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "弓";
+
                     default:
                         return "Bow";
                 }
@@ -275,6 +297,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "弩";
+
                     default:
                         return "Crossbow";
                 }
@@ -289,8 +312,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "投掷";
+
                     case Utils.Localization.TraditionalChinese:
                         return "投擲";
+
                     default:
                         return "Throwing";
                 }
@@ -305,8 +330,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "骑术";
+
                     case Utils.Localization.TraditionalChinese:
                         return "騎術";
+
                     default:
                         return "Riding";
                 }
@@ -321,8 +348,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "跑动";
+
                     case Utils.Localization.TraditionalChinese:
                         return "體能";
+
                     default:
                         return "Athletics";
                 }
@@ -337,8 +366,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "锻造";
+
                     case Utils.Localization.TraditionalChinese:
                         return "鍛造";
+
                     default:
                         return "Smithing";
                 }
@@ -353,8 +384,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "侦察";
+
                     case Utils.Localization.TraditionalChinese:
                         return "偵察";
+
                     default:
                         return "Scouting";
                 }
@@ -369,8 +402,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "战术";
+
                     case Utils.Localization.TraditionalChinese:
                         return "戰術";
+
                     default:
                         return "Tactics";
                 }
@@ -385,8 +420,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "流氓习气";
+
                     case Utils.Localization.TraditionalChinese:
                         return "流氓習氣";
+
                     default:
                         return "Roguery";
                 }
@@ -402,6 +439,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "魅力";
+
                     default:
                         return "Charm";
                 }
@@ -416,8 +454,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "统御";
+
                     case Utils.Localization.TraditionalChinese:
                         return "統禦";
+
                     default:
                         return "Leadership";
                 }
@@ -433,6 +473,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "交易";
+
                     default:
                         return "Trade";
                 }
@@ -448,6 +489,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "管理";
+
                     default:
                         return "Steward";
                 }
@@ -462,8 +504,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "医术";
+
                     case Utils.Localization.TraditionalChinese:
                         return "醫術";
+
                     default:
                         return "Medicine";
                 }
@@ -479,6 +523,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "工程";
+
                     default:
                         return "Engineering";
                 }
@@ -496,8 +541,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "职业";
+
                     case Utils.Localization.TraditionalChinese:
                         return "職業";
+
                     default:
                         return "Profession";
                 }
@@ -512,8 +559,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "年龄";
+
                     case Utils.Localization.TraditionalChinese:
                         return "年齡";
+
                     default:
                         return "Age";
                 }
@@ -529,6 +578,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "活力";
+
                     default:
                         return "Vigor";
                 }
@@ -544,6 +594,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "控制";
+
                     default:
                         return "Control";
                 }
@@ -559,6 +610,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "耐力";
+
                     default:
                         return "Endurance";
                 }
@@ -573,8 +625,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "狡诈";
+
                     case Utils.Localization.TraditionalChinese:
                         return "狡詐";
+
                     default:
                         return "Cunning";
                 }
@@ -590,6 +644,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "社交";
+
                     default:
                         return "Social";
                 }
@@ -605,6 +660,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "智力";
+
                     default:
                         return "Intelligence";
                 }
@@ -619,8 +675,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "专精点";
+
                     case Utils.Localization.TraditionalChinese:
                         return "專精點";
+
                     default:
                         return "Focus";
                 }
@@ -635,8 +693,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "可用属性点";
+
                     case Utils.Localization.TraditionalChinese:
                         return "可用屬性點";
+
                     default:
                         return "Unspent Attribute Points";
                 }
@@ -651,8 +711,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "可用专精点";
+
                     case Utils.Localization.TraditionalChinese:
                         return "可用專精點";
+
                     default:
                         return "Unspent Focus Points";
                 }
@@ -667,8 +729,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "贵族";
+
                     case Utils.Localization.TraditionalChinese:
                         return "貴族";
+
                     default:
                         return "Noble";
                 }
@@ -684,6 +748,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "流浪者";
+
                     default:
                         return "Wanderer";
                 }
@@ -699,6 +764,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "工匠";
+
                     default:
                         return "Artisan";
                 }
@@ -714,6 +780,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "是孩子";
+
                     default:
                         return "Is Child";
                 }
@@ -728,8 +795,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "还活着";
+
                     case Utils.Localization.TraditionalChinese:
                         return "還活著";
+
                     default:
                         return "Is Alive";
                 }
@@ -745,6 +814,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "姓氏";
+
                     default:
                         return "First Name";
                 }
@@ -759,8 +829,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "角色数据";
+
                     case Utils.Localization.TraditionalChinese:
                         return "角色數據";
+
                     default:
                         return "HeroesData";
                 }
@@ -776,6 +848,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "所有";
+
                     default:
                         return "All";
                 }
@@ -790,8 +863,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "城镇数据";
+
                     case Utils.Localization.TraditionalChinese:
                         return "城鎮數據";
+
                     default:
                         return "TownsData";
                 }
@@ -806,8 +881,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "繁荣度";
+
                     case Utils.Localization.TraditionalChinese:
                         return "繁榮度";
+
                     default:
                         return "Prosperity";
                 }
@@ -823,6 +900,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "民兵";
+
                     default:
                         return "Militia";
                 }
@@ -837,8 +915,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "忠诚度";
+
                     case Utils.Localization.TraditionalChinese:
                         return "忠誠度";
+
                     default:
                         return "Loyalty";
                 }
@@ -854,6 +934,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "食物";
+
                     default:
                         return "FoodStocks";
                 }
@@ -869,6 +950,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "治安度";
+
                     default:
                         return "Security";
                 }
@@ -883,8 +965,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "金币";
+
                     case Utils.Localization.TraditionalChinese:
                         return "金幣";
+
                     default:
                         return "Gold";
                 }
@@ -900,6 +984,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "所有者";
+
                     default:
                         return "Governor";
                 }
@@ -914,8 +999,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "城墙等级";
+
                     case Utils.Localization.TraditionalChinese:
                         return "城牆等級";
+
                     default:
                         return "WallLevel";
                 }
@@ -931,6 +1018,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "工坊";
+
                     default:
                         return "Workshops";
                 }
@@ -945,8 +1033,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "传奇铁匠";
+
                     case Utils.Localization.TraditionalChinese:
                         return "傳奇鐵匠";
+
                     default:
                         return "LegendarySmith";
                 }
@@ -961,8 +1051,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "马";
+
                     case Utils.Localization.TraditionalChinese:
                         return "馬";
+
                     default:
                         return "Horse";
                 }
@@ -977,8 +1069,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "单手武器";
+
                     case Utils.Localization.TraditionalChinese:
                         return "單手武器";
+
                     default:
                         return "One Handed Weapon";
                 }
@@ -993,8 +1087,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "双手武器";
+
                     case Utils.Localization.TraditionalChinese:
                         return "雙手武器";
+
                     default:
                         return "Two Handed Weapon";
                 }
@@ -1010,6 +1106,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "箭";
+
                     default:
                         return "Arrows";
                 }
@@ -1025,6 +1122,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "弩箭";
+
                     default:
                         return "Bolts";
                 }
@@ -1040,6 +1138,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "盾牌";
+
                     default:
                         return "Shield";
                 }
@@ -1054,8 +1153,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "投掷";
+
                     case Utils.Localization.TraditionalChinese:
                         return "投擲";
+
                     default:
                         return "Thrown";
                 }
@@ -1070,8 +1171,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "货物";
+
                     case Utils.Localization.TraditionalChinese:
                         return "貨物";
+
                     default:
                         return "Goods";
                 }
@@ -1086,8 +1189,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "头盔";
+
                     case Utils.Localization.TraditionalChinese:
                         return "頭盔";
+
                     default:
                         return "Head Armor";
                 }
@@ -1102,8 +1207,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "胫甲";
+
                     case Utils.Localization.TraditionalChinese:
                         return "脛甲";
+
                     default:
                         return "Leg Armor";
                 }
@@ -1119,6 +1226,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "臂甲";
+
                     default:
                         return "Hand Armor";
                 }
@@ -1133,8 +1241,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "动物";
+
                     case Utils.Localization.TraditionalChinese:
                         return "動物";
+
                     default:
                         return "Animal";
                 }
@@ -1149,8 +1259,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "书";
+
                     case Utils.Localization.TraditionalChinese:
                         return "書";
+
                     default:
                         return "Book";
                 }
@@ -1166,6 +1278,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "胸甲";
+
                     default:
                         return "Chest Armor";
                 }
@@ -1181,6 +1294,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "斗篷";
+
                     default:
                         return "Cape";
                 }
@@ -1195,8 +1309,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "马具";
+
                     case Utils.Localization.TraditionalChinese:
                         return "馬具";
+
                     default:
                         return "Horse Harness";
                 }
@@ -1211,8 +1327,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "清空物品的熟练度要求";
+
                     case Utils.Localization.TraditionalChinese:
                         return "清空物品的熟練度要求";
+
                     default:
                         return "Clear All Item Difficulty";
                 }
@@ -1227,8 +1345,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "解锁长弓在马背上使用";
+
                     case Utils.Localization.TraditionalChinese:
                         return "解鎖長弓在馬背上使用";
+
                     default:
                         return "Unlock LongBow For Use On Horse Back";
                 }
@@ -1243,8 +1363,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "解锁平民装扮";
+
                     case Utils.Localization.TraditionalChinese:
                         return "解鎖平民裝扮";
+
                     default:
                         return "Unlock Item Civilian";
                 }
@@ -1259,8 +1381,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "可结婚";
+
                     case Utils.Localization.TraditionalChinese:
                         return "可結婚";
+
                     default:
                         return "Marriageable";
                 }
@@ -1275,8 +1399,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "添加弹药量";
+
                     case Utils.Localization.TraditionalChinese:
                         return "添加彈藥量";
+
                     default:
                         return "AddAmmo";
                 }
@@ -1291,8 +1417,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "最后已知位置";
+
                     case Utils.Localization.TraditionalChinese:
                         return "最後已知位置";
+
                     default:
                         return "Last Known Location";
                 }
@@ -1307,8 +1435,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "已更名为";
+
                     case Utils.Localization.TraditionalChinese:
                         return "已更名為";
+
                     default:
                         return "Renamed";
                 }
@@ -1323,8 +1453,10 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                 {
                     case Utils.Localization.SimplifiedChinese:
                         return "妊娠配置";
+
                     case Utils.Localization.TraditionalChinese:
                         return "妊娠配寘";
+
                     default:
                         return "Pregnancy Model";
                 }
@@ -1340,6 +1472,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "可生育";
+
                     default:
                         return "Fertile";
                 }
@@ -1355,6 +1488,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "完成";
+
                     default:
                         return "Done";
                 }
@@ -1370,6 +1504,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "异常";
+
                     default:
                         return "Catch";
                 }
@@ -1385,6 +1520,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "存在 {0}";
+
                     default:
                         return "Exist {0}";
                 }
@@ -1400,6 +1536,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "不存在 {0}";
+
                     default:
                         return "No Exist {0}";
                 }
@@ -1415,6 +1552,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "不可生育";
+
                     default:
                         return "Barrenness";
                 }
@@ -1430,6 +1568,7 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "正在控制: {0}";
+
                     default:
                         return "You are now controlling: {0}";
                 }

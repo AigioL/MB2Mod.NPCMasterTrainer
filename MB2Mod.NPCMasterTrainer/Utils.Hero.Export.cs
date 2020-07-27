@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MB2Mod.NPCMasterTrainer.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using TaleWorlds.Core;
+using System.Text;
 using TaleWorlds.CampaignSystem;
-using MB2Mod.NPCMasterTrainer.Properties;
+using TaleWorlds.Core;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -12,7 +13,6 @@ namespace MB2Mod.NPCMasterTrainer
     {
         partial class ExportData
         {
-
             public static readonly Type typeSkillsValueExportData = typeof(SkillsValueExportData);
 
             public static readonly Type typeDefaultSkills = typeof(DefaultSkills);
@@ -90,19 +90,19 @@ namespace MB2Mod.NPCMasterTrainer
                 return data;
             }
 
-            public static new string TableHeader
+            public static new IEnumerable<string> TableHeaders
             {
                 get
                 {
-                    var strings = TableHeaders;
+                    var strings = ExportData<HeroExportData>.TableHeaders;
                     var properties = lazy_properties.Value;
                     strings = strings.Concat(properties.Where(x => x.PropertyType == typeSkillsValueExportData)
                         .Select(x => $"{Resources.GetString(x.Name)}({Resources.Focus})"));
-                    return Join(strings);
+                    return strings;
                 }
             }
 
-            public override string ToRowString()
+            public override StringBuilder AppendRowString(StringBuilder stringBuilder)
             {
                 var strings = Values;
                 var properties = lazy_properties.Value;
@@ -115,7 +115,7 @@ namespace MB2Mod.NPCMasterTrainer
                     }
                     return string.Empty;
                 }));
-                return Join(strings);
+                return Join(stringBuilder, strings);
             }
 
             #region 名称,性别,文化,年龄,等级,职业 6
@@ -147,7 +147,7 @@ namespace MB2Mod.NPCMasterTrainer
             [Int32(8)]
             public string Profession { get; set; }
 
-            const int _1 = 9;
+            private const int _1 = 9;
 
             #endregion
 
@@ -168,7 +168,7 @@ namespace MB2Mod.NPCMasterTrainer
             [Int32(_1 + 4)]
             public int Calculating { get; set; }
 
-            const int _2 = _1 + 5;
+            private const int _2 = _1 + 5;
 
             #endregion
 
@@ -183,7 +183,7 @@ namespace MB2Mod.NPCMasterTrainer
             [Int32(_2 + 2)]
             public SkillsValueExportData Polearm { get; set; }
 
-            const int _3 = _2 + 3;
+            private const int _3 = _2 + 3;
 
             #endregion
 
@@ -198,7 +198,7 @@ namespace MB2Mod.NPCMasterTrainer
             [Int32(_3 + 2)]
             public SkillsValueExportData Throwing { get; set; }
 
-            const int _4 = _3 + 3;
+            private const int _4 = _3 + 3;
 
             #endregion
 
@@ -213,7 +213,7 @@ namespace MB2Mod.NPCMasterTrainer
             [Int32(_4 + 2)]
             public SkillsValueExportData Smithing { get; set; }
 
-            const int _5 = _4 + 3;
+            private const int _5 = _4 + 3;
 
             #endregion
 
@@ -228,7 +228,7 @@ namespace MB2Mod.NPCMasterTrainer
             [Int32(_5 + 2)]
             public SkillsValueExportData Roguery { get; set; }
 
-            const int _6 = _5 + 3;
+            private const int _6 = _5 + 3;
 
             #endregion
 
@@ -243,7 +243,7 @@ namespace MB2Mod.NPCMasterTrainer
             [Int32(_6 + 2)]
             public SkillsValueExportData Trade { get; set; }
 
-            const int _7 = _6 + 3;
+            private const int _7 = _6 + 3;
 
             #endregion
 
@@ -258,7 +258,7 @@ namespace MB2Mod.NPCMasterTrainer
             [Int32(_7 + 2)]
             public SkillsValueExportData Engineering { get; set; }
 
-            const int _8 = _7 + 3;
+            private const int _8 = _7 + 3;
 
             #endregion
 
@@ -282,7 +282,7 @@ namespace MB2Mod.NPCMasterTrainer
             [Int32(_8 + 5)]
             public int Intelligence { get; set; }
 
-            const int _9 = _8 + 6;
+            private const int _9 = _8 + 6;
 
             #endregion
 
@@ -294,7 +294,7 @@ namespace MB2Mod.NPCMasterTrainer
             [Int32(_9 + 1)]
             public int UnspentFocusPoints { get; set; }
 
-            const int _10 = _9 + 2;
+            private const int _10 = _9 + 2;
 
             #endregion
 
@@ -327,7 +327,7 @@ namespace MB2Mod.NPCMasterTrainer
         public static bool? Export(IEnumerable<Hero> heroes, string mark)
         {
             var fileNamePrefix = $"{Resources.HeroesData}({mark})";
-            return Export(heroes, HeroExportData.Convert, HeroExportData.TableHeader, fileNamePrefix);
+            return Export(heroes, HeroExportData.Convert, HeroExportData.TableHeaders, fileNamePrefix);
         }
     }
 }

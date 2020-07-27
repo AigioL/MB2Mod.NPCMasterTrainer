@@ -1,12 +1,11 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
 
 namespace MB2Mod.NPCMasterTrainer
 {
     partial class Utils
     {
-        static readonly StringEnumConverter stringEnumConverter = new StringEnumConverter();
+        private static readonly StringEnumConverter stringEnumConverter = new StringEnumConverter();
 
         public static string ToJsonString(this object obj, bool writeIndented = true)
         {

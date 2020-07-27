@@ -1,10 +1,8 @@
-﻿using System;
+﻿using MB2Mod.NPCMasterTrainer.Properties;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using TaleWorlds.Localization;
-using System.Reflection;
 using TaleWorlds.MountAndBlade;
-using MB2Mod.NPCMasterTrainer.Properties;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -44,7 +42,7 @@ namespace MB2Mod.NPCMasterTrainer
                 }
             }
 
-            static readonly IReadOnlyDictionary<string, string> mapping_language_id__culture_name = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            private static readonly IReadOnlyDictionary<string, string> mapping_language_id__culture_name = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 { "English", English },
                 { "简体中文", SimplifiedChinese },
@@ -53,7 +51,7 @@ namespace MB2Mod.NPCMasterTrainer
                 //{ "German", "" },
             };
 
-            static string Language;
+            private static string Language;
 
             public static string GetLanguage()
             {
@@ -79,7 +77,7 @@ namespace MB2Mod.NPCMasterTrainer
             }
         }
 
-        static bool Match(this CultureInfo culture, string name)
+        private static bool Match(this CultureInfo culture, string name)
         {
             int i = 0;
             do

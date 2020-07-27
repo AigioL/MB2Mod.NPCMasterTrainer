@@ -48,7 +48,7 @@ namespace MB2Mod.NPCMasterTrainer
 
         public static NpcType GetNpcType(this CommandChooseNpcsInMyTroopsArg arg) => (NpcType)(int)arg;
 
-        static bool GetFirstArg(IEnumerable<string> args, out CommandChooseNpcsInMyTroopsArg? arg)
+        private static bool GetFirstArg(IEnumerable<string> args, out CommandChooseNpcsInMyTroopsArg? arg)
         {
             var value = args.First().TrimQuotationMarks();
             if (Enum.TryParse<CommandChooseNpcsInMyTroopsArg>(value, true, out var result))

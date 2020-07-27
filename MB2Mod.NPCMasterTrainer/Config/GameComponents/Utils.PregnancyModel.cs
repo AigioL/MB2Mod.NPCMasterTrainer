@@ -1,11 +1,7 @@
 ﻿using Helpers;
 using MB2Mod.NPCMasterTrainer.Properties;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
-using System.Text;
-using TaleWorlds.Core;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents;
 
@@ -73,9 +69,9 @@ namespace MB2Mod.NPCMasterTrainer
 
         public sealed class NPCMT_PregnancyModel : DefaultPregnancyModel
         {
-            readonly Config config;
+            private readonly Config config;
 
-            NPCMT_PregnancyModel(Config config) => this.config = config;
+            private NPCMT_PregnancyModel(Config config) => this.config = config;
 
             public override float CharacterFertilityProbability
                 => GetPercentage(config?.CharacterFertilityProbability) ?? base.CharacterFertilityProbability;
@@ -95,20 +91,20 @@ namespace MB2Mod.NPCMasterTrainer
             public override float DeliveringTwinsProbability
                 => GetPercentage(config?.DeliveringTwinsProbability) ?? base.DeliveringTwinsProbability;
 
-            static readonly Lazy<PregnancyModel> lazy_instance = new Lazy<PregnancyModel>(() => new NPCMT_PregnancyModel(Config.Instance));
+            private static readonly Lazy<PregnancyModel> lazy_instance = new Lazy<PregnancyModel>(() => new NPCMT_PregnancyModel(Config.Instance));
 
             public static PregnancyModel Instance => lazy_instance.Value;
 
-            const int MinPregnancyAge = 18;
-            const int MaxPregnancyAge = 45;
+            private const int MinPregnancyAge = 18;
+            private const int MaxPregnancyAge = 45;
 
-            static readonly Lazy<FieldInfo> lazy_field_MaxPregnancyAge = new Lazy<FieldInfo>(() =>
-            {
-                var field = typeof(DefaultPregnancyModel).GetField(nameof(MaxPregnancyAge), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-                return field.FieldType == typeof(int) && field.IsLiteral ? field : null;
-            });
+            private static readonly Lazy<FieldInfo> lazy_field_MaxPregnancyAge = new Lazy<FieldInfo>(() =>
+               {
+                   var field = typeof(DefaultPregnancyModel).GetField(nameof(MaxPregnancyAge), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                   return field.FieldType == typeof(int) && field.IsLiteral ? field : null;
+               });
 
-            int GetMaxPregnancyAge()
+            private int GetMaxPregnancyAge()
             {
                 if ((config?.MaxPregnancyAge).HasValue) return config.MaxPregnancyAge.Value;
                 try
@@ -121,12 +117,12 @@ namespace MB2Mod.NPCMasterTrainer
                 }
             }
 
-            // PregnancyCampaignBehavior.DailyTickHero(Hero hero) Age<=18 直接 return 
+            // PregnancyCampaignBehavior.DailyTickHero(Hero hero) Age<=18 直接 return
             // 不进行 RefreshSpouseVisit -> GetDailyChanceOfPregnancyForHero 调用
 
-            bool IsHeroAgeSuitableForPregnancy(Hero hero, int maxPregnancyAge) => hero.Age >= MinPregnancyAge && hero.Age <= maxPregnancyAge;
+            private bool IsHeroAgeSuitableForPregnancy(Hero hero, int maxPregnancyAge) => hero.Age >= MinPregnancyAge && hero.Age <= maxPregnancyAge;
 
-            bool IsMeOrMySpouse(Hero hero)
+            private bool IsMeOrMySpouse(Hero hero)
             {
                 var main = Hero.MainHero;
                 return hero == main || hero == main.Spouse;
@@ -174,7 +170,7 @@ namespace MB2Mod.NPCMasterTrainer
                 var model = Campaign.Current?.Models?.PregnancyModel;
                 if (model != default)
                 {
-                    DisplayMessage($"{Resources.PregnancyModel}: {model.GetType().FullName}");
+                    DisplayMessage($"{Resources.PregnancyModel}: {model.GetType().FullName.Replace("NPCMT_", "NPCMT")}");
                     DisplayMessage($"CharacterFertilityProbability: {model.CharacterFertilityProbability}");
                     DisplayMessage($"PregnancyDurationInDays: {model.PregnancyDurationInDays}");
                     DisplayMessage($"MaternalMortalityProbabilityInLabor: {model.MaternalMortalityProbabilityInLabor}");
@@ -201,7 +197,7 @@ namespace MB2Mod.NPCMasterTrainer
             }
         }
 
-        static float? GetSingle(float? f, float max, float min = 0f)
+        private static float? GetSingle(float? f, float max, float min = 0f)
         {
             if (f.HasValue)
             {
@@ -211,13 +207,13 @@ namespace MB2Mod.NPCMasterTrainer
             return f;
         }
 
-        static float? GetPercentage(float? f) => GetSingle(f, 1f);
+        private static float? GetPercentage(float? f) => GetSingle(f, 1f);
 
-        static float? GetDays(float? f) => GetSingle(f, 36500f);
+        private static float? GetDays(float? f) => GetSingle(f, 36500f);
     }
 }
 
-// Campaign.Current.Models.PregnancyModel 
+// Campaign.Current.Models.PregnancyModel
 //int num1 = (double)MBRandom.RandomFloat <= (double)pregnancyModel.DeliveringTwinsProbability ? 1 : 0; 生双胞胎的概率 0.03f;
 //int num2 = num1 != 0 ? 2 : 1;
 // if ((double) MBRandom.RandomFloat > (double) pregnancyModel.StillbirthProbability) 死胎概率 0.01f;

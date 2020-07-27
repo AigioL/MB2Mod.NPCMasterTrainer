@@ -1,14 +1,14 @@
-﻿using JetBrains.Annotations;
+﻿using Helpers;
+using JetBrains.Annotations;
+using MB2Mod.NPCMasterTrainer.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
-using TaleWorlds.CampaignSystem;
 using TaleWorlds.Localization;
-using Helpers;
-using MB2Mod.NPCMasterTrainer.Properties;
-using System.Reflection;
 
 namespace MB2Mod.NPCMasterTrainer
 {
@@ -255,9 +255,17 @@ namespace MB2Mod.NPCMasterTrainer
 
         public static void ResetFocus([NotNull] this Hero hero)
         {
-            var focus = DefaultSkills.GetAllSkills().Sum(skill => hero.HeroDeveloper.GetFocus(skill));
-            hero.HeroDeveloper.UnspentFocusPoints += MBMath.ClampInt(focus, 0, 999);
-            hero.HeroDeveloper.ClearFocuses();
+            //var focus = DefaultSkills.GetAllSkills().Sum(skill => hero.HeroDeveloper.GetFocus(skill));
+            //hero.HeroDeveloper.UnspentFocusPoints += MBMath.ClampInt(focus, 0, 999);
+            //hero.HeroDeveloper.ClearFocuses();
+            int count = 0;
+            foreach (var item in DefaultSkills.GetAllSkills())
+            {
+                var focus = hero.HeroDeveloper.GetFocus(item);
+                hero.HeroDeveloper.AddFocus(item, 0 - focus, false);
+                count += focus;
+            }
+            hero.HeroDeveloper.UnspentFocusPoints += MBMath.ClampInt(count, 0, 999);
         }
 
         public static void ResetAttrs([NotNull] this Hero hero)
@@ -283,53 +291,54 @@ namespace MB2Mod.NPCMasterTrainer
 
         #endregion
 
-        static readonly Lazy<PropertyInfo> lazy_property_StaticBodyProperties = new Lazy<PropertyInfo>(() =>
-        {
-            var property = typeof(Hero).GetProperty(
-                name: "StaticBodyProperties",
-                bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty,
-                returnType: typeof(StaticBodyProperties),
-                types: Array.Empty<Type>(),
-                binder: null,
-                modifiers: null);
-            return property;
-        });
+        private static readonly Lazy<PropertyInfo> lazy_property_StaticBodyProperties = new Lazy<PropertyInfo>(() =>
+           {
+               var property = typeof(Hero).GetProperty(
+                   name: "StaticBodyProperties",
+                   bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty,
+                   returnType: typeof(StaticBodyProperties),
+                   types: Array.Empty<Type>(),
+                   binder: null,
+                   modifiers: null);
+               return property;
+           });
 
         public static void SetBodyProperties(this Hero obj, BodyProperties value)
         {
             obj.SetBodyProperties(value.DynamicProperties, value.StaticProperties);
-            obj.DynamicBodyProperties = value.DynamicProperties;
+            //obj.DynamicBodyProperties = value.DynamicProperties;
             lazy_property_StaticBodyProperties.Value.SetValue(obj, value.StaticProperties);
         }
 
         public static void SetBodyProperties(this Hero obj, DynamicBodyProperties dynamicBodyProperties, StaticBodyProperties staticBodyProperties)
         {
-            obj.DynamicBodyProperties = dynamicBodyProperties;
+            //obj.DynamicBodyProperties = dynamicBodyProperties;
             lazy_property_StaticBodyProperties.Value.SetValue(obj, staticBodyProperties);
         }
 
         #region FillUp
 
-        const int _MaxSkillValue = 330;
+        private const int _MaxSkillValue = 330;
 
         static int MaxSkillValue => Math.Max(_MaxSkillValue, DefaultSkills.MaxAssumedValue);
 
-        static readonly Lazy<FieldInfo> lazy_field_openedPerks = new Lazy<FieldInfo>(() =>
-        {
-            var field = typeof(HeroDeveloper).GetField(
-                name: "_openedPerks",
-                bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance);
-            return field;
-        });
+        private static readonly Lazy<FieldInfo> lazy_field_openedPerks = new Lazy<FieldInfo>(() =>
+           {
+               var field = typeof(HeroDeveloper).GetField(
+                   name: "_openedPerks",
+                   bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance);
+               return field;
+           });
 
         public static void FillUp([NotNull] this Hero hero, int? maxSkillValue)
         {
             if (hero == default) return;
             try
             {
+                var maxFocus = HeroDeveloper.MaxFocusPerSkill;
                 maxSkillValue ??= MaxSkillValue;
                 //DisplayMessage(string.Format("FillUp {0}", hero));
-                hero.HeroDeveloper.ClearFocuses();
+                //hero.HeroDeveloper.ClearFocuses();
                 hero.ClearAttributes();
                 var allSkills = DefaultSkills.GetAllSkills().ToArray();
                 foreach (var skill in allSkills)
@@ -337,7 +346,12 @@ namespace MB2Mod.NPCMasterTrainer
                     hero.SetSkillValue(skill, maxSkillValue.Value);
                     var xpValue = Campaign.Current.Models.CharacterDevelopmentModel.GetXpRequiredForSkillLevel(maxSkillValue.Value);
                     hero.HeroDeveloper.SetPropertyValue(skill, xpValue);
-                    hero.HeroDeveloper.AddFocus(skill, HeroDeveloper.MaxFocusPerSkill, false);
+                    var focus = hero.HeroDeveloper.GetFocus(skill);
+                    focus = maxFocus - focus;
+                    if (focus > 0)
+                    {
+                        hero.HeroDeveloper.AddFocus(skill, focus, false);
+                    }
                 }
                 for (var i = CharacterAttributesEnum.First; i < CharacterAttributesEnum.End; i++)
                 {

@@ -118,7 +118,7 @@
 | CompanionLimit | int? | null | 玩家所能拥有的同伴(流浪者)数量 |
 | UnlockMaxTierCompanionLimit | bool | true | 解锁玩家最高家族等级所能拥有的同伴(流浪者)数量 |
 
-#### TroopCountLimit
+#### ~~TroopCountLimit~~ >=1.0.5中无效
 
 | 键 | 类型 | 默认值 | 说明 |
 | ---- | ---- | ---- | ------------- |

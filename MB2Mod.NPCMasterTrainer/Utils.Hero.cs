@@ -303,16 +303,8 @@ namespace MB2Mod.NPCMasterTrainer
                return property;
            });
 
-        public static void SetBodyProperties(this Hero obj, BodyProperties value)
+        public static void SetStaticBodyProperties(this Hero obj, StaticBodyProperties staticBodyProperties)
         {
-            obj.SetBodyProperties(value.DynamicProperties, value.StaticProperties);
-            //obj.DynamicBodyProperties = value.DynamicProperties;
-            lazy_property_StaticBodyProperties.Value.SetValue(obj, value.StaticProperties);
-        }
-
-        public static void SetBodyProperties(this Hero obj, DynamicBodyProperties dynamicBodyProperties, StaticBodyProperties staticBodyProperties)
-        {
-            //obj.DynamicBodyProperties = dynamicBodyProperties;
             lazy_property_StaticBodyProperties.Value.SetValue(obj, staticBodyProperties);
         }
 

@@ -126,7 +126,7 @@ namespace MB2Mod.NPCMasterTrainer
         [CommandLineFunctionality.CommandLineArgumentFunction("random_body", "npc")]
         public static string RandomBody(List<string> args)
         {
-            static ValueTuple<DynamicBodyProperties, StaticBodyProperties>? GetRandomBodyProperties(Hero hero)
+            static StaticBodyProperties? GetRandomBodyProperties(Hero hero)
             {
                 if (hero == default) return default;
                 var template = hero.Template;
@@ -143,15 +143,14 @@ namespace MB2Mod.NPCMasterTrainer
                     newCharacter.HairTags,
                     newCharacter.BeardTags,
                     newCharacter.TattooTags).StaticProperties;
-                var dynamicBodyProperties = new DynamicBodyProperties(hero.Age, 0.0f, 0.0f);
-                return (dynamicBodyProperties, staticBodyProperties);
+                return staticBodyProperties;
             }
             static string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultVoid(heroes, hero =>
             {
                 var body = GetRandomBodyProperties(hero);
                 if (body.HasValue)
                 {
-                    hero.SetBodyProperties(body.Value.Item1, body.Value.Item2);
+                    hero.SetStaticBodyProperties(body.Value);
                 }
                 else
                 {
@@ -183,7 +182,7 @@ namespace MB2Mod.NPCMasterTrainer
                 parseResult = false;
             }
             if (!parseResult) return "BodyProperties Incorrect Format";
-            string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultVoid(heroes, hero => hero.SetBodyProperties(bodyProperties));
+            string HandleHeroes(IEnumerable<Hero> heroes) => Utils.HandleResultVoid(heroes, hero => hero.SetStaticBodyProperties(bodyProperties.StaticProperties));
             return Utils.HandleSearchHeroes(args, HandleHeroes, inMyTroops: false);
         }
 

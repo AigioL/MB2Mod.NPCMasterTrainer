@@ -214,7 +214,6 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                 string zipFileNamePrefix =
                     dllFileNameWithoutExtension.StartsWith(mod_dll_file_prefix, StringComparison.OrdinalIgnoreCase) ?
                     dllFileNameWithoutExtension[mod_dll_file_prefix.Length..] : dllFileNameWithoutExtension;
-                BuildPackage();
                 void ClearPackages()
                 {
                     var files = Directory.GetFiles(currentPath, $"{zipFileNamePrefix}_v*.zip");
@@ -224,21 +223,23 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                         File.Delete(file);
                     }
                 }
-                void BuildPackage(CompressionLevel level = CompressionLevel.Optimal)
+                string BuildPackage(CompressionLevel level = CompressionLevel.Optimal)
                 {
-                    ClearPackages();
-                    using var memoryStream = new MemoryStream();
-                    using var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true);
+                    var zipFilePath = Path.Combine(currentPath,
+                        $"{zipFileNamePrefix}_v{version.ToFullString()}.zip");
+                    using var fileStream = new FileStream(zipFilePath, FileMode.CreateNew);
+                    using var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, true);
                     archive.CreateEntryFromFile(xmlPath, Path.Combine(modDirName, SubModule_XML), level);
                     archive.CreateEntryFromFile(readmePath, Path.Combine(modDirName, README_MD), level);
                     var binPath = Path.Combine(utils.BinaryPath);
                     archive.CreateEntryFromFile(dllFilePathSource, Path.Combine(modDirName, binPath, dllFileNameWithoutExtension + ".dll"), level);
-                    var zipFilePath = Path.Combine(currentPath, $"{zipFileNamePrefix}_v{version.ToFullString()}.zip");
-                    using var fileStream = new FileStream(zipFilePath, FileMode.CreateNew);
-                    memoryStream.Position = 0;
-                    memoryStream.WriteTo(fileStream);
+                    fileStream.Flush();
                     Console.WriteLine($"BuildPackage Path: {zipFilePath}");
+                    return zipFilePath;
                 }
+                ClearPackages();
+                var zipFilePath = BuildPackage();
+                TestZipFile(zipFilePath);
             }
             return true;
         }
@@ -250,6 +251,31 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
             var left = Hashs.SHA384_String(leftFileStream);
             var right = Hashs.SHA384_String(rightFileStream);
             return left == right;
+        }
+
+        private static readonly string[] WinRAR = new[] { "WinRAR", "WinRAR.exe" };
+
+        private static readonly string[] _7_Zip = new[] { "7-Zip", "7z.exe" };
+
+        private static void TestZipFile(string zipFilePath)
+        {
+            var progra = new[] {
+                Environment.SpecialFolder.ProgramFiles,
+                Environment.SpecialFolder.ProgramFilesX86
+            }.Select(Environment.GetFolderPath).Distinct().ToArray();
+            foreach (var programFiles in progra)
+            {
+                var winrar = Path.Combine(new[] { programFiles }.Concat(WinRAR).ToArray());
+                if (File.Exists(winrar))
+                {
+                    Process.Start(winrar, $"t -r \"{zipFilePath}\"");
+                }
+                var _7zip = Path.Combine(new[] { programFiles }.Concat(_7_Zip).ToArray());
+                if (File.Exists(_7zip))
+                {
+                    Process.Start(_7zip, $"t \"{zipFilePath}\" -r");
+                }
+            }
         }
     }
 }

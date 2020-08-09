@@ -26,6 +26,8 @@ namespace MB2Mod.NPCMasterTrainer
 
         public const string Catch = "Catch";
 
+        public const string FailSeeMessage = "Fail, see message at bottom left.";
+
         public static bool IsDefault<T>(T t) => EqualityComparer<T>.Default.Equals(t, default);
 
         public static void AddRange<T>(this HashSet<T> ts, IEnumerable<T> collection, bool checkDefNotAdd = false)

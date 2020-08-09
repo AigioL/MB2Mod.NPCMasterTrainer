@@ -569,6 +569,19 @@ namespace MB2Mod.NPCMasterTrainer
 
         #region npc_control
 
+        static string CheckControlHero(Func<string> @delegate)
+        {
+            if (Mission.Current.IsBattle())
+            {
+                return @delegate();
+            }
+            else
+            {
+                Utils.DisplayMessage(Resources.NPCControlCanOnlyBeUsedOnTheBattlefield, Colors.Yellow);
+                return Utils.FailSeeMessage;
+            }
+        }
+
         /// <summary>
         /// npc_control.name [name] 在战场上控制指定npc
         /// </summary>
@@ -577,10 +590,13 @@ namespace MB2Mod.NPCMasterTrainer
         [CommandLineFunctionality.CommandLineArgumentFunction("name", "npc_control")]
         public static string ControlHeroByName(List<string> args)
         {
-            var heroes = Utils.SearchHeroes(args, Utils.NpcType.Noble | Utils.NpcType.Wanderer | Utils.NpcType.Player);
-            var agents = Utils.BattlefieldControl.GetAgents(heroes.Select(x => x.CharacterObject));
-            var result = Utils.BattlefieldControl.Control(agents.FirstOrDefault());
-            return result ? Utils.Done : Utils.NotFound;
+            return CheckControlHero(() =>
+            {
+                var heroes = Utils.SearchHeroes(args, Utils.NpcType.Noble | Utils.NpcType.Wanderer | Utils.NpcType.Player);
+                var agent = Utils.BattlefieldControl.GetAgentV2(heroes.Select(x => x.CharacterObject));
+                var result = Utils.BattlefieldControl.ControlV2(agent);
+                return result ? Utils.Done : Utils.NotFound;
+            });
         }
 
         /// <summary>
@@ -591,38 +607,50 @@ namespace MB2Mod.NPCMasterTrainer
         [CommandLineFunctionality.CommandLineArgumentFunction("index", "npc_control")]
         public static string ControlHeroByIndex(List<string> args)
         {
-            var index = args.Select(x => int.TryParse(x, out var number) ? number : -1).FirstOrDefault(x => x != -1);
-            var heroes = Utils.GetNpcs(Utils.NpcType.Noble | Utils.NpcType.Wanderer | Utils.NpcType.Player);
-            if (index >= 0 && index < heroes.Length)
+            return CheckControlHero(() =>
             {
-                var agents = Utils.BattlefieldControl.GetAgents(new[] { heroes[index].CharacterObject });
-                var result = Utils.BattlefieldControl.Control(agents.FirstOrDefault());
-                return result ? Utils.Done : Utils.NotFound;
-            }
-            return Utils.NotFound;
+                var index = args.Select(x => int.TryParse(x, out var number) ? number : -1).FirstOrDefault(x => x != -1);
+                if (index >= 0)
+                {
+                    var heroes = Utils.GetNpcs(Utils.NpcType.Noble | Utils.NpcType.Wanderer | Utils.NpcType.Player);
+                    if (index < heroes.Length)
+                    {
+                        var agent = Utils.BattlefieldControl.GetAgentV2(new[] { heroes[index].CharacterObject });
+                        var result = Utils.BattlefieldControl.ControlV2(agent);
+                        return result ? Utils.Done : Utils.NotFound;
+                    }
+                }
+                return Utils.NotFound;
+            });
         }
 
-        private static string ControlHeroNext(Utils.NpcType npcType)
+        internal static string ControlHeroNext(Utils.NpcType npcType)
         {
-            var main = Agent.Main;
-            if (main != default)
+            return CheckControlHero(() =>
             {
-                var heroes = Utils.GetNpcs(npcType).Select(x => x.CharacterObject);
-                var agents = Utils.BattlefieldControl.GetAgents(heroes).ToArray();
-                var mainIndex = Array.IndexOf(agents, main);
-                int index;
-                if (mainIndex < 0) index = 0;
-                else
+                var main = Agent.Main;
+                if (main != default)
                 {
-                    var mainIndexAdd1 = mainIndex + 1;
-                    if (mainIndexAdd1 < agents.Length) index = mainIndexAdd1;
-                    else index = 0;
+                    var heroes = Utils.GetNpcs(npcType).Select(x => x.CharacterObject);
+                    var agents = Utils.BattlefieldControl.GetAgentsV2(heroes)?.ToArray();
+                    if (agents != null)
+                    {
+                        var mainIndex = Array.IndexOf(agents, main);
+                        int index;
+                        if (mainIndex < 0) index = 0;
+                        else
+                        {
+                            var mainIndexAdd1 = mainIndex + 1;
+                            if (mainIndexAdd1 < agents.Length) index = mainIndexAdd1;
+                            else index = 0;
+                        }
+                        var result = Utils.BattlefieldControl.ControlV2(agents[index]);
+                        Utils.DisplayMessage($"Current Index: {index}");
+                        return result ? Utils.Done : Utils.NotFound;
+                    }
                 }
-                var result = Utils.BattlefieldControl.Control(agents[index]);
-                Utils.DisplayMessage($"Current Index: {index}");
-                return result ? Utils.Done : Utils.NotFound;
-            }
-            return Utils.NotFound;
+                return Utils.NotFound;
+            });
         }
 
         /// <summary>
@@ -674,9 +702,56 @@ namespace MB2Mod.NPCMasterTrainer
         }
 
         #endregion
+
+        #region npc_set_battle_commander
+
+        public static string BattleCommander { get; private set; }
+
+        public static void InitBattleCommander()
+        {
+            BattleCommander = null;
+        }
+
+        [CommandLineFunctionality.CommandLineArgumentFunction("set_battle_commander_name", "npc")]
+        public static string SetBattleCommanderByName(List<string> args)
+        {
+            var heroes = Utils.SearchHeroes(args, Utils.NpcType.Noble | Utils.NpcType.Wanderer | Utils.NpcType.Player);
+            var hero = heroes?.FirstOrDefault();
+            if (hero != null)
+            {
+                BattleCommander = hero.StringId;
+#if DEBUG
+                Console.WriteLine($"SetBattleCommanderByName commander:{hero?.Name.ToString()}, BattleCommander: {BattleCommander}");
+#endif
+                return Utils.Done;
+            }
+            return Utils.NotFound;
+        }
+
+        [CommandLineFunctionality.CommandLineArgumentFunction("set_battle_commander_index", "npc")]
+        public static string SetBattleCommanderByIndex(List<string> args)
+        {
+            var index = args.Select(x => int.TryParse(x, out var number) ? number : -1).FirstOrDefault(x => x != -1);
+            if (index >= 0)
+            {
+                var heroes = Utils.GetNpcs(Utils.NpcType.Noble | Utils.NpcType.Wanderer | Utils.NpcType.Player);
+                if (index < heroes.Length)
+                {
+                    var hero = heroes[index];
+                    BattleCommander = hero.StringId;
+#if DEBUG
+                    Console.WriteLine($"SetBattleCommanderByIndex commander:{hero?.Name.ToString()}, BattleCommander: {BattleCommander}");
+#endif
+                    return Utils.Done;
+                }
+            }
+            return Utils.NotFound;
+        }
+
+        #endregion
     }
 }
 
-// 未来计划(v1.0.6)
+// 未来计划(v1.1.x)
 // 优化 多个hero(clone) 控制选取/npc_control
 // 优化 agent match hero

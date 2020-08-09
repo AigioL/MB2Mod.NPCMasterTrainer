@@ -13,7 +13,7 @@ namespace MB2Mod.NPCMasterTrainer
 {
     partial class Utils
     {
-        internal const string FileVersion = "1.0.5";
+        internal const string FileVersion = "1.0.6";
         internal const string Version = FileVersion + ".*";
         internal const string AssemblyTitle = "M&BII Mod NPC Master Trainer";
     }

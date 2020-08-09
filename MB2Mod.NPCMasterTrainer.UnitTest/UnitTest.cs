@@ -5,6 +5,8 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors;
 using TaleWorlds.Core;
 
 namespace MB2Mod.NPCMasterTrainer.UnitTest
@@ -148,5 +150,20 @@ namespace MB2Mod.NPCMasterTrainer.UnitTest
         //    var bytes = gb2312.GetBytes(str);
         //    Console.WriteLine($"UTF8 :{Encoding.UTF8.GetString(bytes)}");
         //}
+
+        [TestMethod]
+        public void OnlyCreateFemaleOrMaleWanderer()
+        {
+            var _companionTemplates = typeof(UrbanCharactersCampaignBehavior).GetField("_companionTemplates", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.IsNotNull(_companionTemplates);
+            Assert.IsTrue(_companionTemplates.FieldType == typeof(List<CharacterObject>));
+            var mCreateCompanion = typeof(UrbanCharactersCampaignBehavior).GetMethod("CreateCompanion", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(CharacterObject) }, null);
+            Assert.IsNotNull(mCreateCompanion);
+            var parm = mCreateCompanion.GetParameters();
+            Assert.IsNotNull(parm);
+            Assert.IsTrue(parm.Length == 1);
+            Assert.IsTrue(parm.Single().ParameterType == typeof(CharacterObject));
+            Assert.IsTrue(mCreateCompanion.ReturnType == typeof(void));
+        }
     }
 }

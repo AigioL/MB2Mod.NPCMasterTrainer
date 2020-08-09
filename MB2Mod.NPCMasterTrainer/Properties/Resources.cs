@@ -1568,9 +1568,24 @@ namespace MB2Mod.NPCMasterTrainer.Properties
                     case Utils.Localization.SimplifiedChinese:
                     case Utils.Localization.TraditionalChinese:
                         return "正在控制: {0}";
-
                     default:
                         return "You are now controlling: {0}";
+                }
+            }
+        }
+
+        internal static string NPCControlCanOnlyBeUsedOnTheBattlefield
+        {
+            get
+            {
+                switch (Language)
+                {
+                    case Utils.Localization.SimplifiedChinese:
+                        return "npc_control 只能在战场上使用";
+                    case Utils.Localization.TraditionalChinese:
+                        return "npc_control 只能在戰場上使用";
+                    default:
+                        return "npc_control can only be used on the battlefield";
                 }
             }
         }

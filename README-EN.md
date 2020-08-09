@@ -297,7 +297,7 @@ English | [简体中文](./README.md)
 </table>
 
 ### **Command (Command line instructions)**
-**CTRL and ~** enable the developer console in the game. Currently, the developer console can only type in English. Chinese will become ???. You can enter the following commands in the developer console
+CTRL and ~ enable the developer console in the game. Currently, the developer console can only type in English. Chinese will become ???. You can enter the following commands in the developer console
 <table>
 <tr>
 <th align="left">Command</th>
@@ -570,6 +570,6 @@ English | [简体中文](./README.md)
 </tr>
 <tr>
 <td align="left">name</td>
-<td align="left" colspan="2">Fixed value me(me), all_not_me(except me), wanderer(wanderer), noble(noble) or character English name (in [ESC-option-game Settings] Change the language to English to see the English name of the role. If there is a space in the name, you need to use an underscore (_) to replace the space. If there are multiple roles with the same name, add -2 after the name and specify the second one)< /td>
+<td align="left" colspan="2">Fixed value me(me), all_not_me(except me), wanderer(wanderer), noble(noble) or character English name (in [ESC-option-game Settings] Change the language to English to see the English name of the role. If there is a space in the name, you need to use an underscore (_) to replace the space. If there are multiple roles with the same name, add -2 after the name and specify the second one)</td>
 </tr>
 </table>

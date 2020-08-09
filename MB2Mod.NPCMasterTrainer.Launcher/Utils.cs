@@ -90,8 +90,6 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
 
         private const string SubModule_XML = "SubModule.xml";
 
-        private const string README_MD = "README.md";
-
         private const string mod_dll_file_prefix = "MB2Mod.";
 
         private const string mod_dll_file_search_pattern = mod_dll_file_prefix + "*.dll";
@@ -108,7 +106,8 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                 Console.WriteLine("Deploy Fail, projPath IsNullOrWhiteSpace.");
                 return false;
             }
-            var readmeString = File.ReadAllText(Path.Combine(Directory.GetParent(projPath).FullName, README_MD));
+            var readmeFiles = Directory.GetParent(projPath).GetFiles("README*.md")
+                .ToDictionary(k => k, v => File.ReadAllText(v.FullName));
             var xmlString = File.ReadAllText(Path.Combine(projPath, SubModule_XML));
             var outPath = Path.Combine(projPath, "bin", IsDevelopment ? "Debug" : "Release");
             var dllFilePathSource = SearchModDllFile(outPath);
@@ -150,8 +149,9 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
             var xmlPath = Path.Combine(modDirPath, SubModule_XML);
             var xmlPathWrite = true;
 
-            var readmePath = Path.Combine(modDirPath, README_MD);
-            var readmeWrite = true;
+            var readmePaths = readmeFiles.Keys
+                .ToDictionary(k => k, v => Path.Combine(modDirPath, v.Name));
+            var readmePathsWrite = readmeFiles.Keys.ToDictionary(k => k, v => true);
 
             if (!modDirPathExists)
             {
@@ -171,21 +171,27 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                     }
                 }
 
-                if (File.Exists(readmePath))
+                foreach (var item in readmePaths)
                 {
-                    if (File.ReadAllText(readmePath) != readmeString)
+                    if (File.Exists(item.Value))
                     {
-                        File.Delete(readmePath);
-                    }
-                    else
-                    {
-                        readmeWrite = false;
+                        if (File.ReadAllText(item.Value) != readmeFiles[item.Key])
+                        {
+                            File.Delete(item.Value);
+                        }
+                        else
+                        {
+                            readmePathsWrite[item.Key] = false;
+                        }
                     }
                 }
             }
             if (xmlPathWrite) File.WriteAllText(xmlPath, xmlString);
-            if (readmeWrite) File.WriteAllText(readmePath, readmeString);
-
+            foreach (var item in readmePathsWrite)
+            {
+                var readmeWrite = item.Value;
+                if (readmeWrite) File.WriteAllText(readmePaths[item.Key], readmeFiles[item.Key]);
+            }
             var array_modDllDirPaths = new string[utils.BinaryPath.Length + 1];
             utils.BinaryPath.CopyTo(array_modDllDirPaths, 1);
             array_modDllDirPaths[0] = modDirPath;
@@ -230,7 +236,10 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                     using var fileStream = new FileStream(zipFilePath, FileMode.CreateNew);
                     using var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, true);
                     archive.CreateEntryFromFile(xmlPath, Path.Combine(modDirName, SubModule_XML), level);
-                    archive.CreateEntryFromFile(readmePath, Path.Combine(modDirName, README_MD), level);
+                    foreach (var readmePath in readmePaths)
+                    {
+                        archive.CreateEntryFromFile(readmePath.Key.FullName, Path.Combine(modDirName, readmePath.Key.Name), level);
+                    }
                     var binPath = Path.Combine(utils.BinaryPath);
                     archive.CreateEntryFromFile(dllFilePathSource, Path.Combine(modDirName, binPath, dllFileNameWithoutExtension + ".dll"), level);
                     fileStream.Flush();

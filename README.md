@@ -1,5 +1,7 @@
 # M&BII Mod NPC Master Trainer
 
+[English](./README-EN.md) | 简体中文
+
 [nexusmods](https://www.nexusmods.com/mountandblade2bannerlord/mods/1807)  
 [bbs.mountblade.com.cn](https://bbs.mountblade.com.cn/thread-2064895-1-1.html)  
 

@@ -174,7 +174,7 @@ namespace MB2Mod.NPCMasterTrainer
                 var agentName = agent.Name?.ToString();
                 if (!string.IsNullOrEmpty(agentName))
                 {
-                    DisplayMessage(string.Format(Resources.YouAreNowControlling_, agentName));
+                    DisplayMessage(Format(Resources.YouAreNowControlling_, agentName));
                     //if (IsDevelopment)
                     //{
                     //    DisplayMessage($"last agent AIStateFlags: {main.AIStateFlags}");
@@ -343,7 +343,7 @@ namespace MB2Mod.NPCMasterTrainer
 
                 public static SetBattlefieldCommanderMissionLogic Current => Mission.Current.GetMissionLogic<SetBattlefieldCommanderMissionLogic>();
 
-                public bool Control(Agent destCommander)
+                public bool Control(Agent destCommander, bool equalsResult = true)
                 {
                     if (!IsStartBattle)
                     {
@@ -374,7 +374,7 @@ namespace MB2Mod.NPCMasterTrainer
 #if DEBUG
                         Console.WriteLine("Control commander == agent.");
 #endif
-                        return true;
+                        return equalsResult;
                     }
                     var agentName = destCommander.Name?.ToString();
 #if DEBUG
@@ -409,7 +409,7 @@ namespace MB2Mod.NPCMasterTrainer
                         sourceCommander = destCommander;
                         if (!string.IsNullOrEmpty(agentName))
                         {
-                            DisplayMessage(string.Format(Resources.YouAreNowControlling_, agentName));
+                            DisplayMessage(Format(Resources.YouAreNowControlling_, agentName));
                         }
                         return true;
                     }
@@ -491,36 +491,42 @@ namespace MB2Mod.NPCMasterTrainer
                     }
                 }
 
-                void ControlBattleCommander(params string[] stringIds)
+                bool ControlBattleCommander(params string[] stringIds)
                 {
                     var heroes = GetNpcs(NpcType.Noble | NpcType.Wanderer | NpcType.Player);
                     var hero = heroes.FirstOrDefault(x => stringIds.Contains(x.StringId, StringComparer.Ordinal));
                     if (hero != null)
                     {
                         var destCommander = GetAgentV2(new[] { hero.CharacterObject }, Mission);
-                        Control(destCommander);
+                        return Control(destCommander, false);
                     }
 #if DEBUG
                     Console.WriteLine($"ControlBattleCommander, args" +
                         $"hero:{hero?.Name.ToString()} " +
                         $"stringId:{hero?.StringId}");
 #endif
+                    return false;
                 }
 
                 void OnStartBattle()
                 {
+                    var resultControl = false;
                     var battleCommander = ConsoleCommand.BattleCommander;
                     if (battleCommander != null)
                     {
-                        ControlBattleCommander(battleCommander);
+                        resultControl = ControlBattleCommander(battleCommander);
                     }
                     else
                     {
                         var ids = Config.Instance.BattlefieldCommanderStringIds;
                         if (ids != null && ids.Any())
                         {
-                            ControlBattleCommander(ids);
+                            resultControl = ControlBattleCommander(ids);
                         }
+                    }
+                    if (!resultControl)
+                    {
+                        player.OnAgentHealthChanged += OnAgentHealthChanged;
                     }
                 }
 

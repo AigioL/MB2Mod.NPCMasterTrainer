@@ -1,28 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Module>
-  <Name value="NPC Master Trainer" />
-  <Id value="NPCMasterTrainer" />
-  <Version value="v1.0.0.0" />
-  <SingleplayerModule value="true" />
-  <MultiplayerModule value="false" />
-  <Official value="false" />
+  <Name value="NPC Master Trainer"/>
+  <Id value="NPCMasterTrainer"/>
+  <Version value="v1.0.0.0"/>
+  <SingleplayerModule value="true"/>
+  <MultiplayerModule value="false"/>
+  <Official value="false"/>
   <DependedModules>
-    <DependedModule Id="Native" />
-    <DependedModule Id="SandBoxCore" />
-    <DependedModule Id="Sandbox" />
-    <DependedModule Id="CustomBattle" />
-    <DependedModule Id="StoryMode" />
+    <DependedModule Id="Native"/>
+    <DependedModule Id="SandBoxCore"/>
+    <DependedModule Id="Sandbox"/>
+    <DependedModule Id="CustomBattle"/>
+    <DependedModule Id="StoryMode"/>
   </DependedModules>
   <SubModules>
     <SubModule>
-      <Name value="NPC Master Trainer" />
-      <DLLName value="MB2Mod.NPCMasterTrainer.dll" />
-      <SubModuleClassType value="MB2Mod.NPCMasterTrainer.SubModule" />
+      <Name value="NPC Master Trainer"/>
+      <DLLName value="MB2Mod.NPCMasterTrainer.dll"/>
+      <SubModuleClassType value="MB2Mod.NPCMasterTrainer.SubModule"/>
       <Tags>
-        <Tag key="DedicatedServerType" value="none" />
-        <Tag key="IsNoRenderModeElement" value="false" />
+        <Tag key="DedicatedServerType" value="none"/>
+        <Tag key="IsNoRenderModeElement" value="false"/>
       </Tags>
     </SubModule>
   </SubModules>
-  <Xmls />
+  <Xmls/>
 </Module>

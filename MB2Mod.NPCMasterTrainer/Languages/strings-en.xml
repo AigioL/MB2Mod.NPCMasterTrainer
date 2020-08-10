@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<strings>
+  <string name="LoadedDeveloperConsoleInfoMessage">Loaded DeveloperConsole. Press CTRL and ~ to enable it.</string>
+  <string name="UnspentStatFocus">Unspent: {0} stat | {1} focus</string>
+  <string name="Female">Female</string>
+  <string name="Male">Male</string>
+  <string name="Calculating">Calculating</string>
+  <string name="Profession">Profession</string>
+  <string name="Control">Control</string>
+  <string name="Focus">Focus</string>
+  <string name="UnspentAttributePoints">Unspent Attribute Points</string>
+  <string name="UnspentFocusPoints">Unspent Focus Points</string>
+  <string name="IsChild">Is Child</string>
+  <string name="IsAlive">Is Alive</string>
+  <string name="FirstName">First Name</string>
+  <string name="HeroesData">HeroesData</string>
+  <string name="All">All</string>
+  <string name="TownsData">TownsData</string>
+  <string name="FoodStocks">FoodStocks</string>
+  <string name="Gold">Gold</string>
+  <string name="Governor">Governor</string>
+  <string name="WallLevel">WallLevel</string>
+  <string name="LegendarySmith">LegendarySmith</string>
+  <string name="Bolts">Bolts</string>
+  <string name="LegArmor">Leg Armor</string>
+  <string name="Book">Book</string>
+  <string name="ClearItemDifficulty">Clear All Item Difficulty</string>
+  <string name="UnlockLongBowForUseOnHorseBack">Unlock LongBow For Use On Horse Back</string>
+  <string name="UnlockItemCivilian">Unlock Item Civilian</string>
+  <string name="Marriageable">Marriageable</string>
+  <string name="AddAmmo">AddAmmo</string>
+  <string name="LastKnownLocation">Last Known Location</string>
+  <string name="Renamed">Renamed</string>
+  <string name="PregnancyModel">Pregnancy Model</string>
+  <string name="IsFertile">Fertile</string>
+  <string name="Exception">Exception</string>
+  <string name="TrueString_Exist">Exist {0}</string>
+  <string name="FalseString_Exist">No Exist {0}</string>
+  <string name="FalseString_IsFertile">Barrenness</string>
+  <string name="YouAreNowControlling_">You are now controlling: {0}</string>
+  <string name="NPCControlCanOnlyBeUsedOnTheBattlefield">npc_control can only be used on the battlefield</string>
+</strings>

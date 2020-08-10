@@ -8,12 +8,11 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyFileVersion(Utils.FileVersion)]
 [assembly: InternalsVisibleTo("MB2Mod.NPCMasterTrainer.UnitTest")]
 [assembly: InternalsVisibleTo("MB2Mod.NPCMasterTrainer.Launcher")]
-
 namespace MB2Mod.NPCMasterTrainer
 {
     partial class Utils
     {
-        internal const string FileVersion = "1.0.6";
+        internal const string FileVersion = "1.0.7";
         internal const string Version = FileVersion + ".*";
         internal const string AssemblyTitle = "M&BII Mod NPC Master Trainer";
     }

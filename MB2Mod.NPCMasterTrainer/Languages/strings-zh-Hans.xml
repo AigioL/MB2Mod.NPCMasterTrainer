@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<strings>
+  <string name="LoadedDeveloperConsoleInfoMessage">已加载 DeveloperConsole。按 CTRL 和 ~ 启用。</string>
+  <string name="UnspentStatFocus">可用点数：{0} 属性点 | {1} 专精点</string>
+  <string name="Female">女</string>
+  <string name="Male">男</string>
+  <string name="Calculating">Calculating</string>
+  <string name="Profession">职业</string>
+  <string name="Control">控制</string>
+  <string name="Focus">专精点</string>
+  <string name="UnspentAttributePoints">可用属性点</string>
+  <string name="UnspentFocusPoints">可用专精点</string>
+  <string name="IsChild">是孩子</string>
+  <string name="IsAlive">还活着</string>
+  <string name="FirstName">姓氏</string>
+  <string name="HeroesData">角色数据</string>
+  <string name="All">所有</string>
+  <string name="TownsData">城镇数据</string>
+  <string name="FoodStocks">食物</string>
+  <string name="Gold">金币</string>
+  <string name="Governor">所有者</string>
+  <string name="WallLevel">城墙等级</string>
+  <string name="LegendarySmith">传奇铁匠</string>
+  <string name="Bolts">弩箭</string>
+  <string name="LegArmor">胫甲</string>
+  <string name="Book">书</string>
+  <string name="ClearItemDifficulty">清空物品的熟练度要求</string>
+  <string name="UnlockLongBowForUseOnHorseBack">解锁长弓在马背上使用</string>
+  <string name="UnlockItemCivilian">解锁平民装扮</string>
+  <string name="Marriageable">可结婚</string>
+  <string name="AddAmmo">添加弹药量</string>
+  <string name="LastKnownLocation">最后已知位置</string>
+  <string name="Renamed">已更名为</string>
+  <string name="PregnancyModel">妊娠配置</string>
+  <string name="IsFertile">可生育</string>
+  <string name="Exception">异常</string>
+  <string name="TrueString_Exist">存在 {0}</string>
+  <string name="FalseString_Exist">不存在 {0}</string>
+  <string name="FalseString_IsFertile">不可生育</string>
+  <string name="YouAreNowControlling_">正在控制: {0}</string>
+  <string name="NPCControlCanOnlyBeUsedOnTheBattlefield">npc_control 只能在战场上使用</string>
+</strings>

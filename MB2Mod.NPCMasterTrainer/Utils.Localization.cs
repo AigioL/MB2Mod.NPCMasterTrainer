@@ -2,6 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
+using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
 namespace MB2Mod.NPCMasterTrainer
@@ -17,6 +22,12 @@ namespace MB2Mod.NPCMasterTrainer
             public const string SimplifiedChinese = "zh-Hans";
 
             public const string TraditionalChinese = "zh-Hant";
+
+            public const string Turkish = "tr";
+
+            public const string German = "de";
+
+            public const string Polish = "pl";
 
             //static readonly Lazy<FieldInfo> lazy_field_currentLanguageId = new Lazy<FieldInfo>(() =>
             //{
@@ -42,13 +53,14 @@ namespace MB2Mod.NPCMasterTrainer
                 }
             }
 
-            private static readonly IReadOnlyDictionary<string, string> mapping_language_id__culture_name = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            internal static readonly IReadOnlyDictionary<string, string> mapping_language_id__culture_name = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 { "English", English },
                 { "简体中文", SimplifiedChinese },
-                { "繁体中文", TraditionalChinese },
-                //{ "Türkçe", "" },
-                //{ "German", "" },
+                { "繁體中文", TraditionalChinese },
+                { "Türkçe", Turkish },
+                { "German", German },
+                { "Polskie", Polish },
             };
 
             private static string Language;
@@ -75,6 +87,87 @@ namespace MB2Mod.NPCMasterTrainer
                 if (value.Match(SimplifiedChinese)) Resources.Language = SimplifiedChinese;
                 else if (value.Match(TraditionalChinese)) Resources.Language = TraditionalChinese;
             }
+
+            #region Languages\String-*.xml
+
+            private const string Languages_DIR = "Languages";
+
+            internal static IReadOnlyDictionary<string, string> ReadStringXml(string filePath, string fileName = null)
+            {
+                if (File.Exists(filePath))
+                {
+                    try
+                    {
+                        var dict = new Dictionary<string, string>();
+                        var doc = new XmlDocument();
+                        using var reader = XmlReader.Create(filePath, new XmlReaderSettings
+                        {
+                            IgnoreComments = true
+                        });
+                        doc.Load(reader);
+                        var root = doc.SelectSingleNode("strings");
+                        if (root != null)
+                        {
+                            var items = root.SelectNodes("string");
+                            foreach (XmlNode item in items)
+                            {
+                                if (item == null) continue;
+                                var name = item.Attributes["name"]?.Value;
+                                if (!string.IsNullOrWhiteSpace(name))
+                                {
+                                    if (dict.ContainsKey(name))
+                                    {
+                                        dict[name] = item.InnerText;
+                                    }
+                                    else
+                                    {
+                                        dict.Add(name, item.InnerText);
+                                    }
+                                }
+                            }
+                        }
+                        return dict;
+                    }
+                    catch (Exception e)
+                    {
+                        DisplayMessage(e);
+                        DisplayMessage($"Load {(fileName ?? Path.GetFileName(filePath))} Fail.", Colors.OrangeRed);
+                    }
+                }
+                return default;
+            }
+
+            static Lazy<IReadOnlyDictionary<string, string>> GetStringDictByLanguage(string lang)
+                => new Lazy<IReadOnlyDictionary<string, string>>(() =>
+                {
+                    var fileName = $"strings-{lang}.xml";
+                    var filePath = Path.Combine(CurrentModDirectory, Languages_DIR, fileName);
+                    return ReadStringXml(filePath, fileName);
+                });
+
+            static readonly IReadOnlyDictionary<string, Lazy<IReadOnlyDictionary<string, string>>> pairs = mapping_language_id__culture_name.Values.ToDictionary(k => k, v => GetStringDictByLanguage(v));
+
+            static string GetStringByXmlFiles(string name, string lang, bool useEnglish = false)
+            {
+                if (pairs.ContainsKey(lang))
+                {
+                    var d = pairs[lang]?.Value;
+                    if (d?.ContainsKey(name) ?? false)
+                    {
+                        return d[name];
+                    }
+                }
+                else if (!useEnglish && lang != English)
+                {
+                    GetStringByXmlFiles(name, English, true);
+                }
+                return null;
+            }
+
+            public static string GetStringByXmlFiles(string name)
+                => GetStringByXmlFiles(name, Resources.Language);
+
+            #endregion
         }
 
         private static bool Match(this CultureInfo culture, string name)
@@ -89,6 +182,17 @@ namespace MB2Mod.NPCMasterTrainer
             } while (culture != null && culture != CultureInfo.InvariantCulture);
             return false;
         }
+
+        public static string ToString2(this CharacterAttributesEnum attrType) => attrType switch
+        {
+            CharacterAttributesEnum.Vigor => Resources.Vigor,
+            CharacterAttributesEnum.Control => Resources.Control,
+            CharacterAttributesEnum.Endurance => Resources.Endurance,
+            CharacterAttributesEnum.Cunning => Resources.Cunning,
+            CharacterAttributesEnum.Social => Resources.Social,
+            CharacterAttributesEnum.Intelligence => Resources.Intelligence,
+            _ => attrType.ToString(),
+        };
     }
 }
 

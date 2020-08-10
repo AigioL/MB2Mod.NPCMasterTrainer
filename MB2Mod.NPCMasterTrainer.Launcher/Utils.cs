@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Markdig;
+using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -13,6 +14,9 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
 {
     internal static class Utils
     {
+        internal static string CurrentPath
+            => Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+
         public static bool IsDevelopment => utils.IsDevelopment;
 
         private const string DefGamePath = @"C:\Program Files (x86)\Steam\steamapps\common\Mount & Blade II Bannerlord";
@@ -89,6 +93,8 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
         }
 
         private const string SubModule_XML = "SubModule.xml";
+
+        internal const string Languages_DIR = "Languages";
 
         private const string mod_dll_file_prefix = "MB2Mod.";
 
@@ -187,11 +193,44 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                 }
             }
             if (xmlPathWrite) File.WriteAllText(xmlPath, xmlString);
+            static void SecurityCheck(string html)
+            {
+                var jsExist = html.IndexOf("<script", StringComparison.OrdinalIgnoreCase) >= 0;
+                if (jsExist)
+                {
+                    throw new System.Security.SecurityException("html file not allowed to exist js");
+                }
+            }
             foreach (var item in readmePathsWrite)
             {
                 var readmeWrite = item.Value;
-                if (readmeWrite) File.WriteAllText(readmePaths[item.Key], readmeFiles[item.Key]);
+                if (readmeWrite)
+                {
+                    var mdFilePath = readmePaths[item.Key];
+                    var strContent = readmeFiles[item.Key];
+                    var htmlContent = Markdown.ToHtml(strContent.Replace(".md)", ".html)"));
+                    SecurityCheck(htmlContent);
+                    File.WriteAllText(mdFilePath, strContent);
+                    var htmlFilePath = Path.Combine(Path.GetDirectoryName(mdFilePath), Path.GetFileNameWithoutExtension(mdFilePath) + ".html");
+                    if (File.Exists(htmlFilePath)) File.Delete(htmlFilePath);
+                    File.WriteAllText(htmlFilePath, htmlContent);
+                }
             }
+
+            var stringFiles = Directory.GetFiles(Path.Combine(projPath, Languages_DIR), "strings-*.xml");
+            var langModDirPath = Path.Combine(modDirPath, Languages_DIR);
+            if (!Directory.Exists(langModDirPath)) Directory.CreateDirectory(langModDirPath);
+            foreach (var stringFile in stringFiles)
+            {
+                var stringModFilePath = Path.Combine(langModDirPath, Path.GetFileName(stringFile));
+                if (File.Exists(stringModFilePath))
+                {
+                    if (File.ReadAllText(stringModFilePath) == File.ReadAllText(stringFile)) continue;
+                    File.Delete(stringModFilePath);
+                }
+                File.Copy(stringFile, stringModFilePath);
+            }
+
             var array_modDllDirPaths = new string[utils.BinaryPath.Length + 1];
             utils.BinaryPath.CopyTo(array_modDllDirPaths, 1);
             array_modDllDirPaths[0] = modDirPath;
@@ -239,6 +278,15 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                     foreach (var readmePath in readmePaths)
                     {
                         archive.CreateEntryFromFile(readmePath.Key.FullName, Path.Combine(modDirName, readmePath.Key.Name), level);
+                    }
+                    var readmeHtmlPaths = Directory.GetFiles(modDirPath, "README*.html");
+                    foreach (var readmePath in readmeHtmlPaths)
+                    {
+                        archive.CreateEntryFromFile(readmePath, Path.Combine(modDirName, Path.GetFileName(readmePath)), level);
+                    }
+                    foreach (var stringFile in stringFiles)
+                    {
+                        archive.CreateEntryFromFile(stringFile, Path.Combine(modDirName, Languages_DIR, Path.GetFileName(stringFile)), level);
                     }
                     var binPath = Path.Combine(utils.BinaryPath);
                     archive.CreateEntryFromFile(dllFilePathSource, Path.Combine(modDirName, binPath, dllFileNameWithoutExtension + ".dll"), level);

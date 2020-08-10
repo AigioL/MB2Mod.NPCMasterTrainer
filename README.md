@@ -95,6 +95,13 @@
 		<td align="left"></td>
 	</tr>
 	<tr>
+		<td align="left">AddAmmoByJavelinSecondary</td>
+		<td align="left">ushort</td>
+		<td align="left">0</td>
+		<td align="left">标枪(次要武器即需要按X切换成标枪的长杆武器)</td>
+		<td align="left"></td>
+	</tr>
+	<tr>
 		<th align="left" colspan="5">PregnancyModel(妊娠配置)</th>
 	</tr>
 	<tr>
@@ -325,11 +332,11 @@
 	</tr>
 	<tr>
 		<td align="left">npc.remove_attrs [name] | [attrType] | [value]</td>
-		<td align="left">移除玩家部队中角色的 属性 并返还到可用点数</td>
+		<td align="left">移除玩家部队中角色的 属性 并返还到可用点数，属性必须保留至少1点</td>
 	</tr>
 	<tr>
 		<td align="left">npc.remove_focus [name] | [row] | [column] | [value]</td>
-		<td align="left">移除玩家部队中角色的 专精 并返还到可用点数</td>
+		<td align="left">移除玩家部队中角色的 专精 并返还到可用点数，专精可以全部返还</td>
 	</tr>
 	<tr>
 		<th align="left" colspan="2">铁匠与锻造</th>

@@ -15,7 +15,7 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
             if (Directory.Exists(gamePath))
             {
                 await Utils.ExitGameAsync();
-                var currentPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                var currentPath = Utils.CurrentPath;
                 var projPath = Utils.GetProjectPath(currentPath);
                 var isOK = Utils.Deploy(currentPath, projPath, gamePath, !Utils.IsDevelopment);
                 if (isOK) Console.WriteLine("Done");
@@ -26,5 +26,16 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
             }
             if (!Debugger.IsAttached) Console.ReadLine();
         }
+
+        //private static void Main(string[] args)
+        //{
+        //    LocalizationMigrate.Localization();
+
+        //    //var currentPath = Utils.CurrentPath;
+        //    //var projPath = Utils.GetProjectPath(currentPath);
+        //    //NPCMasterTrainer.Utils.Localization.ReadStringXml(Path.Combine(projPath, Utils.Languages_DIR, "strings-zh-Hans.xml"));
+
+        //    //LocalizationMigrate.Search();
+        //}
     }
 }

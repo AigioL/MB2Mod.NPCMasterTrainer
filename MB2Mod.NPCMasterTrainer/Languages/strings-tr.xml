@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<strings>
+  <string name="LoadedDeveloperConsoleInfoMessage">DeveloperConsole yüklendi. Etkinleştirmek için CTRL ve ~ tuşlarına basın.</string>
+  <string name="UnspentStatFocus">Harcanmamış: {0} stat | {1} odak</string>
+  <string name="Female">Kadın</string>
+  <string name="Male">Erkek</string>
+  <string name="Calculating">Hesaplanıyor</string>
+  <string name="Profession">Meslek</string>
+  <string name="Control">Kontrol</string>
+  <string name="Focus">odak</string>
+  <string name="UnspentAttributePoints">Harcanmamış Öznitelik Puanları</string>
+  <string name="UnspentFocusPoints">Harcanmamış Odak Noktaları</string>
+  <string name="IsChild">Çocuk mu</string>
+  <string name="IsAlive">Yaşıyor</string>
+  <string name="FirstName">İsim</string>
+  <string name="HeroesData">Kahramanlar Verileri</string>
+  <string name="All">Herşey</string>
+  <string name="TownsData">Kasaba Verileri</string>
+  <string name="FoodStocks">Yiyecek Stokları</string>
+  <string name="Gold">Altın</string>
+  <string name="Governor">Vali</string>
+  <string name="WallLevel">Duvar Seviyesi</string>
+  <string name="LegendarySmith">Efsanevi Smith</string>
+  <string name="Bolts">Vidalar</string>
+  <string name="LegArmor">Bacak Zırhı</string>
+  <string name="Book">Kitap</string>
+  <string name="ClearItemDifficulty">Tüm Öğe Zorluğunu Temizle</string>
+  <string name="UnlockLongBowForUseOnHorseBack">At Sırtında Kullanmak İçin LongBow'un Kilidini Açın</string>
+  <string name="UnlockItemCivilian">Civilian Öğesinin Kilidini Aç</string>
+  <string name="Marriageable">gelinlik</string>
+  <string name="AddAmmo">Cephane Ekle</string>
+  <string name="LastKnownLocation">Bilinen Son Konum</string>
+  <string name="Renamed">Yeniden adlandırılan</string>
+  <string name="PregnancyModel">Pregnancy Model</string>
+  <string name="IsFertile">bereketli</string>
+  <string name="Exception">Exception</string>
+  <string name="TrueString_Exist">{0} var</string>
+  <string name="FalseString_Exist">Yok {0}</string>
+  <string name="FalseString_IsFertile">kısırlık</string>
+  <string name="YouAreNowControlling_">Şimdi kontrol ediyorsunuz: {0}</string>
+  <string name="NPCControlCanOnlyBeUsedOnTheBattlefield">npc_control yalnızca savaş alanında kullanılabilir</string>
+</strings>

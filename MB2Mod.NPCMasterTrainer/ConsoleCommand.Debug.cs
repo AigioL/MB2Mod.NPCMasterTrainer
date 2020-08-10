@@ -1,5 +1,6 @@
 ﻿#if DEBUG
 
+using MB2Mod.NPCMasterTrainer.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -102,6 +103,30 @@ namespace MB2Mod.NPCMasterTrainer
         //    a.test = "123";
         //    return a.test;
         //}
+
+        [CommandLineFunctionality.CommandLineArgumentFunction("text_obj", "print")]
+        public static string PrintTextObject(List<string> args)
+        {
+            foreach (var item in new[] {
+                "p9i3zRm9",
+                "TTWL7RLe",
+                "PiHpR4QL",
+                "haax8kMa",
+                "2I2uKJlw",
+                "toQLHG6x",
+                "0oGz5rVx",
+                "OKUTPdaa",
+                "PUjDWe5j"
+            }.Select(Resources.GetStringByTextObject))
+            {
+                Utils.DisplayMessage(item);
+                if (Utils.Config.Instance.HasWin32Console())
+                {
+                    Console.WriteLine(item);
+                }
+            }
+            return Utils.Done;
+        }
     }
 }
 

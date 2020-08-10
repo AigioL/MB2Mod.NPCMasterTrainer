@@ -312,11 +312,21 @@ namespace MB2Mod.NPCMasterTrainer
                             foreach (var hero in heroes)
                             {
                                 var currentAttrValue = hero.GetAttributeValue(attrType);
-                                if (currentAttrValue > value)
+                                if (currentAttrValue > value) // 属性必须保留至少一点
                                 {
                                     var tempValue = currentAttrValue - value;
                                     hero.SetAttributeValue(attrType, tempValue);
-                                    hero.HeroDeveloper.UnspentAttributePoints += value;
+                                    if (hero.GetAttributeValue(attrType) == tempValue)
+                                    {
+                                        hero.HeroDeveloper.UnspentAttributePoints += value;
+                                    }
+                                    Utils.DisplayMessage(
+                                        $"{hero.Name?.ToString()} " +
+                                        $"{attrType.ToString2()} {currentAttrValue}=>{tempValue}");
+                                }
+                                else
+                                {
+                                    return Utils.Fail;
                                 }
                             }
                             return Utils.Done;
@@ -365,11 +375,30 @@ namespace MB2Mod.NPCMasterTrainer
                             foreach (var hero in heroes)
                             {
                                 var currentValue = hero.HeroDeveloper.GetFocus(skill);
-                                if (currentValue >= value)
+#if DEBUG
+                                Console.WriteLine(
+                                    $"skill: {skill.Name?.ToString()}, " +
+                                    $"currentValue: {currentValue}, " +
+                                    $"reduceValue: {value}");
+#endif
+                                if (currentValue >= value) // 专精可以全部返还
                                 {
-                                    var tempValue = value - currentValue;
-                                    hero.HeroDeveloper.AddFocus(skill, tempValue, false);
-                                    hero.HeroDeveloper.UnspentFocusPoints += value;
+                                    var newValue = currentValue - value;
+#if DEBUG
+                                    Console.WriteLine($"newValue: {newValue}");
+#endif
+                                    hero.HeroDeveloper.AddFocus(skill, -value, false);
+                                    if (hero.HeroDeveloper.GetFocus(skill) == newValue)
+                                    {
+                                        hero.HeroDeveloper.UnspentFocusPoints += value;
+                                    }
+                                    Utils.DisplayMessage(
+                                        $"{hero.Name?.ToString()} " +
+                                        $"{skill.Name?.ToString()} {currentValue}=>{newValue}");
+                                }
+                                else
+                                {
+                                    return Utils.Fail;
                                 }
                             }
                             return Utils.Done;

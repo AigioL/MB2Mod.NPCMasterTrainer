@@ -104,6 +104,11 @@ namespace MB2Mod.NPCMasterTrainer
             public ushort AddAmmoByJavelin { get; set; } = 1;
 
             /// <summary>
+            /// 增加弹药量-标枪(次要武器即需要按X切换成标枪的长杆武器)
+            /// </summary>
+            public ushort AddAmmoByJavelinSecondary { get; set; }
+
+            /// <summary>
             /// 修复目前游戏中从剪贴板粘贴的中文文字出现乱码
             /// </summary>
             public bool FixGetClipboardText { get; set; } = true;

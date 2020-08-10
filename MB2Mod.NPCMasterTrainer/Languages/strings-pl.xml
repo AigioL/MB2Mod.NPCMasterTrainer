@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<strings>
+  <string name="LoadedDeveloperConsoleInfoMessage">Loaded DeveloperConsole. Naciśnij klawisze CTRL i ~, aby ją włączyć.</string>
+  <string name="UnspentStatFocus">Niewydane: {0} stat | {1} focus</string>
+  <string name="Female">Płeć żeńska</string>
+  <string name="Male">Męski</string>
+  <string name="Calculating">Obliczenie</string>
+  <string name="Profession">Zawód</string>
+  <string name="Control">Kontrola</string>
+  <string name="Focus">Skupiać</string>
+  <string name="UnspentAttributePoints">Niewydane punkty atrybutów</string>
+  <string name="UnspentFocusPoints">Niewydane punkty ostrości</string>
+  <string name="IsChild">Jest dzieckiem</string>
+  <string name="IsAlive">Żyje</string>
+  <string name="FirstName">Imię</string>
+  <string name="HeroesData">Dane bohaterów</string>
+  <string name="All">Wszystko</string>
+  <string name="TownsData">Dane miast</string>
+  <string name="FoodStocks">Zapasy żywności</string>
+  <string name="Gold">Złoto</string>
+  <string name="Governor">Gubernator</string>
+  <string name="WallLevel">Poziom ściany</string>
+  <string name="LegendarySmith">Legendarny Smith</string>
+  <string name="Bolts">Śruby</string>
+  <string name="LegArmor">Pancerz nóg</string>
+  <string name="Book">Książka</string>
+  <string name="ClearItemDifficulty">Wyczyść poziom trudności wszystkich przedmiotów</string>
+  <string name="UnlockLongBowForUseOnHorseBack">Odblokuj LongBow do użytku na grzbiecie konia</string>
+  <string name="UnlockItemCivilian">Odblokuj przedmiot Civilian</string>
+  <string name="Marriageable">Na wydaniu</string>
+  <string name="AddAmmo">Dodaj amunicję</string>
+  <string name="LastKnownLocation">Ostatnia znana lokalizacja</string>
+  <string name="Renamed">Zmieniona nazwa</string>
+  <string name="PregnancyModel">PregnancyModel</string>
+  <string name="IsFertile">Płodny</string>
+  <string name="Exception">Exception</string>
+  <string name="TrueString_Exist">Istnieje {0}</string>
+  <string name="FalseString_Exist">Nie istnieje {0}</string>
+  <string name="FalseString_IsFertile">Bezpłodność</string>
+  <string name="YouAreNowControlling_">Teraz kontrolujesz: {0}</string>
+  <string name="NPCControlCanOnlyBeUsedOnTheBattlefield">npc_control może być używany tylko na polu bitwy</string>
+</strings>

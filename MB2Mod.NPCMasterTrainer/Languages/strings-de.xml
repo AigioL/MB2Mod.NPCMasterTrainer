@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<strings>
+  <string name="LoadedDeveloperConsoleInfoMessage">Geladene DeveloperConsole. Drücken Sie STRG und ~, um es zu aktivieren.</string>
+  <string name="UnspentStatFocus">Nicht ausgegeben: {0} stat | {1} Fokus</string>
+  <string name="Female">Weiblich</string>
+  <string name="Male">Männlich</string>
+  <string name="Calculating">Berechnen</string>
+  <string name="Profession">Beruf</string>
+  <string name="Control">Steuerung</string>
+  <string name="Focus">Fokus</string>
+  <string name="UnspentAttributePoints">Nicht ausgegebene Attributpunkte</string>
+  <string name="UnspentFocusPoints">Nicht verbrauchte Fokuspunkte</string>
+  <string name="IsChild">Ist Kind</string>
+  <string name="IsAlive">Ist am Leben</string>
+  <string name="FirstName">Vorname</string>
+  <string name="HeroesData">Helden Daten</string>
+  <string name="All">Alles</string>
+  <string name="TownsData">Stadtdaten</string>
+  <string name="FoodStocks">Lebensmittelvorräte</string>
+  <string name="Gold">Gold</string>
+  <string name="Governor">Gouverneur</string>
+  <string name="WallLevel">Wandebene</string>
+  <string name="LegendarySmith">Legendärer Smith</string>
+  <string name="Bolts">Schrauben</string>
+  <string name="LegArmor">Beinrüstung</string>
+  <string name="Book">Buch</string>
+  <string name="ClearItemDifficulty">Schwierigkeitsgrad "Alle Elemente löschen"</string>
+  <string name="UnlockLongBowForUseOnHorseBack">Entsperren Sie LongBow zur Verwendung auf dem Pferderücken</string>
+  <string name="UnlockItemCivilian">Schalte den Zivilisten frei</string>
+  <string name="Marriageable">Heiratsfähig</string>
+  <string name="AddAmmo">Munition hinzufügen</string>
+  <string name="LastKnownLocation">Letzter bekannter Ort</string>
+  <string name="Renamed">Umbenannt</string>
+  <string name="PregnancyModel">Pregnancy Model</string>
+  <string name="IsFertile">Fruchtbar</string>
+  <string name="Exception">Exception</string>
+  <string name="TrueString_Exist">Existiere {0}</string>
+  <string name="FalseString_Exist">Kein Exist {0}</string>
+  <string name="FalseString_IsFertile">Unfruchtbarkeit</string>
+  <string name="YouAreNowControlling_">Sie steuern jetzt: {0}</string>
+  <string name="NPCControlCanOnlyBeUsedOnTheBattlefield">npc_control kann nur auf dem Schlachtfeld verwendet werden</string>
+</strings>

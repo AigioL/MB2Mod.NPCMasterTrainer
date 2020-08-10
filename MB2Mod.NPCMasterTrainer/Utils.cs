@@ -26,6 +26,8 @@ namespace MB2Mod.NPCMasterTrainer
 
         public const string Catch = "Catch";
 
+        public const string Fail = "Fail";
+
         public const string FailSeeMessage = "Fail, see message at bottom left.";
 
         public static bool IsDefault<T>(T t) => EqualityComparer<T>.Default.Equals(t, default);
@@ -82,12 +84,12 @@ namespace MB2Mod.NPCMasterTrainer
             var has_tag = !string.IsNullOrWhiteSpace(tag);
             if (list_true.Any())
             {
-                DisplayMessage(has_tag ? string.Format(trueString, tag) : trueString, colors.Cyan);
+                DisplayMessage(has_tag ? Format(trueString, tag) : trueString, colors.Cyan);
                 DisplayMessage(list_true, colors.Cyan);
             }
             if (list_false.Any())
             {
-                DisplayMessage(has_tag ? string.Format(falseString, tag) : falseString, colors.Gray);
+                DisplayMessage(has_tag ? Format(falseString, tag) : falseString, colors.Gray);
                 DisplayMessage(list_false, colors.Gray);
             }
             return (any_list_true || any_list_false) ? Done : NotFound;

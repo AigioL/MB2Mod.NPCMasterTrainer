@@ -11,6 +11,19 @@ namespace MB2Mod.NPCMasterTrainer
 {
     partial class Utils
     {
+        public static IReadOnlyList<WeaponComponentData> Weapons(this ItemObject itemObject)
+        {
+            try
+            {
+                //return this.WeaponComponent.Weapons; // NullReferenceException
+                return itemObject.Weapons;
+            }
+            catch (NullReferenceException)
+            {
+                return null;
+            }
+        }
+
         public static IEnumerable<ItemObject> GetItemsByType(ItemObject.ItemTypeEnum type)
         {
             return Items.FindAll(x => x.ItemType == type);
@@ -189,6 +202,7 @@ namespace MB2Mod.NPCMasterTrainer
                         var isAddAmmoByThrowingKnife = HasAddAmmoValue(AddAmmoByThrowingKnife);
                         var isAddAmmoByJavelin = HasAddAmmoValue(AddAmmoByJavelin);
                         var isAddAmmo = isAddAmmoByArrow || isAddAmmoByBolt || isAddAmmoByThrowingAxe || isAddAmmoByThrowingKnife || isAddAmmoByJavelin;
+                        var isAddAmmoByJavelinSecondary = HasAddAmmoValue(AddAmmoByJavelinSecondary);
                         foreach (var item in items)
                         {
                             if (item == null) continue;
@@ -233,14 +247,19 @@ namespace MB2Mod.NPCMasterTrainer
                             {
                                 try
                                 {
-                                    var weapons = item.Weapons != null && item.Weapons.Any() ? item.Weapons : (hasPrimaryWeapon ? new[] { item.PrimaryWeapon } : null);
+                                    var weapons = item.Weapons();
+                                    weapons = weapons != null && weapons.Any() ?
+                                        weapons :
+                                        (hasPrimaryWeapon ? new[] { item.PrimaryWeapon } : null);
                                     if (weapons != null)
                                     {
                                         foreach (var weapon in weapons)
                                         {
                                             if (weapon.ItemUsage.Contains("long_bow"))
                                             {
-                                                weapon.SetItemUsage(weapon.ItemUsage.Replace("long_bow", "bow"));
+                                                var itemUsage = weapon.ItemUsage
+                                                    .Replace("long_bow", "bow");
+                                                weapon.SetItemUsage(itemUsage);
                                             }
                                         }
                                     }
@@ -295,6 +314,41 @@ namespace MB2Mod.NPCMasterTrainer
                             }
 
                             #endregion
+
+                            #region AddAmmoByJavelinSecondary 3
+
+                            try
+                            {
+                                if (isAddAmmoByJavelinSecondary)
+                                {
+                                    var weapons = item.Weapons();
+                                    if (weapons != null && weapons.Count > 1)
+                                    {
+                                        foreach (var weapon in weapons)
+                                        {
+                                            if (weapon == null || weapon == item.PrimaryWeapon) continue;
+                                            if (weapon.WeaponClass == WeaponClass.Javelin && weapon.IsConsumable)
+                                            {
+                                                var addValue = AddAmmoValue(
+                                                    weapon.MaxDataValue,
+                                                    AddAmmoByJavelinSecondary);
+                                                weapon.SetMaxDataValue(addValue);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception e_SetMaxDataValue2)
+                            {
+#if DEBUG
+                                Console.WriteLine("AddAmmoByJavelinSecondary catch");
+                                Console.WriteLine(e_SetMaxDataValue2.Message);
+                                Console.WriteLine(e_SetMaxDataValue2.StackTrace);
+#endif
+                                exceptions[3] = e_SetMaxDataValue2;
+                            }
+
+                            #endregion
                         }
 
                         #region Print Exception
@@ -319,19 +373,19 @@ namespace MB2Mod.NPCMasterTrainer
 
                         if (ClearItemDifficulty)
                         {
-                            DisplayMessage($"{Resources.ClearItemDifficulty}: {(exceptions[0] == null ? Resources.Done : Resources.Catch)}", Colors.BlueViolet);
+                            DisplayMessage($"{Resources.ClearItemDifficulty}: {(exceptions[0] == null ? Resources.Done : Resources.Exception)}", Colors.BlueViolet);
                         }
                         if (UnlockItemCivilian)
                         {
-                            DisplayMessage($"{Resources.UnlockItemCivilian}: {(exceptions[1] == null ? Resources.Done : Resources.Catch)}", Colors.BlueViolet);
+                            DisplayMessage($"{Resources.UnlockItemCivilian}: {(exceptions[1] == null ? Resources.Done : Resources.Exception)}", Colors.BlueViolet);
                         }
                         if (UnlockLongBowForUseOnHorseBack)
                         {
-                            DisplayMessage($"{Resources.UnlockLongBowForUseOnHorseBack}: {(exceptions[2] == null ? Resources.Done : Resources.Catch)}", Colors.BlueViolet);
+                            DisplayMessage($"{Resources.UnlockLongBowForUseOnHorseBack}: {(exceptions[2] == null ? Resources.Done : Resources.Exception)}", Colors.BlueViolet);
                         }
                         if (isAddAmmo)
                         {
-                            DisplayMessage($"{Resources.AddAmmo}: {(exceptions[3] == null ? Resources.Done : Resources.Catch)}", Colors.BlueViolet);
+                            DisplayMessage($"{Resources.AddAmmo}: {(exceptions[3] == null ? Resources.Done : Resources.Exception)}", Colors.BlueViolet);
                         }
 
                         #endregion
@@ -343,6 +397,11 @@ namespace MB2Mod.NPCMasterTrainer
                 }
                 catch (Exception e)
                 {
+#if DEBUG
+                    Console.WriteLine("Config.HandleItems catch");
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
+#endif
                     DisplayMessage(e);
                     result = Catch;
                 }

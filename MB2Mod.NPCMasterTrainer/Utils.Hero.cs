@@ -286,7 +286,7 @@ namespace MB2Mod.NPCMasterTrainer
             hero.ResetPerks();
             hero.ResetFocus();
             hero.ResetAttrs();
-            DisplayMessage(string.Format(Resources.UnspentStatFocus, hero.HeroDeveloper.UnspentAttributePoints, hero.HeroDeveloper.UnspentFocusPoints));
+            DisplayMessage(Format(Resources.UnspentStatFocus, hero.HeroDeveloper.UnspentAttributePoints, hero.HeroDeveloper.UnspentFocusPoints));
         }
 
         #endregion

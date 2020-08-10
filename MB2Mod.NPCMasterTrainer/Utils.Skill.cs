@@ -9,7 +9,7 @@ namespace MB2Mod.NPCMasterTrainer
     {
         public static SkillObject GetSkillObject(int row, int column)
         {
-            var index = (row - 1) * 3 + column;
+            var index = (row - 1) * 3 + column - 1;
             return GetSkillObject(index);
         }
 

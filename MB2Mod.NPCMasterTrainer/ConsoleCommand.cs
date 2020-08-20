@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -305,33 +306,37 @@ namespace MB2Mod.NPCMasterTrainer
                         (Enum.TryParse<CharacterAttributesEnum>(attrTypeInputText, true, out var @enum) ?
                         (int)@enum : -1));
                     var value = ushort.TryParse(args2[2].LastOrDefault(), out var number2) ? number2 : 0;
-                    if (attrType >= CharacterAttributesEnum.First && attrType < CharacterAttributesEnum.End && value > 0 && value < HeroDeveloper.MaxAttribute)
+                    if (value <= 0) return "value must be greater than zero.";
+                    if (value > HeroDeveloper.MaxAttribute) return $"value must be less than or equal to {HeroDeveloper.MaxAttribute}";
+                    if (attrType >= CharacterAttributesEnum.First && attrType < CharacterAttributesEnum.End)
                     {
                         string HandleHeroes(IEnumerable<Hero> heroes)
                         {
                             foreach (var hero in heroes)
                             {
+                                var value2 = value;
                                 var currentAttrValue = hero.GetAttributeValue(attrType);
-                                if (currentAttrValue > value) // 属性必须保留至少一点
+                                if (currentAttrValue >= 1) // 属性必须保留至少一点
                                 {
-                                    var tempValue = currentAttrValue - value;
+                                    if (value2 >= currentAttrValue) value2 = currentAttrValue - 1;
+                                    var tempValue = currentAttrValue - value2;
                                     hero.SetAttributeValue(attrType, tempValue);
                                     if (hero.GetAttributeValue(attrType) == tempValue)
                                     {
-                                        hero.HeroDeveloper.UnspentAttributePoints += value;
+                                        hero.HeroDeveloper.UnspentAttributePoints += value2;
                                     }
                                     Utils.DisplayMessage(
                                         $"{hero.Name?.ToString()} " +
                                         $"{attrType.ToString2()} {currentAttrValue}=>{tempValue}");
                                 }
-                                else
-                                {
-                                    return Utils.Fail;
-                                }
                             }
                             return Utils.Done;
                         }
                         return Utils.HandleSearchHeroes(args2.First(), HandleHeroes);
+                    }
+                    else
+                    {
+                        return $"attrType must be greater than or equal to {(int)CharacterAttributesEnum.First} and less than {(int)CharacterAttributesEnum.End}";
                     }
                 }
                 return Utils.NotFound;
@@ -365,45 +370,127 @@ namespace MB2Mod.NPCMasterTrainer
                     var row = ushort.TryParse(args2[1].LastOrDefault(), out var row_num) ?
                         row_num : (Enum.TryParse<CharacterAttributesEnum>(rowInputText, true, out var @enum) ?
                         (int)@enum : -1);
+                    if (!(row >= 1 && row <= 6)) return $"row(1~6) must be greater than or equal to 1 and less than or equal to 6";
                     var column = ushort.TryParse(args2[2].LastOrDefault(), out var column_num) ? column_num : -1;
+                    if (!(column >= 1 && column <= 3)) return $"column(1~3) must be greater than or equal to 1 and less than or equal to 3";
                     var skill = Utils.GetSkillObject(row, column);
                     var value = ushort.TryParse(args2[3].LastOrDefault(), out var value_num) ? value_num : 0;
-                    if (skill != default && value > 0 && value < HeroDeveloper.MaxFocusPerSkill)
+                    if (value <= 0) return "value must be greater than zero.";
+                    if (value > HeroDeveloper.MaxFocusPerSkill) return $"value must be less than or equal to {HeroDeveloper.MaxFocusPerSkill}";
+                    if (skill != default)
                     {
                         string HandleHeroes(IEnumerable<Hero> heroes)
                         {
                             foreach (var hero in heroes)
                             {
                                 var currentValue = hero.HeroDeveloper.GetFocus(skill);
+                                var value2 = value;
+                                if (value2 > currentValue) value2 = currentValue;
 #if DEBUG
                                 Console.WriteLine(
                                     $"skill: {skill.Name?.ToString()}, " +
                                     $"currentValue: {currentValue}, " +
-                                    $"reduceValue: {value}");
+                                    $"value2: {value2}, " +
+                                    $"value: {value}");
 #endif
-                                if (currentValue >= value) // 专精可以全部返还
+                                if (value2 > 0) // 专精可以全部返还
                                 {
-                                    var newValue = currentValue - value;
+                                    var newValue = currentValue - value2;
 #if DEBUG
                                     Console.WriteLine($"newValue: {newValue}");
 #endif
-                                    hero.HeroDeveloper.AddFocus(skill, -value, false);
+                                    hero.HeroDeveloper.AddFocus(skill, -value2, false);
                                     if (hero.HeroDeveloper.GetFocus(skill) == newValue)
                                     {
-                                        hero.HeroDeveloper.UnspentFocusPoints += value;
+                                        hero.HeroDeveloper.UnspentFocusPoints += value2;
                                     }
                                     Utils.DisplayMessage(
                                         $"{hero.Name?.ToString()} " +
                                         $"{skill.Name?.ToString()} {currentValue}=>{newValue}");
                                 }
-                                else
-                                {
-                                    return Utils.Fail;
-                                }
                             }
                             return Utils.Done;
                         }
                         return Utils.HandleSearchHeroes(args2.First(), HandleHeroes);
+                    }
+                }
+                return Utils.NotFound;
+            }
+            catch (Exception e)
+            {
+                Utils.DisplayMessage(e);
+                return Utils.Catch;
+            }
+        }
+
+        /// <summary>
+        /// npc.remove_focus_by_entire_line [name] | [row] | [value] 移除玩家部队中角色的某一整行的专精并返还到可用点数
+        /// <para>row: 1~6</para>
+        /// <para>example: </para>
+        /// <para>npc.remove_focus_by_entire_line me | 2 | 1</para>
+        /// <para>npc.remove_focus_by_entire_line me | control | 1</para>
+        /// <para>npc.remove_focus_by_entire_line me | 1 | 5</para>
+        /// <para>npc.remove_focus_by_entire_line all | 1 | 5</para>
+        /// <para>npc.remove_focus_by_entire_line all | 2 | 5</para>
+        /// <para>npc.remove_focus_by_entire_line all | 3 | 5</para>
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("remove_focus_by_entire_line", "npc")]
+        public static string RemoveHeroFocusByEntireLine(List<string> args)
+        {
+            try
+            {
+                var args2 = args.SplitArgments();
+                if (args2.Count == 3)
+                {
+                    var rowInputText = args2[1].LastOrDefault();
+                    var row = ushort.TryParse(args2[1].LastOrDefault(), out var row_num) ?
+                        row_num : (Enum.TryParse<CharacterAttributesEnum>(rowInputText, true, out var @enum) ?
+                        (int)@enum : -1);
+                    if (!(row >= 1 && row <= 6)) return $"row(1~6) must be greater than or equal to 1 and less than or equal to 6";
+                    var value = ushort.TryParse(args2[2].LastOrDefault(), out var value_num) ? value_num : 0;
+                    if (value <= 0) return "value must be greater than zero.";
+                    if (value > HeroDeveloper.MaxFocusPerSkill) return $"value must be less than or equal to {HeroDeveloper.MaxFocusPerSkill}";
+                    var skills = new int[3].Select((x, i) => Utils.GetSkillObject(row, i + 1));
+                    return Utils.HandleSearchHeroes(args2.First(), HandleHeroes);
+                    string HandleHeroes(IEnumerable<Hero> heroes)
+                    {
+                        foreach (var hero in heroes)
+                        {
+                            foreach (var skill in skills)
+                            {
+                                if (skill != default)
+                                {
+                                    var currentValue = hero.HeroDeveloper.GetFocus(skill);
+                                    var value2 = value;
+                                    if (value2 > currentValue) value2 = currentValue;
+#if DEBUG
+                                    Console.WriteLine(
+                                        $"skill: {skill.Name?.ToString()}, " +
+                                        $"currentValue: {currentValue}, " +
+                                        $"value2: {value2}, " +
+                                        $"value: {value}");
+#endif
+                                    if (value2 > 0) // 专精可以全部返还
+                                    {
+                                        var newValue = currentValue - value2;
+#if DEBUG
+                                        Console.WriteLine($"newValue: {newValue}");
+#endif
+                                        hero.HeroDeveloper.AddFocus(skill, -value2, false);
+                                        if (hero.HeroDeveloper.GetFocus(skill) == newValue)
+                                        {
+                                            hero.HeroDeveloper.UnspentFocusPoints += value2;
+                                        }
+                                        Utils.DisplayMessage(
+                                            $"{hero.Name?.ToString()} " +
+                                            $"{skill.Name?.ToString()} {currentValue}=>{newValue}");
+                                    }
+                                }
+                            }
+                        }
+                        return Utils.Done;
                     }
                 }
                 return Utils.NotFound;
@@ -778,9 +865,23 @@ namespace MB2Mod.NPCMasterTrainer
         }
 
         #endregion
+
+        [CommandLineFunctionality.CommandLineArgumentFunction("kill_player", "campaign")]
+        public static string KillPlayer(List<string> strings)
+        {
+            if (Campaign.Current == null) return "Campaign was not started.";
+            var player = Hero.MainHero;
+            if (player == null) return "Hero is not found.";
+            if (!player.IsAlive) return "Hero is already dead.";
+            KillCharacterAction.ApplyByMurder(player, null, true);
+            return "Hero is killed.";
+        }
+
+        //[CommandLineFunctionality.CommandLineArgumentFunction("close", "menu")]
+        //public static string MenuClose(List<string> strings)
+        //{
+        //    Campaign.Current?.GameMenuManager?.ExitToLast();
+        //    return "Ok";
+        //}
     }
 }
-
-// 未来计划(v1.1.x)
-// 优化 多个hero(clone) 控制选取/npc_control
-// 优化 agent match hero

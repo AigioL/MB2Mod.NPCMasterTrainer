@@ -40,11 +40,11 @@ namespace MB2Mod.NPCMasterTrainer
                     x.IsRunning,
                     x.Capital,
                 }),
-                MercenaryData = town.MercenaryData.TryGetValue(x => new
-                {
-                    TroopType = town.MercenaryData.TryGetValue(y => y.TroopType?.Name.ToString()),
-                    town.MercenaryData.Number,
-                }), // 城镇雇佣兵数据
+                //MercenaryData = town.MercenaryData.TryGetValue(x => new
+                //{
+                //    TroopType = town.MercenaryData.TryGetValue(y => y.TroopType?.Name.ToString()),
+                //    town.MercenaryData.Number,
+                //}), // 城镇雇佣兵数据
                 WallLevel = town.TryGetValue(x => x.GetWallLevel()), // 城墙等级,
                 town.Prosperity, // 繁荣度
                 ProsperityLevel = town.TryGetValue(x => x.GetProsperityLevel()),

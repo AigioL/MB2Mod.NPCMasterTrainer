@@ -136,7 +136,7 @@ namespace MB2Mod.NPCMasterTrainer
                 if (hero.Spouse != null && hero.IsFertile && IsHeroAgeSuitableForPregnancy(hero, maxPregnancyAge))
                 {
                     var bonuses = new ExplainedNumber(1f);
-                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Medicine.PerfectHealth, hero.Clan.Leader.CharacterObject, ref bonuses);
+                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Medicine.PerfectHealth, hero.Clan.Leader.CharacterObject, true, ref bonuses);
                     result = (float)((6.5 - (hero.Age - MinPregnancyAge) * 0.230000004172325) * 0.0199999995529652) * bonuses.ResultNumber;
                     if (hero.Children.Count == 0) result *= 3f;
                     else if (hero.Children.Count == 1) result *= 2f;

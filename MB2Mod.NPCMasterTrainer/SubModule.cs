@@ -49,6 +49,7 @@ namespace MB2Mod.NPCMasterTrainer
                 ScriptingInterfaceOfIInput.FixGetClipboardText();
             }
             Utils.UrbanCharactersCampaignBehavior2.InitOnlyCreateFemaleOrMaleWanderer();
+            //Utils.FixMenuLevalCrash.Fix();
         }
 
         protected override void OnSubModuleUnloaded()

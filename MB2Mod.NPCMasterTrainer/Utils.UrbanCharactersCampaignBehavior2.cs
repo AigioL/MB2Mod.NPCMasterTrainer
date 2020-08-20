@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors;
 using TaleWorlds.Core;
@@ -60,6 +61,7 @@ namespace MB2Mod.NPCMasterTrainer
 
             static void SetCompanionTemplates(object behavior, List<CharacterObject> characters) => _companionTemplates.Value.SetValue(behavior, characters);
 
+            [MethodImpl(MethodImplOptions.NoInlining)]
             void CreateCompanionDest(CharacterObject companionTemplate)
             {
                 if (companionTemplate == null) return;
@@ -94,6 +96,7 @@ namespace MB2Mod.NPCMasterTrainer
             }
 
 #pragma warning disable IDE0060 // 删除未使用的参数
+            [MethodImpl(MethodImplOptions.NoInlining)]
             void CreateCompanionSource(CharacterObject companionTemplate)
             {
             }

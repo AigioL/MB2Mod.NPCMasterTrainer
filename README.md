@@ -339,6 +339,10 @@
 		<td align="left">移除玩家部队中角色的 专精 并返还到可用点数，专精可以全部返还</td>
 	</tr>
 	<tr>
+		<td align="left">npc.remove_focus_by_entire_line [name] | [row] | [value]</td>
+		<td align="left">移除玩家部队中角色的某一整行的 专精 并返还到可用点数</td>
+	</tr>
+	<tr>
 		<th align="left" colspan="2">铁匠与锻造</th>
 	</tr>
 	<tr>
@@ -472,6 +476,10 @@
 	<tr>
 		<td align="left">rename.children [num]</td>
 		<td align="left">玩家的第 num 个孩子重命名(num从1开始)</td>
+	</tr>
+	<tr>
+		<td align="left">campaign.kill_player</td>
+		<td align="left">立刻杀死玩家并选择继承人</td>
 	</tr>
 </table>
 

@@ -115,6 +115,7 @@ namespace MB2Mod.NPCMasterTrainer.UnitTest
                 fields = (from f in fields where f.FieldType.IsGenericType && f.FieldType.GetGenericTypeDefinition() == typeof(Lazy<>) select f).ToArray();
                 foreach (var item in fields)
                 {
+                    if (item.FieldType == typeof(Lazy<ClanTierModel>)) continue;
                     dynamic value;
                     bool @catch = default;
                     try

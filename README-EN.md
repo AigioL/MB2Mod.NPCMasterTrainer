@@ -338,6 +338,10 @@ CTRL and ~ enable the developer console in the game. Currently, the developer co
     <td align="left">Remove the focus of the character from the player’s army and return it to the available points. All focus can be returned</td> 
   </tr>  
   <tr> 
+    <td align="left">npc.remove_focus_by_entire_line [name] | [row] | [value]</td>  
+    <td align="left">Remove the specialization of a entire line of a character in the player's army and return it to the available points</td> 
+  </tr>  
+  <tr> 
     <th align="left" colspan="2">Blacksmiths and Forging</th> 
   </tr>  
   <tr> 
@@ -471,6 +475,10 @@ CTRL and ~ enable the developer console in the game. Currently, the developer co
   <tr> 
     <td align="left">rename.children [num]</td>  
     <td align="left">The player's numth child is renamed (num starts from 1)</td> 
+  </tr>
+  <tr>
+    <td align="left">campaign.kill_player</td>
+    <td align="left">Kill the player immediately and choose the heir</td>
   </tr> 
 </table>
 

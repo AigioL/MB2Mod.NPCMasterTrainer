@@ -116,7 +116,7 @@
 		<td align="left">float?</td>
 		<td align="left">null</td>
 		<td align="left">在创建新游戏时设置所有角色可生育的占比</td>
-		<td align="left">0.95</td>
+		<td align="left">0.95(e1.5.2中不存在此项，在此Mod版本 1.0.9 中删除)</td>
 	</tr>
 	<tr>
 		<td align="left">PregnancyDurationInDays</td>

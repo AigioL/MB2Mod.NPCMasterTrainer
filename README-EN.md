@@ -116,7 +116,7 @@ English | [简体中文](./README.md)
     <td align="left">float?</td>  
     <td align="left">null</td>  
     <td align="left">Set the proportion of fertility for all characters when creating a new game</td>  
-    <td align="left">0.95</td> 
+    <td align="left">0.95(This item does not exist in e1.5.2 and is deleted in mod version 1.0.9)</td> 
   </tr>  
   <tr> 
     <td align="left">PregnancyDurationInDays</td>  

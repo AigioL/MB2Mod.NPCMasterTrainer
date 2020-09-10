@@ -8,6 +8,8 @@ using System.Linq;
 using System.Reflection;
 using System.Security.AccessControl;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using utils = MB2Mod.NPCMasterTrainer.Utils;
 
 namespace MB2Mod.NPCMasterTrainer.Launcher
@@ -112,7 +114,8 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                 Console.WriteLine("Deploy Fail, projPath IsNullOrWhiteSpace.");
                 return false;
             }
-            var readmeFiles = Directory.GetParent(projPath).GetFiles("README*.md")
+            var slnDirInfo = Directory.GetParent(projPath);
+            var readmeFiles = slnDirInfo.GetFiles("README*.md")
                 .ToDictionary(k => k, v => File.ReadAllText(v.FullName));
             var xmlString = File.ReadAllText(Path.Combine(projPath, SubModule_XML));
             var outPath = Path.Combine(projPath, "bin", IsDevelopment ? "Debug" : "Release");
@@ -201,6 +204,21 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                     throw new System.Security.SecurityException("html file not allowed to exist js");
                 }
             }
+            static string GetFullHtmlContent(string lang, string css, string content)
+            {
+                const string HtmlTemplate = "<!DOCTYPE html><html lang=\"{0}\"><head><meta charset=\"utf-8\"><title>M&BII Mod NPC Master Trainer</title><style type=\"text/css\">{1}</style></head><body>{2}</body></html>";
+                return string.Format(HtmlTemplate, lang, css, content);
+            }
+            var css = Path.Combine(slnDirInfo.FullName, "README.css");
+            css = File.Exists(css) ? File.ReadAllText(css) : string.Empty;
+            static string GetLang(string filePath)
+            {
+                const string f_d = "README";
+                const string f = f_d + "-";
+                var fileName = Path.GetFileNameWithoutExtension(filePath);
+                if (string.Equals(fileName, f_d, StringComparison.OrdinalIgnoreCase)) return "zh";
+                return fileName.StartsWith(f, StringComparison.OrdinalIgnoreCase) ? fileName[f.Length..].ToLower() : string.Empty;
+            }
             foreach (var item in readmePathsWrite)
             {
                 var readmeWrite = item.Value;
@@ -209,6 +227,8 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                     var mdFilePath = readmePaths[item.Key];
                     var strContent = readmeFiles[item.Key];
                     var htmlContent = Markdown.ToHtml(strContent.Replace(".md)", ".html)"));
+                    var lang = GetLang(mdFilePath);
+                    htmlContent = GetFullHtmlContent(lang, css, htmlContent);
                     SecurityCheck(htmlContent);
                     File.WriteAllText(mdFilePath, strContent);
                     var htmlFilePath = Path.Combine(Path.GetDirectoryName(mdFilePath), Path.GetFileNameWithoutExtension(mdFilePath) + ".html");
@@ -270,8 +290,9 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                 }
                 string BuildPackage(CompressionLevel level = CompressionLevel.Optimal)
                 {
+                    var gameVersion = ReadGameVersion(gamePath);
                     var zipFilePath = Path.Combine(currentPath,
-                        $"{zipFileNamePrefix}_v{version.ToFullString()}.zip");
+                        $"{zipFileNamePrefix}_v{version.ToFullString()}__target_{gameVersion}.zip");
                     using var fileStream = new FileStream(zipFilePath, FileMode.CreateNew);
                     using var archive = new ZipArchive(fileStream, ZipArchiveMode.Create, true);
                     archive.CreateEntryFromFile(xmlPath, Path.Combine(modDirName, SubModule_XML), level);
@@ -333,6 +354,18 @@ namespace MB2Mod.NPCMasterTrainer.Launcher
                     Process.Start(_7zip, $"t \"{zipFilePath}\" -r");
                 }
             }
+        }
+
+        static string ReadGameVersion(string gamePath)
+        {
+            var xmlPath = Path.Combine(gamePath, "Modules", "Native", "SubModule.xml");
+            if (File.Exists(xmlPath))
+            {
+                var doc = XDocument.Load(xmlPath);
+                var el = doc.XPathSelectElement("/Module/Version");
+                return el?.Attribute("value")?.Value ?? string.Empty;
+            }
+            return string.Empty;
         }
     }
 }

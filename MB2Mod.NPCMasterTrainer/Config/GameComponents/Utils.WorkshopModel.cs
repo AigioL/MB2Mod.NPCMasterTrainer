@@ -72,6 +72,18 @@ namespace MB2Mod.NPCMasterTrainer
                     return Instance;
                 return default;
             }
+
+            public static bool Print()
+            {
+                var model = Campaign.Current?.Models?.WorkshopModel;
+                if (model != default)
+                {
+                    var typeName = model.GetType().FullName;
+                    DisplayMessage($"WorkshopModel: {typeName}");
+                    return true;
+                }
+                return false;
+            }
         }
     }
 }

@@ -639,6 +639,14 @@ namespace MB2Mod.NPCMasterTrainer
             return Utils.NPCMT_PregnancyModel.Print() ? Utils.Done : Utils.NotFound;
         }
 
+        [CommandLineFunctionality.CommandLineArgumentFunction("npcmt_model", "print")]
+        public static string PrintModel(List<string> args)
+        {
+            return (Utils.NPCMT_PregnancyModel.Print(true) &&
+            Utils.NPCMT_ClanTierModel.Print() &&
+            Utils.NPCMT_WorkshopModel.Print()) ? Utils.Done : Utils.NotFound;
+        }
+
         /// <summary>
         /// npc.check_is_fertile 检查角色是否可生育
         /// </summary>

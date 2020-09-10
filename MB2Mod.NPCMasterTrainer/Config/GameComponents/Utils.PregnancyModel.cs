@@ -16,10 +16,10 @@ namespace MB2Mod.NPCMasterTrainer
             /// </summary>
             public bool EnablePregnancyModel { get; set; }
 
-            /// <summary>
-            /// [妊娠配置]在游戏创建成功后初始化所有的角色能够生育的占比，当前版本(1.4.0.230377)默认值为 0.95
-            /// </summary>
-            public float? CharacterFertilityProbability { get; set; }
+            ///// <summary>
+            ///// [妊娠配置]在游戏创建成功后初始化所有的角色能够生育的占比，当前版本(1.4.0.230377)默认值为 0.95
+            ///// </summary>
+            //public float? CharacterFertilityProbability { get; set; }
 
             /// <summary>
             /// [妊娠配置]妊娠期(天数)，当前版本(1.4.0.230377)默认值为 36
@@ -73,8 +73,8 @@ namespace MB2Mod.NPCMasterTrainer
 
             private NPCMT_PregnancyModel(Config config) => this.config = config;
 
-            public override float CharacterFertilityProbability
-                => GetPercentage(config?.CharacterFertilityProbability) ?? base.CharacterFertilityProbability;
+            //public override float CharacterFertilityProbability
+            //    => GetPercentage(config?.CharacterFertilityProbability) ?? base.CharacterFertilityProbability;
 
             public override float PregnancyDurationInDays
                 => GetDays(config?.PregnancyDurationInDays) ?? base.PregnancyDurationInDays;
@@ -165,24 +165,29 @@ namespace MB2Mod.NPCMasterTrainer
                 return result;
             }
 
-            public static bool Print()
+            public static bool Print(bool isV2 = false)
             {
                 var model = Campaign.Current?.Models?.PregnancyModel;
                 if (model != default)
                 {
-                    DisplayMessage($"{Resources.PregnancyModel}: {model.GetType().FullName.Replace("NPCMT_", "NPCMT")}");
-                    DisplayMessage($"CharacterFertilityProbability: {model.CharacterFertilityProbability}");
-                    DisplayMessage($"PregnancyDurationInDays: {model.PregnancyDurationInDays}");
-                    DisplayMessage($"MaternalMortalityProbabilityInLabor: {model.MaternalMortalityProbabilityInLabor}");
-                    DisplayMessage($"StillbirthProbability: {model.StillbirthProbability}");
-                    DisplayMessage($"DeliveringFemaleOffspringProbability: {model.DeliveringFemaleOffspringProbability}");
-                    DisplayMessage($"DeliveringTwinsProbability: {model.DeliveringTwinsProbability}");
-                    if (model is NPCMT_PregnancyModel model_npcmt)
+                    var typeName = model.GetType().FullName;
+                    typeName = isV2 ? typeName : typeName.Replace("NPCMT_", "NPCMT");
+                    DisplayMessage($"{(isV2 ? "PregnancyModel" : Resources.PregnancyModel)}: {typeName}");
+                    if (!isV2)
                     {
-                        DisplayMessage($"MaxPregnancyAge: {model_npcmt.GetMaxPregnancyAge()}");
-                        DisplayMessage($"MaxPregnancyAgeForMeOrMySpouse: {model_npcmt.config.MaxPregnancyAgeForMeOrMySpouse ?? model_npcmt.GetMaxPregnancyAge()}");
-                        DisplayMessage($"AddDailyChanceOfPregnancyForHeroMultiple: {model_npcmt.config.AddDailyChanceOfPregnancyForHeroMultiple}");
-                        DisplayMessage($"AddDailyChanceOfPregnancyForMeOrMySpouseMultiple: {model_npcmt.config.AddDailyChanceOfPregnancyForMeOrMySpouseMultiple}");
+                        //DisplayMessage($"CharacterFertilityProbability: {model.CharacterFertilityProbability}");
+                        DisplayMessage($"PregnancyDurationInDays: {model.PregnancyDurationInDays}");
+                        DisplayMessage($"MaternalMortalityProbabilityInLabor: {model.MaternalMortalityProbabilityInLabor}");
+                        DisplayMessage($"StillbirthProbability: {model.StillbirthProbability}");
+                        DisplayMessage($"DeliveringFemaleOffspringProbability: {model.DeliveringFemaleOffspringProbability}");
+                        DisplayMessage($"DeliveringTwinsProbability: {model.DeliveringTwinsProbability}");
+                        if (model is NPCMT_PregnancyModel model_npcmt)
+                        {
+                            DisplayMessage($"MaxPregnancyAge: {model_npcmt.GetMaxPregnancyAge()}");
+                            DisplayMessage($"MaxPregnancyAgeForMeOrMySpouse: {model_npcmt.config.MaxPregnancyAgeForMeOrMySpouse ?? model_npcmt.GetMaxPregnancyAge()}");
+                            DisplayMessage($"AddDailyChanceOfPregnancyForHeroMultiple: {model_npcmt.config.AddDailyChanceOfPregnancyForHeroMultiple}");
+                            DisplayMessage($"AddDailyChanceOfPregnancyForMeOrMySpouseMultiple: {model_npcmt.config.AddDailyChanceOfPregnancyForMeOrMySpouseMultiple}");
+                        }
                     }
                     return true;
                 }

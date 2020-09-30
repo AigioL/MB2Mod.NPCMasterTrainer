@@ -9,6 +9,8 @@ namespace MB2Mod.NPCMasterTrainer
         {
             public static void ReplaceMethod(MethodInfo source, MethodInfo destination)
             {
+                if (source == destination) return;
+
                 RuntimeHelpers.PrepareMethod(source.MethodHandle);
                 RuntimeHelpers.PrepareMethod(destination.MethodHandle);
 

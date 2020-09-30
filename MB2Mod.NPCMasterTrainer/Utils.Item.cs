@@ -1,8 +1,10 @@
 ﻿using MB2Mod.NPCMasterTrainer.Properties;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
@@ -185,14 +187,66 @@ namespace MB2Mod.NPCMasterTrainer
             return (short)value;
         }
 
+        static bool UnlockItemCivilianV2EnableState;
+
+        [Obsolete("invalid")]
+        private static void UnlockItemCivilianV2()
+        {
+            if (UnlockItemCivilianV2EnableState) return;
+            try
+            {
+                var property = typeof(ItemObject).GetProperty(nameof(ItemObject.IsCivilian), BindingFlags.Public | BindingFlags.Instance);
+                if (property.PropertyType == typeof(bool))
+                {
+                    var destination = typeof(ItemObjectDest).GetMethod(nameof(ItemObjectDest.GetIsCivilianDest), BindingFlags.Public | BindingFlags.Instance);
+                    var source = property.GetMethod;
+                    if (source == default) return;
+                    Hook.ReplaceMethod(source, destination);
+                    UnlockItemCivilianV2EnableState = true;
+                    if (Config.Instance.HasWin32Console())
+                    {
+                        Console.WriteLine("UnlockItemCivilianV2 Success.");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                DisplayMessage(e);
+            }
+        }
+
+        private class ItemObjectDest
+        {
+            private ItemObjectDest() => throw new NotSupportedException();
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            public bool GetIsCivilianDest() => true;
+        }
+
+        public static bool HasCraftedItemObject() => ItemObject.All.Any(x => x.IsCraftedWeapon);
+
+        [Conditional("DEBUG")]
+        public static void PrintCraftedWeapons()
+        {
+            var str = string.Join(Environment.NewLine, ItemObject.All.Where(x => x.IsCraftedWeapon).Select(x => x.Name?.ToString()));
+            Console.WriteLine("CraftedWeapons: ");
+            Console.WriteLine(str);
+        }
+
         partial class Config
         {
-            public void HandleItemObjects()
+            public void HandleItemObjects(bool onlyCraftedWeapons = false)
             {
                 string result;
                 try
                 {
-                    var items = ItemObject.All;
+                    //if (UnlockItemCivilian)
+                    //{
+                    //    UnlockItemCivilianV2();
+                    //}
+
+                    var items = onlyCraftedWeapons ?
+                        ItemObject.All.Where(x => x.IsCraftedWeapon) : ItemObject.All.AsEnumerable();
                     if (items != default && items.Any())
                     {
                         var exceptions = new Exception[4];

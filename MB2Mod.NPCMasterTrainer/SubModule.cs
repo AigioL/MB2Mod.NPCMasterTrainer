@@ -1,6 +1,8 @@
 ﻿using MB2Mod.NPCMasterTrainer.Properties;
 using System;
+using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 using TaleWorlds.Core;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
@@ -16,17 +18,44 @@ namespace MB2Mod.NPCMasterTrainer
         public override void OnGameInitializationFinished(Game game)
         {
             base.OnGameInitializationFinished(game);
-            Utils.Config.Instance.HandleItemObjects();
             ConsoleCommand.InitBattleCommander();
         }
 
         protected override void OnGameStart(Game game, IGameStarter gameStarter)
         {
             base.OnGameStart(game, gameStarter);
+            OnGameStart2(game, gameStarter);
             gameStarter.AddModel(Utils.NPCMT_ClanTierModel.Init);
             gameStarter.AddModel(Utils.NPCMT_PregnancyModel.Init);
             //gameStarter.AddModel(Utils.NPCMT_TroopCountLimitModel.Init);
             gameStarter.AddModel(Utils.NPCMT_WorkshopModel.Init);
+        }
+
+        [Conditional("DEBUG")]
+        void OnGameStart2(Game game, IGameStarter gameStarter)
+        {
+            Console.WriteLine($"OnGameStart HasCraftedItemObject: {Utils.HasCraftedItemObject()}");
+        }
+
+        public override void OnGameLoaded(Game game, object initializerObject)
+        {
+            base.OnGameLoaded(game, initializerObject);
+            OnGameLoaded2(game, initializerObject);
+            OnGameLoadedAfter();
+        }
+
+        async void OnGameLoadedAfter()
+        {
+            await Task.Delay(3500);
+            Utils.Config.Instance.HandleItemObjects();
+        }
+
+        [Conditional("DEBUG")]
+        void OnGameLoaded2(Game game, object initializerObject)
+        {
+            Console.WriteLine($"OnGameLoaded HasCraftedItemObject: {Utils.HasCraftedItemObject()}");
+            Console.WriteLine($"initializerObject: {initializerObject?.ToString()}");
+            Utils.PrintCraftedWeapons();
         }
 
         protected override void OnSubModuleLoad()

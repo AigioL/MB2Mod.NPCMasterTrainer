@@ -479,7 +479,11 @@ CTRL and ~ enable the developer console in the game. Currently, the developer co
   <tr>
     <td align="left">campaign.kill_player</td>
     <td align="left">Kill the player immediately and choose the heir</td>
-  </tr> 
+  </tr>
+  <tr>
+    <td align="left">config.handle_crafted_weapon_item_npcmt</td>
+    <td align="left">Re-run all forged items according to Config (unlock civilian mode, unlock proficiency, use longbow on horseback, add ammunition). You can use this command after the blacksmith forges new items. If the forged weapon contains ammunition such as javelins Items, execution of this command will cause the ammunition to increase again, and the file can be read back to normal after saving</td>
+  </tr>
 </table>
 
 ### **Example (Command line usage example)**

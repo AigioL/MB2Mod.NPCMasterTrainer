@@ -166,5 +166,13 @@ namespace MB2Mod.NPCMasterTrainer.UnitTest
             Assert.IsTrue(parm.Single().ParameterType == typeof(CharacterObject));
             Assert.IsTrue(mCreateCompanion.ReturnType == typeof(void));
         }
+
+        [TestMethod]
+        public void ItemObjectR()
+        {
+            var property = typeof(ItemObject).GetProperty(nameof(ItemObject.IsCivilian), BindingFlags.Public | BindingFlags.Instance);
+            Assert.IsTrue(property.PropertyType == typeof(bool));
+            Assert.IsTrue(property.GetMethod != null);
+        }
     }
 }

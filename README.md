@@ -481,6 +481,10 @@
 		<td align="left">campaign.kill_player</td>
 		<td align="left">立刻杀死玩家并选择继承人</td>
 	</tr>
+	<tr>
+		<td align="left">config.handle_crafted_weapon_item_npcmt</td>
+		<td align="left">对所有锻造物品根据Config重新进行(解锁平民模式，解锁熟练度，在马背上使用长弓，添加弹药量)，可以在铁匠锻造新物品后使用此命令，如果锻造武器中有标枪等弹药类的物品，执行此命令会导致弹药量再次增加，存档后读档可恢复正常</td>
+	</tr>
 </table>
 
 ### **Example(命令行使用示例)**

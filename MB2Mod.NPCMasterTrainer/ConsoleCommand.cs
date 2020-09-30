@@ -874,6 +874,8 @@ namespace MB2Mod.NPCMasterTrainer
 
         #endregion
 
+        #region campaign
+
         [CommandLineFunctionality.CommandLineArgumentFunction("kill_player", "campaign")]
         public static string KillPlayer(List<string> strings)
         {
@@ -885,11 +887,25 @@ namespace MB2Mod.NPCMasterTrainer
             return "Hero is killed.";
         }
 
+        #endregion
+
         //[CommandLineFunctionality.CommandLineArgumentFunction("close", "menu")]
         //public static string MenuClose(List<string> strings)
         //{
         //    Campaign.Current?.GameMenuManager?.ExitToLast();
         //    return "Ok";
         //}
+
+        #region config
+
+        [CommandLineFunctionality.CommandLineArgumentFunction("handle_crafted_weapon_item_npcmt", "config")]
+        public static string HandleItemObjects(List<string> strings)
+        {
+            Utils.PrintCraftedWeapons();
+            Utils.Config.Instance.HandleItemObjects(true);
+            return "Ok";
+        }
+
+        #endregion
     }
 }

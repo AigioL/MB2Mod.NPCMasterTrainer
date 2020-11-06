@@ -12,6 +12,12 @@ namespace MB2Mod.NPCMasterTrainer
         partial class Config
         {
             /// <summary>
+            /// 我的配偶会死于分娩，默认值<see langword="false"/>(不会死于分娩)
+            /// <para>此项默认值会修改原行为，通常仅在主角为男性时生效</para>
+            /// </summary>
+            public bool MySpouseCanDiedInLabor { get; set; }
+
+            /// <summary>
             /// 开启妊娠配置，默认值<see langword="false"/>(关)
             /// </summary>
             public bool EnablePregnancyModel { get; set; }

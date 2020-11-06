@@ -18,7 +18,15 @@ namespace MB2Mod.NPCMasterTrainer
             }
         }
 
-        public static void DisplayMessage(Exception e) => DisplayMessage(e.ToString(), Colors.OrangeRed);
+        public static void DisplayMessage(Exception e)
+        {
+            var information = e.ToString();
+            if (Config.Instance.EnableDevConsole())
+            {
+                Console.WriteLine(information);
+            }
+            DisplayMessage(information, Colors.OrangeRed);
+        }
 
         public static void DisplayMessage(IEnumerable<string> strings, Color? color = null, string separator = " ")
         {

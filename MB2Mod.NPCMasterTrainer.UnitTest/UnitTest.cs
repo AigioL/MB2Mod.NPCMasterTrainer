@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors;
 using TaleWorlds.Core;
 
@@ -173,6 +174,16 @@ namespace MB2Mod.NPCMasterTrainer.UnitTest
             var property = typeof(ItemObject).GetProperty(nameof(ItemObject.IsCivilian), BindingFlags.Public | BindingFlags.Instance);
             Assert.IsTrue(property.PropertyType == typeof(bool));
             Assert.IsTrue(property.GetMethod != null);
+        }
+
+        [TestMethod]
+        public void InitModifyApplyInLabor()
+        {
+            var sourceType = typeof(KillCharacterAction);
+            var destination = sourceType.GetMethod(nameof(KillCharacterAction.ApplyInLabor),
+               BindingFlags.Public | BindingFlags.Static, null,
+               new[] { typeof(Hero), typeof(bool) }, null);
+            Assert.IsTrue(destination != null);
         }
     }
 }

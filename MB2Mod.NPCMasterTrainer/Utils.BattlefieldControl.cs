@@ -117,7 +117,9 @@ namespace MB2Mod.NPCMasterTrainer
                     {
                         var query = from x in characters
                                     where x.IsHero
-                                    let agent = agents.OrderByDescending(x => x.Health)
+                                    let agent = agents
+                                    .Where(x => x.Health > 20f)
+                                    .OrderByDescending(x => x.Health)
                                     .FirstOrDefault(y => x == y.Character)
                                     where agent != null
                                     select agent;
@@ -345,6 +347,20 @@ namespace MB2Mod.NPCMasterTrainer
 
                 public bool Control(Agent destCommander, bool equalsResult = true)
                 {
+                    if (destCommander == null)
+                    {
+#if DEBUG
+                        Console.WriteLine($"Control Fail, destCommander is null.");
+#endif
+                        return false;
+                    }
+                    if (destCommander.Health < 20f)
+                    {
+#if DEBUG
+                        Console.WriteLine($"Control Fail, destCommander Health < 20.");
+#endif
+                        return false;
+                    }
                     if (!IsStartBattle)
                     {
 #if DEBUG
@@ -493,7 +509,7 @@ namespace MB2Mod.NPCMasterTrainer
 
                 bool ControlBattleCommander(params string[] stringIds)
                 {
-                    var heroes = GetNpcs(NpcType.Noble | NpcType.Wanderer | NpcType.Player);
+                    var heroes = GetNpcs2(new[] { NpcType.Wanderer, NpcType.Noble, NpcType.Player });
                     var hero = heroes.FirstOrDefault(x => stringIds.Contains(x.StringId, StringComparer.Ordinal));
                     if (hero != null)
                     {
@@ -533,12 +549,22 @@ namespace MB2Mod.NPCMasterTrainer
                 public override void OnMissionTick(float dt)
                 {
                     base.OnMissionTick(dt);
-                    if (!IsStartBattle && Mission.IsStartBattle())
+                    try
                     {
-                        player = Mission.MainAgent;
-                        sourceCommander = player;
-                        IsStartBattle = true;
-                        OnStartBattle();
+                        if (!IsStartBattle && Mission.IsStartBattle())
+                        {
+                            player = Mission.MainAgent;
+                            sourceCommander = player;
+                            IsStartBattle = true;
+                            OnStartBattle();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+#if DEBUG
+                        Console.WriteLine("OnMissionTick catch");
+                        Console.WriteLine(e.ToString());
+#endif
                     }
                 }
 
@@ -546,7 +572,17 @@ namespace MB2Mod.NPCMasterTrainer
                 {
                     IsDeactivate = true;
                     base.OnMissionDeactivate();
-                    DisposeControl();
+                    try
+                    {
+                        DisposeControl();
+                    }
+                    catch (Exception e)
+                    {
+#if DEBUG
+                        Console.WriteLine("OnMissionDeactivate catch");
+                        Console.WriteLine(e.ToString());
+#endif
+                    }
                 }
             }
         }

@@ -23,6 +23,11 @@ namespace MB2Mod.NPCMasterTrainer
             /// 创建流浪者时排除的文化，默认排除帝国
             /// </summary>
             public string[] CreateWandererExcludeCultures { get; set; } = new[] { "empire" };
+
+            ///// <summary>
+            ///// 创建流浪者时的年龄
+            ///// </summary>
+            //public byte? CreateWandererSetAge { get; set; } = 19;
         }
 
         public static string[] GetCultures()
@@ -68,6 +73,10 @@ namespace MB2Mod.NPCMasterTrainer
                 if (companionTemplate.Occupation == Occupation.Wanderer)
                 {
                     var config = Config.Instance;
+                    //if (config.CreateWandererSetAge.HasValue && companionTemplate.IsHero)
+                    //{
+                    //    companionTemplate.HeroObject.BirthDay = CampaignTime.Now - CampaignTime.Years(config.CreateWandererSetAge.Value);
+                    //}
                     var hasFilterGender = config.OnlyCreateFemaleOrMaleWanderer.HasValue;
                     var hasFilterCulture = config.CreateWandererExcludeCultures != null && config.CreateWandererExcludeCultures.Any();
                     var filterGenderFail = hasFilterGender && companionTemplate.IsFemale != config.OnlyCreateFemaleOrMaleWanderer.Value;
@@ -85,13 +94,13 @@ namespace MB2Mod.NPCMasterTrainer
                         companionTemplate = companionTemplates.GetRandomElement();
                     }
                 }
-#if DEBUG
-                if (Config.Instance.HasWin32Console())
-                {
-                    Console.WriteLine($"CreateCompanionDest: {companionTemplate.Name}, " +
-                        $"Culture: {companionTemplate.Culture?.Name}");
-                }
-#endif
+                //#if DEBUG
+                //                if (Config.Instance.HasWin32Console())
+                //                {
+                //                    Console.WriteLine($"CreateCompanionDest: {companionTemplate.Name}, " +
+                //                        $"Culture: {companionTemplate.Culture?.Name}");
+                //                }
+                //#endif
                 CreateCompanionSource(companionTemplate);
             }
 
@@ -107,7 +116,10 @@ namespace MB2Mod.NPCMasterTrainer
                 get
                 {
                     var config = Config.Instance;
-                    return config.OnlyCreateFemaleOrMaleWanderer.HasValue || (config.CreateWandererExcludeCultures != null && config.CreateWandererExcludeCultures.Any());
+                    return /*config.CreateWandererSetAge.HasValue ||*/
+                        config.OnlyCreateFemaleOrMaleWanderer.HasValue ||
+                        (config.CreateWandererExcludeCultures != null &&
+                        config.CreateWandererExcludeCultures.Any());
                 }
             }
 
@@ -122,6 +134,10 @@ namespace MB2Mod.NPCMasterTrainer
                 source = destination;
                 destination = behaviorDestType.GetMethod(nameof(CreateCompanionDest), BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(CharacterObject) }, null);
                 Hook.ReplaceMethod(source, destination);
+                if (Config.Instance.HasWin32Console())
+                {
+                    Console.WriteLine("InitOnlyCreateFemaleOrMaleWanderer Success.");
+                }
             }
         }
     }

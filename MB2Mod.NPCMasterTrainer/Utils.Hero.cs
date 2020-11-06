@@ -14,6 +14,24 @@ namespace MB2Mod.NPCMasterTrainer
 {
     partial class Utils
     {
+        /// <summary>
+        /// <see cref="Hero.MainHero"/>(API Replace)
+        /// </summary>
+        public static Hero MainHero
+        {
+            get
+            {
+                try
+                {
+                    return Hero.MainHero;
+                }
+                catch (NullReferenceException)
+                {
+                    return null;
+                }
+            }
+        }
+
         [Flags]
         public enum NpcType
         {
@@ -198,6 +216,38 @@ namespace MB2Mod.NPCMasterTrainer
                 hashSet.Remove(player);
             }
             return hashSet.ToArray();
+        }
+
+        public static IEnumerable<Hero> GetNpcs2(NpcType[] types, bool inMyTroops = true, bool excludeMe = false)
+        {
+            var player = Hero.MainHero;
+            if (player == default) return Array.Empty<Hero>();
+            var hashSet = new HashSet<Hero>();
+            foreach (var type in types)
+            {
+                switch (type)
+                {
+                    case NpcType.Player:
+                        if (!excludeMe)
+                        {
+                            hashSet.Add(player);
+                        }
+                        break;
+                    case NpcType.Wanderer:
+                        var wanderers = GetNotMeNpcs(player.Clan?.Companions, player, isWanderer: true, inMyTroops: inMyTroops);
+                        if (wanderers != null) hashSet.AddRange(wanderers);
+                        break;
+                    case NpcType.Noble:
+                        var lords = GetNotMeNpcs(player.Clan?.Heroes, player, isNoble: true, inMyTroops: inMyTroops);
+                        if (lords != null) hashSet.AddRange(lords);
+                        break;
+                }
+            }
+            if (excludeMe && hashSet.Contains(player))
+            {
+                hashSet.Remove(player);
+            }
+            return hashSet;
         }
 
         /// <summary>

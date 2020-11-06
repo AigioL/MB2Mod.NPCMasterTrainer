@@ -53,7 +53,7 @@
 		<td align="left">FixGetClipboardText</td>
 		<td align="left">bool</td>
 		<td align="left">true</td>
-		<td align="left">修复目前游戏中从剪贴板粘贴的中文文字出现乱码</td>
+		<td align="left">修复目前游戏中从剪贴板粘贴的非英文字符可能会出现的乱码</td>
 		<td align="left"></td>
 	</tr>
 	<tr>
@@ -301,6 +301,66 @@
 		<td align="left">死后控制NPC选择中排除玩家</td>
 		<td align="left"></td>
 	</tr>
+	<tr>
+		<td align="left">MySpouseCanDiedInLabor</td>
+		<td align="left">bool</td>
+		<td align="left">false</td>
+		<td align="left">我的配偶会死于分娩，如果玩家角色为男性，则配偶在分娩时有一定概率死于难产，此选项默认值false将避免上述情况发生，设置此值为true则不修改原逻辑</td>
+		<td align="left"></td>
+	</tr>
+	<tr>
+		<th align="left" colspan="4">AgeModel(年龄配置)</th>
+		<th align="left">在版本 e1.5.4.245039 中的原设定值</th>
+	</tr>
+	<tr>
+		<td align="left">EnableAgeModel</td>
+		<td align="left">bool</td>
+		<td align="left">false</td>
+		<td align="left">开启年龄配置</td>
+		<td align="left"></td>
+	</tr>
+	<tr>
+		<td align="left">BecomeInfantAge</td>
+		<td align="left">int?</td>
+		<td align="left">null</td>
+		<td align="left">变成婴儿年龄</td>
+		<td align="left">3</td>
+	</tr>
+	<tr>
+		<td align="left">BecomeChildAge</td>
+		<td align="left">int?</td>
+		<td align="left">null</td>
+		<td align="left">变成儿童年龄</td>
+		<td align="left">6</td>
+	</tr>
+	<tr>
+		<td align="left">BecomeTeenagerAge</td>
+		<td align="left">int?</td>
+		<td align="left">null</td>
+		<td align="left">变成青年年龄</td>
+		<td align="left">14</td>
+	</tr>
+	<tr>
+		<td align="left">HeroComesOfAge</td>
+		<td align="left">int?</td>
+		<td align="left">null</td>
+		<td align="left">成年年龄</td>
+		<td align="left">18</td>
+	</tr>
+	<tr>
+		<td align="left">BecomeOldAge</td>
+		<td align="left">int?</td>
+		<td align="left">null</td>
+		<td align="left">老年年龄</td>
+		<td align="left">47</td>
+	</tr>
+	<tr>
+		<td align="left">MaxAge</td>
+		<td align="left">int?</td>
+		<td align="left">null</td>
+		<td align="left">最大寿命年龄</td>
+		<td align="left">128</td>
+	</tr>
 </table>
 
 
@@ -467,6 +527,10 @@
 		<td align="left">克隆玩家部队中的角色</td>
 	</tr>
 	<tr>
+		<td align="left">npc.clone_fix_empty_wounded</td>
+		<td align="left">修复因使用[克隆玩家部队中的角色]导致出现玩家部队中的永久伤员</td>
+	</tr>
+	<tr>
 		<td align="left">npc.fill_up [name] | [num?]</td>
 		<td align="left">加满玩家部队中的角色 技能/专精/属性 点，需开启作弊模式</td>
 	</tr>
@@ -484,6 +548,10 @@
 	<tr>
 		<td align="left">config.handle_crafted_weapon_item_npcmt</td>
 		<td align="left">对所有锻造物品根据Config重新进行(解锁平民模式，解锁熟练度，在马背上使用长弓，添加弹药量)，可以在铁匠锻造新物品后使用此命令，如果锻造武器中有标枪等弹药类的物品，执行此命令会导致弹药量再次增加，存档后读档可恢复正常</td>
+	</tr>
+	<tr>
+		<td align="left">npc.set_age [name] | [age]</td>
+		<td align="left">设置npc年龄</td>
 	</tr>
 </table>
 
@@ -593,3 +661,94 @@
 		<td align="left" colspan="2">固定值 me(我),all_not_me(除了我之外),wanderer(流浪者),noble(贵族) 或 角色英文名(在[ESC-选项-游戏设置]更改语言为英语可看到角色的英文名，如果名字存在空格，需要使用下划线(_)替代空格。如果存在多个重名角色，在名字后加上-2，指定第2个)</td>
 	</tr>
 </table>
+
+### **更新日志**
+- v1.1.1
+	- **默认行为修改**
+		- 配偶在分娩时不会死于难产(仅玩家角色为男性时) 
+	- 新增命令
+		- npc.set_age
+		- npc.clone_fix_empty_wounded
+	- Config
+		- MySpouseCanDiedInLabor
+		- EnableAgeModel
+		- BecomeInfantAge
+		- BecomeChildAge
+		- BecomeTeenagerAge
+		- HeroComesOfAge
+		- BecomeOldAge
+		- MaxAge
+	- 改进 
+		- 战场控制选择NPC顺序(流浪者优先) 
+	- **修复**
+		- 控制NPC时如果有伤员导致的闪退
+		- 处理装备(解锁马上长弓，平民模式，熟练度，弹药量等) 在创建新游戏时生效
+- v1.1.0
+	- 新增命令
+		- config.handle_crafted_weapon_item_npcmt
+	- 改进
+		- 处理装备可作用于锻造武器
+- v1.0.9
+	- 改进
+		- 兼容 e1.5.2
+- v1.0.8
+	- 新增命令
+		- campaign.kill_player
+		- npc.remove_focus_by_entire_line
+	- 改进
+	 	- 兼容 e1.5.0
+- v1.0.7
+	- 新增命令
+		- npc.remove_focus
+	- 改进
+		- 本地化(文本翻译)
+- v1.0.6
+	- **默认行为修改**
+		- 创建流浪者时排除帝国文化
+		- 在战场上死后控制其他NPC
+	- Config
+		- CreateWandererExcludeCultures
+		- OnlyCreateFemaleOrMaleWanderer
+		- BattlefieldCommanderStringIds
+		- EnableAfterDeathControl
+		- AfterDeathControlExcludePlayer
+		- AfterDeathControlOnly__Noble_Or_Wanderer_Or_NobleOrWanderer
+- v1.0.5
+	- 新增命令
+		- npc.clone
+	- 改进
+		- 兼容 e1.4.3
+- v1.0.3
+	- 新增命令
+		- npc_control.name
+		- npc_control.index
+		- npc_control.next
+		- npc_control.next_noble
+		- npc_control.next_wanderer
+		- print.npcs_index
+- v1.0.2
+	- 新增命令
+		- npc.change_body
+		- npc.random_body
+	- Config
+		- FixGetClipboardText
+- v1.0.1
+	- 新增命令
+		- rename.children
+		- npc.check_is_fertile
+		- npc.set_is_fertile_true
+		- npc.set_is_fertile_false
+	- 改进
+		- 修正导出CSV中职业数据
+		- 检查传奇铁匠命令输出结果文字内容
+- v1.0.0
+	- **默认行为修改**
+		- 增加弹药量
+			- 箭 +11
+			- 弩箭 +6
+			- 飞斧 +2
+			- 飞刀 +13
+			- 标枪 +1
+		- 清空物品的熟练度要求
+		- 解锁长弓在马背上使用
+		- 解锁平民装扮

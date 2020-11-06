@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.Core;
@@ -284,6 +285,28 @@ namespace MB2Mod.NPCMasterTrainer
         }
 
         /// <summary>
+        /// npc.clone_fix_empty_wounded 修复因使用[克隆玩家部队中的角色]导致出现玩家部队中的永久伤员
+        /// <para>BUG复现：使用了克隆命令后，战败被抓，将克隆的角色建立部队后受伤等</para>
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("clone_fix_empty_wounded", "npc")]
+        public static string ClearTotalWoundedHeroes(List<string> args)
+        {
+            var troopRoster = Campaign.Current?.MainParty.MemberRoster;
+            if (troopRoster != default)
+            {
+                var _totalWoundedHeroes = typeof(TroopRoster).GetField("_totalWoundedHeroes", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (_totalWoundedHeroes != default && _totalWoundedHeroes.FieldType == typeof(int))
+                {
+                    _totalWoundedHeroes.SetValue(troopRoster, 0);
+                    return Utils.Done;
+                }
+            }
+            return Utils.NotFound;
+        }
+
+        /// <summary>
         /// npc.remove_attrs [name] | [attrType] | [value] 移除玩家部队中角色的属性并返还到可用点数
         /// <para>attrType: Vigor(1), Control(2), Endurance(3), Cunning(4), Social(5), Intelligence(6)</para>
         /// <para>example: </para>
@@ -500,6 +523,33 @@ namespace MB2Mod.NPCMasterTrainer
                 Utils.DisplayMessage(e);
                 return Utils.Catch;
             }
+        }
+
+        /// <summary>
+        /// npc.set_age [name] | [age] 设置年龄
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        [CommandLineFunctionality.CommandLineArgumentFunction("set_age", "npc")]
+        public static string SetAge(List<string> args)
+        {
+            var args2 = args.SplitArgments();
+            if (args2.Count == 2)
+            {
+                byte.TryParse(args2[1].LastOrDefault(), out var value);
+                if (value <= 18) value = 18;
+                var birthDay = CampaignTime.Now - CampaignTime.Years(value);
+                return Utils.HandleSearchHeroes(args2.First(), HandleHeroes);
+                string HandleHeroes(IEnumerable<Hero> heroes)
+                {
+                    foreach (var hero in heroes)
+                    {
+                        hero.BirthDay = birthDay;
+                    }
+                    return Utils.Done;
+                }
+            }
+            return Utils.NotFound;
         }
 
         #endregion
@@ -748,33 +798,44 @@ namespace MB2Mod.NPCMasterTrainer
             });
         }
 
-        internal static string ControlHeroNext(Utils.NpcType npcType)
+        internal static string ControlHeroNext(params Utils.NpcType[] npcTypes)
         {
-            return CheckControlHero(() =>
+            try
             {
-                var main = Agent.Main;
-                if (main != default)
+                return CheckControlHero(() =>
                 {
-                    var heroes = Utils.GetNpcs(npcType).Select(x => x.CharacterObject);
-                    var agents = Utils.BattlefieldControl.GetAgentsV2(heroes)?.ToArray();
-                    if (agents != null)
+                    var main = Agent.Main;
+                    if (main != default)
                     {
-                        var mainIndex = Array.IndexOf(agents, main);
-                        int index;
-                        if (mainIndex < 0) index = 0;
-                        else
+                        var heroes = Utils.GetNpcs2(npcTypes).Select(x => x.CharacterObject);
+                        var agents = Utils.BattlefieldControl.GetAgentsV2(heroes)?.ToArray();
+                        if (agents != null && agents.Length > 0)
                         {
-                            var mainIndexAdd1 = mainIndex + 1;
-                            if (mainIndexAdd1 < agents.Length) index = mainIndexAdd1;
-                            else index = 0;
+                            var mainIndex = Array.IndexOf(agents, main);
+                            int index;
+                            if (mainIndex < 0) index = 0;
+                            else
+                            {
+                                var mainIndexAdd1 = mainIndex + 1;
+                                if (mainIndexAdd1 < agents.Length) index = mainIndexAdd1;
+                                else index = 0;
+                            }
+                            if (index >= 0 && index < agents.Length)
+                            {
+                                var result = Utils.BattlefieldControl.ControlV2(agents[index]);
+                                Utils.DisplayMessage($"Current Index: {index}");
+                                return result ? Utils.Done : Utils.NotFound;
+                            }
                         }
-                        var result = Utils.BattlefieldControl.ControlV2(agents[index]);
-                        Utils.DisplayMessage($"Current Index: {index}");
-                        return result ? Utils.Done : Utils.NotFound;
                     }
-                }
-                return Utils.NotFound;
-            });
+                    return Utils.NotFound;
+                });
+            }
+            catch (Exception e)
+            {
+                Utils.DisplayMessage(e);
+                return Utils.Catch;
+            }
         }
 
         /// <summary>
@@ -785,7 +846,7 @@ namespace MB2Mod.NPCMasterTrainer
         [CommandLineFunctionality.CommandLineArgumentFunction("next", "npc_control")]
         public static string ControlHeroNext(List<string> args)
         {
-            return ControlHeroNext(Utils.NpcType.Noble | Utils.NpcType.Wanderer | Utils.NpcType.Player);
+            return ControlHeroNext(Utils.NpcType.Wanderer, Utils.NpcType.Noble, Utils.NpcType.Player);
         }
 
         /// <summary>

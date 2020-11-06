@@ -53,7 +53,7 @@ English | [简体中文](./README.md)
     <td align="left">FixGetClipboardText</td>  
     <td align="left">bool</td>  
     <td align="left">true</td>  
-    <td align="left">Fix the garbled characters in the Chinese text pasted from the clipboard in the current game</td>  
+    <td align="left">Fixed possible garbled non English characters pasted from the clipboard in the current game</td>  
     <td align="left"/> 
   </tr>  
   <tr> 
@@ -300,11 +300,71 @@ English | [简体中文](./README.md)
     <td align="left">false</td>  
     <td align="left">Exclude players from control NPC selection after death</td>  
     <td align="left"/> 
+  </tr>  
+  <tr> 
+    <td align="left">MySpouseCanDiedInLabor</td>  
+    <td align="left">bool</td>  
+    <td align="left">false</td>  
+    <td align="left">My spouse will die of childbirth. If the player's role is male, the spouse will have a certain probability of dying of dystocia during childbirth. The default value of this option is false to avoid the above situation. If this value is set to true, the original logic will not be modified</td>  
+    <td align="left"/> 
+  </tr>
+  <tr>
+  	<th align="left" colspan="4">AgeModel(Age configuration)</th>
+  	<th align="left">The original settings in version e1.5.4.245039</th>
+  </tr>
+  <tr>
+  	<td align="left">EnableAgeModel</td>
+  	<td align="left">bool</td>
+  	<td align="left">false</td>
+  	<td align="left"></td>
+  	<td align="left"></td>
+  </tr>
+  <tr>
+  	<td align="left">BecomeInfantAge</td>
+  	<td align="left">int?</td>
+  	<td align="left">null</td>
+  	<td align="left"></td>
+  	<td align="left">3</td>
+  </tr>
+  <tr>
+  	<td align="left">BecomeChildAge</td>
+  	<td align="left">int?</td>
+  	<td align="left">null</td>
+  	<td align="left"></td>
+  	<td align="left">6</td>
+  </tr>
+  <tr>
+  	<td align="left">BecomeTeenagerAge</td>
+  	<td align="left">int?</td>
+  	<td align="left">null</td>
+  	<td align="left"></td>
+  	<td align="left">14</td>
+  </tr>
+  <tr>
+  	<td align="left">HeroComesOfAge</td>
+  	<td align="left">int?</td>
+  	<td align="left">null</td>
+  	<td align="left"></td>
+  	<td align="left">18</td>
+  </tr>
+  <tr>
+  	<td align="left">BecomeOldAge</td>
+  	<td align="left">int?</td>
+  	<td align="left">null</td>
+  	<td align="left"></td>
+  	<td align="left">47</td>
+  </tr>
+  <tr>
+  	<td align="left">MaxAge</td>
+  	<td align="left">int?</td>
+  	<td align="left">null</td>
+  	<td align="left"></td>
+  	<td align="left">128</td>
   </tr> 
 </table>
 
 ### **Command (Command line instructions)**
-CTRL and ~ enable the developer console in the game. Currently, the developer console can only type in English. Chinese will become ???. You can enter the following commands in the developer console
+CTRL and ~ enable the developer console in the game. Currently, the developer console can only type in English. non English char will become ???. You can enter the following commands in the developer console
 <table> 
   <tr> 
     <th align="left">Command</th>  
@@ -466,11 +526,15 @@ CTRL and ~ enable the developer console in the game. Currently, the developer co
     <td align="left">Clone the character in the player’s army</td> 
   </tr>  
   <tr> 
+    <td align="left">npc.clone_fix_empty_wounded</td>  
+    <td align="left">Fixed a permanent casualty in a player's unit caused by the use of clone player's character</td> 
+  </tr>  
+  <tr> 
     <td align="left">npc.fill_up [name] | [num?]</td>  
     <td align="left">To fill up the character’s skill/specialization/attribute points in the player’s army, the cheat mode must be turned on</td> 
   </tr>  
   <tr> 
-    <td align="left" colspan="2">Because the developer console cannot input Chinese, you need to copy the new name to the clipboard and execute the following command</td> 
+    <td align="left" colspan="2">Because the developer console cannot input non English Char, you need to copy the new name to the clipboard and execute the following command</td> 
   </tr>  
   <tr> 
     <td align="left">rename.children [num]</td>  
@@ -484,6 +548,10 @@ CTRL and ~ enable the developer console in the game. Currently, the developer co
     <td align="left">config.handle_crafted_weapon_item_npcmt</td>
     <td align="left">Re-run all forged items according to Config (unlock civilian mode, unlock proficiency, use longbow on horseback, add ammunition). You can use this command after the blacksmith forges new items. If the forged weapon contains ammunition such as javelins Items, execution of this command will cause the ammunition to increase again, and the file can be read back to normal after saving</td>
   </tr>
+	<tr>
+		<td align="left">npc.set_age [name] | [age]</td>
+		<td align="left">set npc age by hero name</td>
+	</tr>
 </table>
 
 ### **Example (Command line usage example)**
@@ -592,3 +660,94 @@ CTRL and ~ enable the developer console in the game. Currently, the developer co
     <td align="left" colspan="2">Fixed value me(me), all_not_me(except me), wanderer(wanderer), noble(noble) or character English name (in [ESC-option-game Settings] Change the language to English to see the English name of the role. If there is a space in the name, you need to use an underscore (_) to replace the space. If there are multiple roles with the same name, add -2 after the name and specify the second one)</td> 
   </tr> 
 </table>
+
+### **Change Log**
+- v1.1.1
+	- **Default Behavior Modify**
+		- The spouse does not die of dystocia during childbirth (only when the player's role is male)
+	- New Command
+		- npc.set_age
+		- npc.clone_fix_empty_wounded
+	- Config
+		- MySpouseCanDiedInLabor
+		- EnableAgeModel
+		- BecomeInfantAge
+		- BecomeChildAge
+		- BecomeTeenagerAge
+		- HeroComesOfAge
+		- BecomeOldAge
+		- MaxAge
+	- Improve 
+		- Selection of NPC sequence for battlefield control
+    - **Fix**
+        - When controlling NPC, if there is a flash back caused by the wounded
+        - Processing equipment (unlock horse longbow, civilian mode, proficiency, ammo, etc.) Takes effect when a new game is created
+- v1.1.0
+	- New Command
+		- config.handle_crafted_weapon_item_npcmt
+	- Improve
+		- Processing equipment can be used to forge weapons
+- v1.0.9
+	- Improve
+		- Compatible e1.5.2
+- v1.0.8
+	- New Command
+		- campaign.kill_player
+		- npc.remove_focus_by_entire_line
+	- Improve
+	 	- Compatible e1.5.0
+- v1.0.7
+	- New Command
+		- npc.remove_focus
+	- Improve
+		- Localization (text translation)
+- v1.0.6
+    - **Default Behavior Modify**
+        - Exclude empire culture when creating wanderer
+        - Control other NPCs after death on the battlefield
+	- Config
+		- CreateWandererExcludeCultures
+		- OnlyCreateFemaleOrMaleWanderer
+		- BattlefieldCommanderStringIds
+		- EnableAfterDeathControl
+		- AfterDeathControlExcludePlayer
+		- AfterDeathControlOnly__Noble_Or_Wanderer_Or_NobleOrWanderer
+- v1.0.5
+	- New Command
+		- npc.clone
+	- Improve
+		- Compatible e1.4.3
+- v1.0.3
+	- New Command
+		- npc_control.name
+		- npc_control.index
+		- npc_control.next
+		- npc_control.next_noble
+		- npc_control.next_wanderer
+		- print.npcs_index
+- v1.0.2
+	- New Command
+		- npc.change_body
+		- npc.random_body
+	- Config
+		- FixGetClipboardText
+- v1.0.1
+	- New Command
+		- rename.children
+		- npc.check_is_fertile
+		- npc.set_is_fertile_true
+		- npc.set_is_fertile_false
+	- Improve
+		- Correction of occupation data in export CSV
+		- Check the legend blacksmith command output results text content
+- v1.0.0
+	- **Default Behavior Modify**
+		- AddAmmo
+			- Arrow +11
+			- Bolt +6
+			- ThrowingAxe +2
+			- ThrowingKnife +13
+			- Javelin +1
+    - Clear Item Difficulty
+    - Unlock LongBow For Use On Horse Back
+    - Unlock Item Civilian
